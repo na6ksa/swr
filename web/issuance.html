@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWR — Asset Issuance Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:  #00a651;
+    --green3: #00c261;
+    --gold:   #c9a84c;
+    --gold2:  #e8c46a;
+    --dark:   #020c05;
+    --dark2:  #041208;
+    --dark3:  #071a0c;
+    --slate:  #94a3b8;
+    --muted:  #334155;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--dark); font-family:'Inter',system-ui,sans-serif; color:#fff; line-height:1.6; }
+  a { color:inherit; text-decoration:none; }
+
+  .grad-g { background:linear-gradient(135deg,var(--green),var(--green3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+  /* ── SHELL ── */
+  .shell { display:flex; min-height:100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width:240px; flex-shrink:0; background:var(--dark2); border-right:1px solid var(--dark3); padding:24px 0; position:sticky; top:0; height:100vh; display:flex; flex-direction:column; }
+  .sidebar-logo { padding:0 20px 28px; border-bottom:1px solid var(--dark3); margin-bottom:20px; }
+  .sidebar-nav  { padding:0 12px; display:flex; flex-direction:column; gap:2px; }
+  .nav-item { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px; font-size:0.82rem; color:var(--slate); cursor:pointer; transition:background 0.2s, color 0.2s; }
+  .nav-item:hover { background:var(--dark3); color:#fff; }
+  .nav-item.active { background:rgba(0,166,81,0.1); color:var(--green); font-weight:600; }
+  .nav-icon { font-size:1rem; width:20px; text-align:center; }
+
+  /* ── MAIN ── */
+  .main { flex:1; }
+  .topbar { height:64px; border-bottom:1px solid var(--dark3); display:flex; align-items:center; justify-content:space-between; padding:0 32px; background:rgba(2,12,5,0.95); backdrop-filter:blur(12px); position:sticky; top:0; z-index:10; }
+  .topbar-title { font-size:1rem; font-weight:700; }
+  .btn-primary { padding:9px 22px; border-radius:8px; font-size:0.78rem; font-weight:700; background:linear-gradient(135deg,var(--green),var(--green3)); color:#000; border:none; cursor:pointer; }
+
+  /* ── CONTENT ── */
+  .content { padding:32px; max-width:900px; }
+
+  /* ── WIZARD STEPS ── */
+  .wizard-steps { display:flex; gap:0; margin-bottom:40px; }
+  .wstep { flex:1; display:flex; flex-direction:column; align-items:center; position:relative; }
+  .wstep:not(:last-child)::after { content:''; position:absolute; top:16px; left:50%; width:100%; height:2px; background:var(--dark3); z-index:0; }
+  .wstep:not(:last-child).done::after { background:var(--green); }
+  .wstep-circle { width:32px; height:32px; border-radius:50%; border:2px solid var(--dark3); background:var(--dark); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; color:var(--muted); z-index:1; position:relative; }
+  .wstep.done .wstep-circle { border-color:var(--green); background:var(--green); color:#000; }
+  .wstep.active .wstep-circle { border-color:var(--green); color:var(--green); }
+  .wstep-label { font-size:0.65rem; color:var(--muted); margin-top:8px; text-align:center; font-weight:600; }
+  .wstep.active .wstep-label { color:var(--green); }
+  .wstep.done .wstep-label { color:var(--slate); }
+
+  /* ── FORM ── */
+  .form-section { background:var(--dark2); border:1px solid var(--dark3); border-radius:16px; padding:32px; margin-bottom:24px; }
+  .form-section-title { font-size:0.9rem; font-weight:700; margin-bottom:6px; }
+  .form-section-sub   { font-size:0.78rem; color:var(--slate); margin-bottom:28px; }
+  .form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  .form-group.full { grid-column:span 2; }
+  label { font-size:0.72rem; font-weight:600; color:var(--slate); text-transform:uppercase; letter-spacing:0.08em; }
+  input, select, textarea {
+    background:var(--dark); border:1px solid var(--dark3); border-radius:8px;
+    padding:12px 14px; color:#fff; font-size:0.85rem; font-family:inherit;
+    outline:none; transition:border-color 0.2s; width:100%;
+  }
+  input:focus, select:focus, textarea:focus { border-color:var(--green); }
+  input::placeholder, textarea::placeholder { color:var(--muted); }
+  select option { background:var(--dark2); }
+  textarea { resize:vertical; min-height:100px; }
+
+  /* ── UPLOAD ZONE ── */
+  .upload-zone {
+    border:2px dashed var(--dark3); border-radius:12px; padding:32px;
+    text-align:center; cursor:pointer; transition:border-color 0.2s, background 0.2s;
+  }
+  .upload-zone:hover { border-color:var(--green); background:rgba(0,166,81,0.03); }
+  .upload-icon { font-size:2rem; margin-bottom:10px; }
+  .upload-title { font-size:0.88rem; font-weight:600; margin-bottom:6px; }
+  .upload-sub   { font-size:0.72rem; color:var(--muted); }
+  .upload-types { display:flex; gap:8px; justify-content:center; margin-top:14px; }
+  .upload-type  { font-size:0.62rem; font-weight:600; padding:4px 10px; border-radius:20px; background:rgba(0,166,81,0.07); border:1px solid rgba(0,166,81,0.15); color:var(--green); }
+
+  /* ── SHARIAH CHECKLIST ── */
+  .shariah-list { display:flex; flex-direction:column; gap:12px; }
+  .shariah-item { display:flex; align-items:flex-start; gap:14px; padding:14px 16px; background:var(--dark3); border-radius:10px; }
+  .shariah-check { width:20px; height:20px; border-radius:6px; border:2px solid var(--dark3); flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; font-size:0.7rem; }
+  .shariah-check.ok { border-color:var(--green); background:rgba(0,166,81,0.1); color:var(--green); }
+  .shariah-check.pending { border-color:var(--gold2); }
+  .shariah-item-text { font-size:0.82rem; color:var(--slate); }
+  .shariah-item-text strong { color:#fff; display:block; margin-bottom:4px; }
+
+  /* ── TOKEN PREVIEW ── */
+  .token-preview { background:var(--dark3); border-radius:14px; padding:24px; }
+  .tp-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+  .tp-symbol { font-size:1.6rem; font-weight:900; }
+  .tp-badge  { font-size:0.62rem; font-weight:700; padding:4px 12px; border-radius:20px; background:rgba(0,166,81,0.1); border:1px solid rgba(0,166,81,0.25); color:var(--green); }
+  .tp-rows { display:flex; flex-direction:column; gap:10px; }
+  .tp-row  { display:flex; justify-content:space-between; font-size:0.8rem; padding-bottom:10px; border-bottom:1px solid rgba(7,26,12,0.8); }
+  .tp-row:last-child { border-bottom:none; padding-bottom:0; }
+  .tp-label { color:var(--muted); }
+  .tp-value { font-weight:600; }
+
+  /* ── FEES ── */
+  .fee-breakdown { background:rgba(0,166,81,0.04); border:1px solid rgba(0,166,81,0.15); border-radius:12px; padding:20px; }
+  .fee-row { display:flex; justify-content:space-between; font-size:0.82rem; padding:8px 0; border-bottom:1px solid rgba(0,166,81,0.08); }
+  .fee-row:last-child { border-bottom:none; font-weight:700; color:#fff; }
+  .fee-label { color:var(--slate); }
+  .fee-total { color:var(--green); }
+
+  /* ── FORM FOOTER ── */
+  .form-footer { display:flex; align-items:center; justify-content:space-between; margin-top:32px; }
+  .btn-back { padding:12px 28px; border-radius:8px; font-size:0.85rem; font-weight:600; border:1px solid var(--dark3); color:var(--slate); cursor:pointer; background:transparent; transition:border-color 0.2s; }
+  .btn-back:hover { border-color:var(--slate); color:#fff; }
+  .btn-next { padding:12px 32px; border-radius:8px; font-size:0.88rem; font-weight:700; background:linear-gradient(135deg,var(--green),var(--green3)); color:#000; border:none; cursor:pointer; transition:opacity 0.2s; }
+  .btn-next:hover { opacity:0.88; }
+
+  @media(max-width:840px){
+    .sidebar { display:none; }
+    .content { padding:20px; }
+    .form-grid-2 { grid-template-columns:1fr; }
+    .form-group.full { grid-column:span 1; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="90" height="28" viewBox="0 0 160 50" fill="none">
+        <defs>
+          <linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00a651"/><stop offset="100%" stop-color="#00c261"/></linearGradient>
+          <linearGradient id="sd" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c9a84c"/><stop offset="100%" stop-color="#e8c46a"/></linearGradient>
+        </defs>
+        <circle cx="14" cy="10" r="6" fill="url(#sg)"/>
+        <circle cx="34" cy="30" r="6" fill="url(#sg)" opacity="0.6"/>
+        <circle cx="54" cy="10" r="6" fill="url(#sd)"/>
+        <line x1="14" y1="16" x2="34" y2="25" stroke="url(#sg)" stroke-width="1.5" opacity="0.5"/>
+        <line x1="34" y1="25" x2="54" y2="16" stroke="url(#sd)" stroke-width="1.5" opacity="0.5"/>
+        <text x="66" y="30" font-family="'Inter',sans-serif" font-size="22" font-weight="900" fill="#ffffff">SWR</text>
+      </svg>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item"><span class="nav-icon">📊</span> Overview</div>
+      <div class="nav-item active"><span class="nav-icon">🏗️</span> New Issuance</div>
+      <div class="nav-item"><span class="nav-icon">📦</span> My Assets</div>
+      <div class="nav-item"><span class="nav-icon">💰</span> Yield Manager</div>
+      <div class="nav-item"><span class="nav-icon">👥</span> Investors</div>
+      <div class="nav-item"><span class="nav-icon">📋</span> Documents</div>
+      <div class="nav-item"><span class="nav-icon">⚙️</span> Settings</div>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">New Asset Issuance</div>
+      <button class="btn-primary">Save Draft</button>
+    </div>
+
+    <div class="content">
+
+      <!-- WIZARD STEPS -->
+      <div class="wizard-steps">
+        <div class="wstep done">
+          <div class="wstep-circle">✓</div>
+          <div class="wstep-label">Sponsor KYB</div>
+        </div>
+        <div class="wstep done">
+          <div class="wstep-circle">✓</div>
+          <div class="wstep-label">Asset Details</div>
+        </div>
+        <div class="wstep active">
+          <div class="wstep-circle">3</div>
+          <div class="wstep-label">Token Structure</div>
+        </div>
+        <div class="wstep">
+          <div class="wstep-circle">4</div>
+          <div class="wstep-label">Shariah Review</div>
+        </div>
+        <div class="wstep">
+          <div class="wstep-circle">5</div>
+          <div class="wstep-label">CMA Submission</div>
+        </div>
+        <div class="wstep">
+          <div class="wstep-circle">6</div>
+          <div class="wstep-label">Go Live</div>
+        </div>
+      </div>
+
+      <!-- STEP 3: TOKEN STRUCTURE -->
+      <div class="form-section">
+        <div class="form-section-title">Token Structure</div>
+        <div class="form-section-sub">Define how the asset will be divided into tokens and set investor access rules.</div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Token Symbol</label>
+            <input type="text" placeholder="xROSHN1" value="xROSHN1">
+          </div>
+          <div class="form-group">
+            <label>Total Token Supply</label>
+            <input type="number" placeholder="1000000" value="1000000">
+          </div>
+          <div class="form-group">
+            <label>Asset Value (SAR)</label>
+            <input type="number" placeholder="10000000" value="10000000">
+          </div>
+          <div class="form-group">
+            <label>Price per Token (SAR) — auto</label>
+            <input type="text" value="SAR 10.00 / token" disabled style="opacity:0.5;">
+          </div>
+          <div class="form-group">
+            <label>Minimum Investment (tokens)</label>
+            <input type="number" placeholder="10" value="10">
+          </div>
+          <div class="form-group">
+            <label>Maximum per Retail Investor (SAR)</label>
+            <input type="number" placeholder="200000" value="200000">
+          </div>
+          <div class="form-group">
+            <label>Yield Distribution Frequency</label>
+            <select>
+              <option>Quarterly</option>
+              <option>Monthly</option>
+              <option>Semi-Annual</option>
+              <option>Annual</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Investor Eligibility</label>
+            <select>
+              <option>All KYC-verified investors</option>
+              <option>Professional + Institutional only</option>
+              <option>Institutional only</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Yield Distribution Wallet (SARX)</label>
+            <input type="text" placeholder="0x... (asset manager wallet that deposits yield)">
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCUMENT UPLOAD -->
+      <div class="form-section">
+        <div class="form-section-title">Legal Documents</div>
+        <div class="form-section-sub">Upload all required documents. They are stored encrypted on IPFS with only the hash recorded on-chain.</div>
+
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div class="upload-zone">
+            <div class="upload-icon">📄</div>
+            <div class="upload-title">SPV Registration Certificate</div>
+            <div class="upload-sub">Saudi CR certificate of the asset SPV</div>
+            <div class="upload-types">
+              <span class="upload-type">PDF</span>
+              <span class="upload-type">Max 10MB</span>
+            </div>
+          </div>
+          <div class="upload-zone">
+            <div class="upload-icon">🏠</div>
+            <div class="upload-title">Property Title / Asset Ownership Documents</div>
+            <div class="upload-sub">Original deed or ownership certificate from the relevant authority</div>
+            <div class="upload-types">
+              <span class="upload-type">PDF</span>
+              <span class="upload-type">JPG</span>
+            </div>
+          </div>
+          <div class="upload-zone" style="border-color:rgba(0,166,81,0.3); background:rgba(0,166,81,0.03);">
+            <div class="upload-icon">✅</div>
+            <div class="upload-title">Asset Valuation Report — Uploaded</div>
+            <div class="upload-sub" style="color:var(--green);">valuation_report_2026.pdf · 2.4 MB</div>
+          </div>
+          <div class="upload-zone">
+            <div class="upload-icon">📊</div>
+            <div class="upload-title">Financial Statements (Last 3 Years)</div>
+            <div class="upload-sub">Audited financial statements for the asset or SPV</div>
+            <div class="upload-types">
+              <span class="upload-type">PDF</span>
+              <span class="upload-type">XLS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHARIAH CHECKLIST -->
+      <div class="form-section">
+        <div class="form-section-title">Shariah Compliance Pre-Check</div>
+        <div class="form-section-sub">Complete this checklist before submitting to our Shariah Supervisory Board.</div>
+
+        <div class="shariah-list">
+          <div class="shariah-item">
+            <div class="shariah-check ok">✓</div>
+            <div class="shariah-item-text">
+              <strong>Asset is Halal</strong>
+              The underlying asset does not involve prohibited industries (alcohol, gambling, weapons, pork, conventional banking).
+            </div>
+          </div>
+          <div class="shariah-item">
+            <div class="shariah-check ok">✓</div>
+            <div class="shariah-item-text">
+              <strong>No Interest (Riba)</strong>
+              Yield is derived from ownership income (rent, profit-sharing) — not from interest-bearing loans.
+            </div>
+          </div>
+          <div class="shariah-item">
+            <div class="shariah-check ok">✓</div>
+            <div class="shariah-item-text">
+              <strong>Asset-Backed</strong>
+              Each token is backed 1:1 by real ownership in the underlying asset via a Saudi SPV. No naked financial instruments.
+            </div>
+          </div>
+          <div class="shariah-item">
+            <div class="shariah-check pending"></div>
+            <div class="shariah-item-text">
+              <strong>SPV Structure Review — Pending</strong>
+              The Shariah Board will review the SPV articles of association and ownership transfer mechanism.
+            </div>
+          </div>
+          <div class="shariah-item">
+            <div class="shariah-check pending"></div>
+            <div class="shariah-item-text">
+              <strong>Fatwa Certificate — Pending</strong>
+              Formal Fatwa from the Shariah Supervisory Board will be issued after document review (5–10 business days).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOKEN PREVIEW + FEES -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:32px;">
+        <div class="form-section" style="margin-bottom:0;">
+          <div class="form-section-title">Token Preview</div>
+          <div class="form-section-sub">How your token will appear to investors.</div>
+          <div class="token-preview">
+            <div class="tp-header">
+              <div>
+                <div class="tp-symbol grad-g">$xROSHN1</div>
+                <div style="font-size:0.65rem; color:var(--muted); margin-top:4px;">ROSHN Riyadh Block 1</div>
+              </div>
+              <div class="tp-badge">Shariah ✓</div>
+            </div>
+            <div class="tp-rows">
+              <div class="tp-row"><span class="tp-label">Asset Type</span><span class="tp-value">Real Estate</span></div>
+              <div class="tp-row"><span class="tp-label">Total Value</span><span class="tp-value">SAR 10,000,000</span></div>
+              <div class="tp-row"><span class="tp-label">Token Supply</span><span class="tp-value">1,000,000</span></div>
+              <div class="tp-row"><span class="tp-label">Price / Token</span><span class="tp-value">SAR 10</span></div>
+              <div class="tp-row"><span class="tp-label">Min. Investment</span><span class="tp-value">SAR 100</span></div>
+              <div class="tp-row"><span class="tp-label">Target Yield</span><span class="tp-value" style="color:var(--green)">7.2% p.a.</span></div>
+              <div class="tp-row"><span class="tp-label">Distribution</span><span class="tp-value">Quarterly (SARX)</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section" style="margin-bottom:0;">
+          <div class="form-section-title">Issuance Fees</div>
+          <div class="form-section-sub">One-time fees charged at successful token launch.</div>
+          <div class="fee-breakdown">
+            <div class="fee-row">
+              <span class="fee-label">Platform Issuance Fee (2.0%)</span>
+              <span>SAR 200,000</span>
+            </div>
+            <div class="fee-row">
+              <span class="fee-label">Shariah Certification</span>
+              <span>SAR 15,000</span>
+            </div>
+            <div class="fee-row">
+              <span class="fee-label">Legal & SPV Setup</span>
+              <span>SAR 35,000</span>
+            </div>
+            <div class="fee-row">
+              <span class="fee-label">CMA Filing Fee</span>
+              <span>SAR 5,000</span>
+            </div>
+            <div class="fee-row">
+              <span class="fee-label" style="color:#fff; font-weight:700;">Total Issuance Cost</span>
+              <span class="fee-total">SAR 255,000</span>
+            </div>
+          </div>
+          <div style="font-size:0.72rem; color:var(--muted); margin-top:16px; line-height:1.7;">
+            50% discount on Platform Fee when paid in $SWR tokens.<br>
+            Annual management fee: 0.75% of AUM (charged quarterly).
+          </div>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn-back">← Back</button>
+        <button class="btn-next">Submit for Shariah Review →</button>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+</body>
+</html>

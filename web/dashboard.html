@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWR — Investor Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:  #00a651;
+    --green3: #00c261;
+    --gold:   #c9a84c;
+    --gold2:  #e8c46a;
+    --dark:   #020c05;
+    --dark2:  #041208;
+    --dark3:  #071a0c;
+    --dark4:  #0a2412;
+    --slate:  #94a3b8;
+    --muted:  #334155;
+    --red:    #ef4444;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--dark); font-family:'Inter',system-ui,sans-serif; color:#fff; line-height:1.6; overflow-x:hidden; }
+  a { color:inherit; text-decoration:none; }
+
+  .grad-g    { background:linear-gradient(135deg,var(--green),var(--green3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .grad-gold { background:linear-gradient(135deg,var(--gold),var(--gold2));  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+  /* ── LAYOUT ── */
+  .shell { display:flex; min-height:100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width:240px; flex-shrink:0; background:var(--dark2);
+    border-left:1px solid var(--dark3); /* will be right border visually */
+    border-right:1px solid var(--dark3);
+    display:flex; flex-direction:column; padding:24px 0;
+    position:sticky; top:0; height:100vh;
+  }
+  .sidebar-logo { padding:0 20px 28px; border-bottom:1px solid var(--dark3); margin-bottom:20px; }
+  .sidebar-nav  { display:flex; flex-direction:column; gap:2px; padding:0 12px; flex:1; }
+  .nav-item {
+    display:flex; align-items:center; gap:12px;
+    padding:10px 12px; border-radius:8px; font-size:0.82rem; color:var(--slate);
+    cursor:pointer; transition:background 0.2s, color 0.2s;
+  }
+  .nav-item:hover { background:var(--dark3); color:#fff; }
+  .nav-item.active { background:rgba(0,166,81,0.1); color:var(--green); font-weight:600; }
+  .nav-icon { font-size:1rem; width:20px; text-align:center; }
+  .sidebar-bottom { padding:16px 20px; border-top:1px solid var(--dark3); }
+  .kyc-badge {
+    display:flex; align-items:center; gap:8px;
+    background:rgba(0,166,81,0.08); border:1px solid rgba(0,166,81,0.2);
+    border-radius:8px; padding:10px 12px; font-size:0.72rem; color:var(--green); font-weight:600;
+  }
+  .kyc-dot { width:6px; height:6px; border-radius:50%; background:var(--green); }
+
+  /* ── MAIN ── */
+  .main { flex:1; display:flex; flex-direction:column; }
+  .topbar {
+    height:64px; border-bottom:1px solid var(--dark3);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 32px; position:sticky; top:0; background:rgba(2,12,5,0.95);
+    backdrop-filter:blur(12px); z-index:10;
+  }
+  .topbar-title { font-size:1rem; font-weight:700; }
+  .topbar-right { display:flex; align-items:center; gap:16px; }
+  .wallet-chip {
+    display:flex; align-items:center; gap:8px;
+    background:var(--dark2); border:1px solid var(--dark3);
+    border-radius:8px; padding:8px 14px; font-size:0.75rem; font-weight:600;
+  }
+  .wallet-dot { width:6px; height:6px; border-radius:50%; background:var(--green); }
+  .btn-sm {
+    padding:8px 18px; border-radius:8px; font-size:0.78rem; font-weight:700;
+    background:linear-gradient(135deg,var(--green),var(--green3)); color:#000;
+    cursor:pointer; border:none;
+  }
+
+  /* ── CONTENT ── */
+  .content { padding:32px; flex:1; }
+
+  /* ── PORTFOLIO HEADER ── */
+  .portfolio-header {
+    background:var(--dark2); border:1px solid var(--dark3); border-radius:20px;
+    padding:32px 36px; margin-bottom:24px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:24px;
+  }
+  .portfolio-value { font-size:2.8rem; font-weight:900; line-height:1; }
+  .portfolio-label { font-size:0.65rem; font-weight:600; letter-spacing:0.15em; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+  .portfolio-change { font-size:0.88rem; font-weight:700; color:var(--green); margin-top:6px; }
+  .portfolio-stats { display:flex; gap:40px; }
+  .p-stat .v { font-size:1.4rem; font-weight:900; }
+  .p-stat .l { font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-top:4px; }
+
+  /* ── GRID ── */
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .metric-card { background:var(--dark2); border:1px solid var(--dark3); border-radius:14px; padding:22px 24px; }
+  .metric-card .num  { font-size:1.8rem; font-weight:900; margin-bottom:4px; }
+  .metric-card .lbl  { font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; }
+  .metric-card .sub  { font-size:0.72rem; color:var(--slate); margin-top:4px; }
+
+  /* ── HOLDINGS TABLE ── */
+  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .section-title  { font-size:0.9rem; font-weight:700; }
+  .section-link   { font-size:0.75rem; color:var(--green); cursor:pointer; }
+  .table-wrap { background:var(--dark2); border:1px solid var(--dark3); border-radius:14px; overflow:hidden; }
+  table { width:100%; border-collapse:collapse; }
+  thead th { padding:12px 20px; font-size:0.65rem; font-weight:700; letter-spacing:0.1em; color:var(--muted); text-align:left; text-transform:uppercase; border-bottom:1px solid var(--dark3); }
+  tbody td { padding:14px 20px; font-size:0.82rem; color:var(--slate); border-bottom:1px solid rgba(7,26,12,0.8); }
+  tbody td:first-child { color:#fff; font-weight:600; }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:hover { background:rgba(0,166,81,0.03); }
+  .token-chip { display:inline-flex; align-items:center; gap:6px; }
+  .token-dot  { width:6px; height:6px; border-radius:50%; background:var(--green); flex-shrink:0; }
+  .yield-pct  { color:var(--green); font-weight:700; }
+  .price-up   { color:var(--green); }
+  .price-dn   { color:var(--red); }
+  .action-btn {
+    padding:5px 14px; border-radius:6px; font-size:0.7rem; font-weight:700;
+    background:rgba(0,166,81,0.08); border:1px solid rgba(0,166,81,0.2);
+    color:var(--green); cursor:pointer; transition:background 0.2s;
+  }
+  .action-btn:hover { background:rgba(0,166,81,0.18); }
+
+  /* ── YIELD HISTORY ── */
+  .yield-card { background:var(--dark2); border:1px solid var(--dark3); border-radius:14px; padding:24px; }
+  .yield-bars { display:flex; align-items:flex-end; gap:8px; height:80px; margin:20px 0 12px; }
+  .yield-bar  { flex:1; border-radius:4px 4px 0 0; background:linear-gradient(180deg,var(--green),rgba(0,166,81,0.15)); min-width:20px; }
+  .yield-bar.gold { background:linear-gradient(180deg,var(--gold2),rgba(201,168,76,0.15)); }
+  .yield-months { display:flex; gap:8px; }
+  .yield-month  { flex:1; text-align:center; font-size:0.58rem; color:var(--muted); }
+  .yield-list   { display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+  .yield-item   { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--dark3); border-radius:8px; }
+  .yield-item-left  { display:flex; flex-direction:column; gap:3px; }
+  .yield-item-name  { font-size:0.8rem; font-weight:600; }
+  .yield-item-date  { font-size:0.65rem; color:var(--muted); }
+  .yield-item-amt   { font-size:0.88rem; font-weight:700; color:var(--green); }
+
+  /* ── MARKET ── */
+  .market-card { background:var(--dark2); border:1px solid var(--dark3); border-radius:14px; padding:24px; }
+  .market-list { display:flex; flex-direction:column; gap:8px; margin-top:16px; }
+  .market-item { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:10px; border:1px solid var(--dark3); cursor:pointer; transition:border-color 0.2s, background 0.2s; }
+  .market-item:hover { border-color:rgba(0,166,81,0.3); background:rgba(0,166,81,0.03); }
+  .market-item-left  { display:flex; align-items:center; gap:12px; }
+  .market-icon  { width:36px; height:36px; border-radius:10px; background:rgba(0,166,81,0.08); border:1px solid rgba(0,166,81,0.15); display:flex; align-items:center; justify-content:center; font-size:1rem; }
+  .market-name  { font-size:0.82rem; font-weight:600; }
+  .market-type  { font-size:0.65rem; color:var(--muted); margin-top:2px; }
+  .market-price { font-size:0.88rem; font-weight:700; }
+  .market-yield { font-size:0.65rem; color:var(--green); margin-top:2px; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:1100px){
+    .sidebar { width:200px; }
+    .grid-3 { grid-template-columns:1fr 1fr; }
+    .portfolio-stats { gap:24px; }
+  }
+  @media(max-width:840px){
+    .sidebar { display:none; }
+    .grid-3 { grid-template-columns:1fr; }
+    .grid-2 { grid-template-columns:1fr; }
+    .content { padding:20px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="90" height="28" viewBox="0 0 160 50" fill="none">
+        <defs>
+          <linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00a651"/><stop offset="100%" stop-color="#00c261"/></linearGradient>
+          <linearGradient id="sd" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c9a84c"/><stop offset="100%" stop-color="#e8c46a"/></linearGradient>
+        </defs>
+        <circle cx="14" cy="10" r="6" fill="url(#sg)"/>
+        <circle cx="34" cy="30" r="6" fill="url(#sg)" opacity="0.6"/>
+        <circle cx="54" cy="10" r="6" fill="url(#sd)"/>
+        <line x1="14" y1="16" x2="34" y2="25" stroke="url(#sg)" stroke-width="1.5" opacity="0.5"/>
+        <line x1="34" y1="25" x2="54" y2="16" stroke="url(#sd)" stroke-width="1.5" opacity="0.5"/>
+        <text x="66" y="30" font-family="'Inter',sans-serif" font-size="22" font-weight="900" fill="#ffffff">SWR</text>
+      </svg>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active"><span class="nav-icon">📊</span> Dashboard</div>
+      <div class="nav-item"><span class="nav-icon">🏙️</span> My Assets</div>
+      <div class="nav-item"><span class="nav-icon">🔄</span> Trade</div>
+      <div class="nav-item"><span class="nav-icon">💰</span> Yield</div>
+      <div class="nav-item"><span class="nav-icon">🔍</span> Explore</div>
+      <div class="nav-item"><span class="nav-icon">📋</span> Documents</div>
+      <div class="nav-item"><span class="nav-icon">⚙️</span> Settings</div>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="kyc-badge">
+        <div class="kyc-dot"></div>
+        KYC Verified · Professional
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">Portfolio Overview</div>
+      <div class="topbar-right">
+        <div class="wallet-chip">
+          <div class="wallet-dot"></div>
+          0x3C44...293B
+        </div>
+        <button class="btn-sm">+ Invest</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- PORTFOLIO HEADER -->
+      <div class="portfolio-header">
+        <div>
+          <div class="portfolio-label">Total Portfolio Value</div>
+          <div class="portfolio-value grad-g">SAR 87,340</div>
+          <div class="portfolio-change">▲ +SAR 2,140 (+2.51%) this month</div>
+        </div>
+        <div class="portfolio-stats">
+          <div class="p-stat">
+            <div class="v grad-gold">SAR 1,284</div>
+            <div class="l">Yield Earned (YTD)</div>
+          </div>
+          <div class="p-stat">
+            <div class="v" style="color:#fff">5</div>
+            <div class="l">Assets Held</div>
+          </div>
+          <div class="p-stat">
+            <div class="v" style="color:var(--green)">6.8%</div>
+            <div class="l">Avg. Yield p.a.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- METRIC CARDS -->
+      <div class="grid-3">
+        <div class="metric-card">
+          <div class="num grad-g">SAR 340</div>
+          <div class="lbl">Claimable Yield</div>
+          <div class="sub">From 3 assets · Ready to claim</div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:#fff">5,820</div>
+          <div class="lbl">SWR Tokens Staked</div>
+          <div class="sub">Earning 8.2% APY staking rewards</div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:var(--gold2)">SAR 12,660</div>
+          <div class="lbl">SARX Balance</div>
+          <div class="sub">Available to invest</div>
+        </div>
+      </div>
+
+      <!-- HOLDINGS + YIELD SIDE BY SIDE -->
+      <div class="grid-2" style="margin-bottom:24px;">
+
+        <!-- HOLDINGS TABLE -->
+        <div>
+          <div class="section-header">
+            <div class="section-title">My Holdings</div>
+            <div class="section-link">View all →</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Asset</th>
+                  <th>Tokens</th>
+                  <th>Value</th>
+                  <th>Yield</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="token-chip"><div class="token-dot"></div>xROSHN1</div><div style="font-size:0.65rem; color:var(--muted); margin-top:2px;">ROSHN Riyadh Block 1</div></td>
+                  <td>3,200</td>
+                  <td>SAR 32,000</td>
+                  <td class="yield-pct">7.2%</td>
+                  <td><button class="action-btn">Trade</button></td>
+                </tr>
+                <tr>
+                  <td><div class="token-chip"><div class="token-dot" style="background:var(--gold2)"></div>xGOLD1</div><div style="font-size:0.65rem; color:var(--muted); margin-top:2px;">Physical Gold Fund</div></td>
+                  <td>1,500</td>
+                  <td>SAR 22,500</td>
+                  <td class="price-up">+4.1%</td>
+                  <td><button class="action-btn">Trade</button></td>
+                </tr>
+                <tr>
+                  <td><div class="token-chip"><div class="token-dot" style="background:#818cf8"></div>xSUKUK1</div><div style="font-size:0.65rem; color:var(--muted); margin-top:2px;">ACWA Power Sukuk</div></td>
+                  <td>2,000</td>
+                  <td>SAR 20,000</td>
+                  <td class="yield-pct">6.5%</td>
+                  <td><button class="action-btn">Trade</button></td>
+                </tr>
+                <tr>
+                  <td><div class="token-chip"><div class="token-dot" style="background:#f97316"></div>xINFRA1</div><div style="font-size:0.65rem; color:var(--muted); margin-top:2px;">Marafiq Water Plant</div></td>
+                  <td>840</td>
+                  <td>SAR 8,400</td>
+                  <td class="yield-pct">8.1%</td>
+                  <td><button class="action-btn">Trade</button></td>
+                </tr>
+                <tr>
+                  <td><div class="token-chip"><div class="token-dot" style="background:#e879f9"></div>xJED1</div><div style="font-size:0.65rem; color:var(--muted); margin-top:2px;">Jeddah Tower Fund</div></td>
+                  <td>444</td>
+                  <td>SAR 4,440</td>
+                  <td class="yield-pct">6.9%</td>
+                  <td><button class="action-btn">Trade</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- YIELD HISTORY -->
+        <div>
+          <div class="section-header">
+            <div class="section-title">Yield Received</div>
+            <div class="section-link">Claim all →</div>
+          </div>
+          <div class="yield-card">
+            <div style="font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">Monthly Income (SARX)</div>
+            <div class="yield-bars">
+              <div class="yield-bar" style="height:35%"></div>
+              <div class="yield-bar gold" style="height:48%"></div>
+              <div class="yield-bar" style="height:42%"></div>
+              <div class="yield-bar gold" style="height:62%"></div>
+              <div class="yield-bar" style="height:55%"></div>
+              <div class="yield-bar gold" style="height:70%"></div>
+              <div class="yield-bar" style="height:85%"></div>
+              <div class="yield-bar gold" style="height:100%"></div>
+            </div>
+            <div class="yield-months">
+              <div class="yield-month">Jan</div><div class="yield-month">Feb</div>
+              <div class="yield-month">Mar</div><div class="yield-month">Apr</div>
+              <div class="yield-month">May</div><div class="yield-month">Jun</div>
+              <div class="yield-month">Jul</div><div class="yield-month">Aug</div>
+            </div>
+            <div class="yield-list">
+              <div class="yield-item">
+                <div class="yield-item-left">
+                  <div class="yield-item-name">xROSHN1 — Quarterly Rent</div>
+                  <div class="yield-item-date">Jun 30, 2027</div>
+                </div>
+                <div class="yield-item-amt">+SAR 192</div>
+              </div>
+              <div class="yield-item">
+                <div class="yield-item-left">
+                  <div class="yield-item-name">xSUKUK1 — Coupon Payment</div>
+                  <div class="yield-item-date">Jun 15, 2027</div>
+                </div>
+                <div class="yield-item-amt">+SAR 108</div>
+              </div>
+              <div class="yield-item">
+                <div class="yield-item-left">
+                  <div class="yield-item-name">xINFRA1 — Offtake Revenue</div>
+                  <div class="yield-item-date">Jun 1, 2027</div>
+                </div>
+                <div class="yield-item-amt">+SAR 56</div>
+              </div>
+              <div style="text-align:center; padding:12px 0 4px;">
+                <button class="btn-sm" style="width:100%;">Claim SAR 340 →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MARKET EXPLORE -->
+      <div>
+        <div class="section-header">
+          <div class="section-title">Explore Assets</div>
+          <div class="section-link">View all assets →</div>
+        </div>
+        <div class="market-card">
+          <div class="market-list">
+            <div class="market-item">
+              <div class="market-item-left">
+                <div class="market-icon">🏙️</div>
+                <div>
+                  <div class="market-name">ROSHN Jeddah Phase 2</div>
+                  <div class="market-type">Real Estate · xROSHN2</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div class="market-price">SAR 12 / token</div>
+                <div class="market-yield">7.4% yield · Shariah ✓</div>
+              </div>
+            </div>
+            <div class="market-item">
+              <div class="market-item-left">
+                <div class="market-icon">⚡</div>
+                <div>
+                  <div class="market-name">NEOM Solar Farm A</div>
+                  <div class="market-type">Infrastructure · xNEOM1</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div class="market-price">SAR 25 / token</div>
+                <div class="market-yield">9.1% yield · Shariah ✓</div>
+              </div>
+            </div>
+            <div class="market-item">
+              <div class="market-item-left">
+                <div class="market-icon">📜</div>
+                <div>
+                  <div class="market-name">Saudi Aramco Sukuk 2027</div>
+                  <div class="market-type">Sukuk · xARAMCO1</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div class="market-price">SAR 100 / token</div>
+                <div class="market-yield">5.8% yield · Shariah ✓</div>
+              </div>
+            </div>
+            <div class="market-item">
+              <div class="market-item-left">
+                <div class="market-icon">🥇</div>
+                <div>
+                  <div class="market-name">Physical Gold Fund II</div>
+                  <div class="market-type">Commodity · xGOLD2</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div class="market-price">SAR 15 / token</div>
+                <div class="market-yield">Spot-linked · Shariah ✓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+</body>
+</html>
