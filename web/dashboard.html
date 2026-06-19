@@ -193,6 +193,7 @@
           <div class="wallet-dot"></div>
           <span id="wallet-addr">—</span>
         </div>
+        <a href="dashboard-ar.html" style="display:flex;align-items:center;gap:4px;background:var(--dark2);border:1px solid var(--dark3);border-radius:8px;padding:6px 12px;font-size:0.72rem;font-weight:700;color:var(--slate);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--slate)'"><span style="opacity:0.5">EN</span><span style="color:var(--dark3);margin:0 2px">|</span><span>AR</span></a>
         <button id="btn-connect" class="btn-sm" onclick="connectWallet()">Connect Wallet</button>
         <button id="btn-disconnect" class="btn-sm" style="display:none; background:var(--dark2); border:1px solid var(--dark3); color:var(--slate);" onclick="disconnectWallet()">Disconnect</button>
       </div>
@@ -250,12 +251,18 @@
         <div class="metric-card">
           <div class="num" style="color:#fff" id="card-swr">—</div>
           <div class="lbl">SWR Token Balance</div>
-          <div class="sub">Governance &amp; fee discounts</div>
+          <div class="sub" style="display:flex;align-items:center;justify-content:space-between;">
+            <span>Governance &amp; fee discounts</span>
+            <span onclick="addTokenToMetaMask('SWR')" style="cursor:pointer;color:var(--green);font-size:0.65rem;font-weight:700;">+ Add</span>
+          </div>
         </div>
         <div class="metric-card">
           <div class="num" style="color:var(--gold2)" id="card-sarx">—</div>
           <div class="lbl">SARX Balance</div>
-          <div class="sub">Available to invest</div>
+          <div class="sub" style="display:flex;align-items:center;justify-content:space-between;">
+            <span>Available to invest</span>
+            <span onclick="addTokenToMetaMask('SARX')" style="cursor:pointer;color:var(--green);font-size:0.65rem;font-weight:700;">+ Add</span>
+          </div>
         </div>
       </div>
 
@@ -433,35 +440,30 @@ function disconnectWallet() {
 async function loadDashboard() {
   if (!provider || !account) return;
 
-  try {
-    const a = SWR.addresses;
-    const kyc   = new ethers.Contract(a.KYCWhitelist,     SWR.abis.KYCWhitelist,     provider);
-    const swrTok = new ethers.Contract(a.SWRToken,         SWR.abis.ERC20,             provider);
-    const sarx   = new ethers.Contract(a.SARX,             SWR.abis.ERC20,             provider);
-    const asset  = new ethers.Contract(a.AssetToken,       SWR.abis.AssetToken,        provider);
-    const yield_ = new ethers.Contract(a.YieldDistributor, SWR.abis.YieldDistributor,  provider);
+  const a = SWR.addresses;
+  const kyc    = new ethers.Contract(a.KYCWhitelist,     SWR.abis.KYCWhitelist,    provider);
+  const swrTok = new ethers.Contract(a.SWRToken,         SWR.abis.ERC20,            provider);
+  const sarx   = new ethers.Contract(a.SARX,             SWR.abis.ERC20,            provider);
+  const asset  = new ethers.Contract(a.AssetToken,       SWR.abis.AssetToken,       provider);
+  const yield_ = new ethers.Contract(a.YieldDistributor, SWR.abis.YieldDistributor, provider);
 
-    // Parallel reads
-    const [
-      isKyc, tierRaw,
-      swrBal,
-      sarxBal,
-      assetBal,
-      priceSAR,
-      pending,
-    ] = await Promise.all([
-      kyc.isWhitelisted(account),
-      kyc.getTier(account),
-      swrTok.balanceOf(account),
-      sarx.balanceOf(account),
-      asset.balanceOf(account),
-      asset.tokenPriceSAR(),
-      yield_.pendingYield(account),
-    ]);
+  // Sequential calls — each labelled so the toast names the failing step
+  async function call(label, fn) {
+    try { return await fn(); }
+    catch(e) { throw new Error(label + ': ' + (e.reason || e.message || e)); }
+  }
+
+  try {
+    const isKyc    = await call('KYC.isWhitelisted',    () => kyc.isWhitelisted(account));
+    const tierRaw  = await call('KYC.getTier',          () => kyc.getTier(account));
+    const swrBal   = await call('SWRToken.balanceOf',   () => swrTok.balanceOf(account));
+    const sarxBal  = await call('SARX.balanceOf',       () => sarx.balanceOf(account));
+    const assetBal = await call('AssetToken.balanceOf', () => asset.balanceOf(account));
+    const priceSAR = await call('AssetToken.price',     () => asset.tokenPriceSAR());
+    const pending  = await call('Yield.pendingYield',   () => yield_.pendingYield(account));
 
     // KYC badge
-    const tier = tierRaw.toNumber();
-    updateKYCBadge(isKyc, tier);
+    updateKYCBadge(isKyc, Number(tierRaw));
 
     // SWR balance (18 decimals)
     document.getElementById('card-swr').textContent = SWR.fmt.tok18(swrBal) + ' SWR';
@@ -470,19 +472,19 @@ async function loadDashboard() {
     const sarxNum = Number(sarxBal) / 1e6;
     document.getElementById('card-sarx').textContent = 'SAR ' + sarxNum.toLocaleString('en-SA', { maximumFractionDigits: 2 });
 
-    // Asset token balance (6 decimals)
-    const tokenCount = Number(assetBal) / 1e6;
-    const priceNum   = Number(priceSAR); // = 10 (SAR 10 per token, same 6-dec scale)
-    const portfolioSAR = tokenCount * priceNum;
+    // Asset tokens: raw balance = whole token count (decimals=6 for fractional, raw unit = 1 token)
+    const tokenCount   = Number(assetBal);
+    const priceDisplay = Number(priceSAR) / 1e6;        // e.g. 10000000 → SAR 10
+    const portfolioSAR = tokenCount * priceDisplay;
 
-    document.getElementById('portfolio-value').textContent  = 'SAR ' + portfolioSAR.toLocaleString('en-SA', { maximumFractionDigits: 2 });
-    document.getElementById('stat-tokens').textContent      = tokenCount.toLocaleString('en-SA', { maximumFractionDigits: 0 });
-    document.getElementById('stat-price').textContent       = 'SAR ' + priceNum.toLocaleString('en-SA');
-    document.getElementById('explore-price').textContent    = 'SAR ' + priceNum.toLocaleString('en-SA') + ' / token';
+    document.getElementById('portfolio-value').textContent = 'SAR ' + portfolioSAR.toLocaleString('en-SA', { maximumFractionDigits: 2 });
+    document.getElementById('stat-tokens').textContent     = tokenCount.toLocaleString('en-SA');
+    document.getElementById('stat-price').textContent      = 'SAR ' + priceDisplay.toLocaleString('en-SA');
+    document.getElementById('explore-price').textContent   = 'SAR ' + priceDisplay.toLocaleString('en-SA') + ' / token';
 
     // Pending yield (SARX, 6 decimals)
     const pendingNum = Number(pending) / 1e6;
-    const pendingFmt = 'SAR ' + pendingNum.toLocaleString('en-SA', { maximumFractionDigits: 6 });
+    const pendingFmt = 'SAR ' + pendingNum.toLocaleString('en-SA', { maximumFractionDigits: 2 });
     document.getElementById('stat-yield').textContent     = pendingFmt;
     document.getElementById('card-yield').textContent     = pendingFmt;
     document.getElementById('card-yield-sub').textContent = pendingNum > 0 ? 'Ready to claim →' : 'No yield available yet';
@@ -500,7 +502,7 @@ async function loadDashboard() {
           </td>
           <td>${tokenCount.toLocaleString('en-SA', { maximumFractionDigits: 0 })}</td>
           <td>SAR ${portfolioSAR.toLocaleString('en-SA', { maximumFractionDigits: 2 })}</td>
-          <td class="yield-pct">SAR ${priceNum}</td>
+          <td class="yield-pct">SAR ${priceDisplay}</td>
           <td><button class="action-btn">Details</button></td>
         </tr>`;
     }
@@ -529,7 +531,27 @@ async function loadDashboard() {
 
   } catch (e) {
     console.error(e);
-    showToast('Error loading data: ' + (e.reason || e.message), 'error');
+    showToast('Failed at: ' + e.message, 'error');
+  }
+}
+
+// ── ADD TOKEN TO METAMASK ────────────────────────────────────
+
+async function addTokenToMetaMask(symbol) {
+  const tokens = {
+    SARX: { address: SWR.addresses.SARX,     symbol: 'SARX', decimals: 6,  name: 'SAR Stablecoin' },
+    SWR:  { address: SWR.addresses.SWRToken,  symbol: 'SWR',  decimals: 18, name: 'SWR Token' },
+    xROSHN1: { address: SWR.addresses.AssetToken, symbol: 'xROSHN1', decimals: 6, name: 'SWR Asset: ROSHN Riyadh Block 1' },
+  };
+  const t = tokens[symbol];
+  if (!t) return;
+  try {
+    await window.ethereum.request({
+      method: 'wallet_watchAsset',
+      params: { type: 'ERC20', options: t },
+    });
+  } catch (e) {
+    showToast('Could not add token: ' + e.message, 'error');
   }
 }
 
