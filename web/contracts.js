@@ -31,7 +31,7 @@ window.SWR = {
       'function pendingYield(address) view returns (uint256)',
       'function claim()',
       'function epochCount() view returns (uint256)',
-      'function epochs(uint256) view returns (uint256 totalYield, uint256 totalSupply, uint256 depositedAt, string description)',
+      'function epochs(uint256) view returns (uint256, uint256, uint256, string)',
     ],
     AssetTokenFull: [
       'function balanceOf(address) view returns (uint256)',

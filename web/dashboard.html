@@ -718,14 +718,31 @@ function showSection(id) {
 
 // ── WALLET ────────────────────────────────────────────────────
 async function connectWallet() {
-  if (!window.ethereum) { showToast('MetaMask not detected.', 'error'); return; }
+  if (!window.ethereum) {
+    showToast('MetaMask not found. Install it from metamask.io then reload.', 'error');
+    return;
+  }
   try {
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    account = accounts[0];
+    if (!accounts || accounts.length === 0) {
+      showToast('No accounts returned. Unlock MetaMask and try again.', 'error');
+      return;
+    }
+    account  = accounts[0];
     provider = new ethers.providers.Web3Provider(window.ethereum);
     signer   = provider.getSigner();
     await afterConnect();
-  } catch (e) { showToast('Connection rejected.', 'error'); }
+  } catch (e) {
+    if (e.code === 4001) {
+      showToast('Rejected — click "Connect Wallet" again and approve in MetaMask.', 'error');
+    } else if (e.code === -32002) {
+      showToast('MetaMask is waiting — open the MetaMask extension and approve the pending request.', 'error');
+    } else if (e.code === 4100) {
+      showToast('MetaMask is locked. Click the MetaMask icon, enter your password, then try again.', 'error');
+    } else {
+      showToast('Connect error: ' + (e.message || e), 'error');
+    }
+  }
 }
 
 async function afterConnect() {
@@ -912,14 +929,14 @@ async function loadEpochs(yieldC, myTokens, totalSupply, count) {
   for (let i = 0; i < count; i++) {
     try {
       const ep = await yieldC.epochs(i);
-      const totalYield  = Number(ep.totalYield) / 1e6;
-      const epSupply    = Number(ep.totalSupply);
+      const totalYield  = Number(ep[0]) / 1e6;
+      const epSupply    = Number(ep[1]);
       const myShare     = epSupply > 0 ? (myTokens / epSupply * 100).toFixed(4) : '0';
-      const myAmount    = epSupply > 0 ? (myTokens / epSupply * Number(ep.totalYield)) / 1e6 : 0;
-      const date        = new Date(Number(ep.depositedAt) * 1000).toLocaleDateString('en-SA');
+      const myAmount    = epSupply > 0 ? (myTokens / epSupply * Number(ep[0])) / 1e6 : 0;
+      const date        = new Date(Number(ep[2]) * 1000).toLocaleDateString('en-SA');
       rows.push(`<tr>
         <td style="color:var(--muted)">${i + 1}</td>
-        <td>${ep.description || '—'}</td>
+        <td>${ep[3] || '—'}</td>
         <td>SAR ${totalYield.toLocaleString('en-SA',{maximumFractionDigits:2})}</td>
         <td>${myShare}%</td>
         <td class="yield-pct">SAR ${myAmount.toLocaleString('en-SA',{maximumFractionDigits:2})}</td>
