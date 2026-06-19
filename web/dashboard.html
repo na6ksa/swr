@@ -635,7 +635,7 @@
 <div id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-<script src="contracts.js"></script>
+<script src="contracts.js?v=3"></script>
 <script>
 let provider, signer, account;
 let _data = {}; // cached on-chain data
@@ -799,15 +799,16 @@ async function loadAll() {
   if (!provider || !account) return;
   const a = SWR.addresses;
 
-  const kyc    = new ethers.Contract(a.KYCWhitelist,     SWR.abis.KYCWhitelist,    provider);
-  const swrTok = new ethers.Contract(a.SWRToken,         SWR.abis.ERC20,            provider);
-  const sarxC  = new ethers.Contract(a.SARX,             SWR.abis.ERC20,            provider);
-  const assetC = new ethers.Contract(a.AssetToken,       SWR.abis.AssetTokenFull,   provider);
-  const yieldC = new ethers.Contract(a.YieldDistributor, SWR.abis.YieldDistributor, provider);
-
   async function safe(fn, fallback) { try { return await fn(); } catch { return fallback; } }
 
   try {
+    if (!SWR.abis.AssetTokenFull) throw new Error('contracts.js is cached — press Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows) to hard-reload');
+
+    const kyc    = new ethers.Contract(a.KYCWhitelist,     SWR.abis.KYCWhitelist,    provider);
+    const swrTok = new ethers.Contract(a.SWRToken,         SWR.abis.ERC20,            provider);
+    const sarxC  = new ethers.Contract(a.SARX,             SWR.abis.ERC20,            provider);
+    const assetC = new ethers.Contract(a.AssetToken,       SWR.abis.AssetTokenFull,   provider);
+    const yieldC = new ethers.Contract(a.YieldDistributor, SWR.abis.YieldDistributor, provider);
     const [isKyc, tierRaw, swrBal, sarxBal, assetBal, priceSAR, totalSupply, pending, epochCount] = await Promise.all([
       safe(() => kyc.isWhitelisted(account), false),
       safe(() => kyc.getTier(account), 0),
