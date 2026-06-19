@@ -30,6 +30,19 @@ window.SWR = {
     YieldDistributor: [
       'function pendingYield(address) view returns (uint256)',
       'function claim()',
+      'function epochCount() view returns (uint256)',
+      'function epochs(uint256) view returns (uint256 totalYield, uint256 totalSupply, uint256 depositedAt, string description)',
+    ],
+    AssetTokenFull: [
+      'function balanceOf(address) view returns (uint256)',
+      'function decimals() view returns (uint8)',
+      'function tokenPriceSAR() view returns (uint256)',
+      'function totalSupply() view returns (uint256)',
+      'function transfer(address to, uint256 amount) returns (bool)',
+      'function assetValueSAR() view returns (uint256)',
+      'function assetId() view returns (string)',
+      'function assetType() view returns (string)',
+      'function shariahCertified() view returns (bool)',
     ],
   },
 
