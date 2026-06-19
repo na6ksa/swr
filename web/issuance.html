@@ -121,6 +121,23 @@
   .btn-next { padding:12px 32px; border-radius:8px; font-size:0.88rem; font-weight:700; background:linear-gradient(135deg,var(--green),var(--green3)); color:#000; border:none; cursor:pointer; transition:opacity 0.2s; }
   .btn-next:hover { opacity:0.88; }
 
+  /* ── WALLET ── */
+  .wallet-chip { display:flex; align-items:center; gap:8px; background:var(--dark2); border:1px solid var(--dark3); border-radius:8px; padding:8px 14px; font-size:0.75rem; font-weight:600; }
+  .wallet-dot  { width:6px; height:6px; border-radius:50%; background:var(--green); }
+  .btn-sm { padding:8px 18px; border-radius:8px; font-size:0.78rem; font-weight:700; background:linear-gradient(135deg,var(--green),var(--green3)); color:#000; cursor:pointer; border:none; }
+
+  /* ── ALERTS ── */
+  .alert { border-radius:10px; padding:14px 18px; font-size:0.82rem; margin-bottom:20px; display:none; }
+  .alert.info  { background:rgba(0,166,81,0.08); border:1px solid rgba(0,166,81,0.2); color:var(--green); }
+  .alert.warn  { background:rgba(249,115,22,0.08); border:1px solid rgba(249,115,22,0.2); color:#f97316; }
+  .alert.error { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); color:#ef4444; }
+
+  /* ── TOAST ── */
+  #toast { position:fixed; bottom:28px; right:28px; padding:14px 20px; border-radius:10px; font-size:0.82rem; font-weight:600; color:#fff; background:var(--dark3); border:1px solid var(--dark3); opacity:0; transform:translateY(10px); transition:all 0.3s; z-index:999; max-width:340px; pointer-events:none; }
+  #toast.show    { opacity:1; transform:translateY(0); }
+  #toast.success { background:rgba(0,166,81,0.15); border-color:rgba(0,166,81,0.4); }
+  #toast.error   { background:rgba(239,68,68,0.15); border-color:rgba(239,68,68,0.4); }
+
   @media(max-width:840px){
     .sidebar { display:none; }
     .content { padding:20px; }
@@ -163,10 +180,28 @@
   <div class="main">
     <div class="topbar">
       <div class="topbar-title">New Asset Issuance</div>
-      <button class="btn-primary">Save Draft</button>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div id="wallet-chip" class="wallet-chip" style="display:none">
+          <div class="wallet-dot"></div>
+          <span id="wallet-addr">—</span>
+        </div>
+        <button id="btn-connect" class="btn-sm" onclick="connectWallet()">Connect Wallet</button>
+        <button class="btn-primary" style="display:none" id="btn-save">Save Draft</button>
+      </div>
     </div>
 
     <div class="content">
+
+      <!-- WALLET ALERTS -->
+      <div id="alert-connect" class="alert warn" style="display:flex; align-items:center; gap:10px;">
+        ⚠️ Connect your wallet to submit an issuance. Your KYB status will be verified on-chain.
+      </div>
+      <div id="alert-kyc" class="alert info" style="display:none;">
+        ✓ Wallet connected · <span id="alert-tier">—</span> · KYC verified on Sepolia
+      </div>
+      <div id="alert-nokyc" class="alert error" style="display:none;">
+        ✗ This wallet is not KYC-verified on the SWR KYCWhitelist contract. Contact compliance to onboard.
+      </div>
 
       <!-- WIZARD STEPS -->
       <div class="wizard-steps">
@@ -400,5 +435,70 @@
     </div><!-- /content -->
   </div><!-- /main -->
 </div><!-- /shell -->
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="contracts.js"></script>
+<script>
+let provider, signer, account;
+
+async function connectWallet() {
+  if (!window.ethereum) { showToast('MetaMask not detected.', 'error'); return; }
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    account  = accounts[0];
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer   = provider.getSigner();
+    await afterConnect();
+  } catch (e) { showToast('Connection rejected.', 'error'); }
+}
+
+async function afterConnect() {
+  document.getElementById('wallet-addr').textContent = SWR.fmt.addr(account);
+  document.getElementById('wallet-chip').style.display = '';
+  document.getElementById('btn-connect').style.display = 'none';
+  document.getElementById('btn-save').style.display = '';
+  document.getElementById('alert-connect').style.display = 'none';
+
+  try {
+    const kyc = new ethers.Contract(SWR.addresses.KYCWhitelist, SWR.abis.KYCWhitelist, provider);
+    const [isKyc, tierRaw] = await Promise.all([kyc.isWhitelisted(account), kyc.getTier(account)]);
+
+    if (isKyc) {
+      const tier = SWR.tierLabel[tierRaw.toNumber()];
+      document.getElementById('alert-tier').textContent = tier;
+      document.getElementById('alert-kyc').style.display = 'flex';
+      document.getElementById('alert-nokyc').style.display = 'none';
+    } else {
+      document.getElementById('alert-nokyc').style.display = 'flex';
+      document.getElementById('alert-kyc').style.display = 'none';
+    }
+  } catch (e) { console.error(e); }
+}
+
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 4000);
+}
+
+window.addEventListener('load', async () => {
+  if (window.ethereum) {
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    if (accounts.length) {
+      account = accounts[0];
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer   = provider.getSigner();
+      await afterConnect();
+    }
+    window.ethereum.on('accountsChanged', (accs) => {
+      if (accs.length) { account = accs[0]; provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner(); afterConnect(); }
+    });
+  }
+});
+</script>
 </body>
 </html>
