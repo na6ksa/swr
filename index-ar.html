@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWR — الأصول الواقعية السعودية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:  #00a651;
+    --green3: #00c261;
+    --gold:   #c9a84c;
+    --gold2:  #e8c46a;
+    --dark:   #020c05;
+    --dark2:  #041208;
+    --dark3:  #071a0c;
+    --slate:  #94a3b8;
+    --muted:  #334155;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--dark); font-family:'Cairo',system-ui,sans-serif; color:#fff; line-height:1.7; overflow-x:hidden; letter-spacing:0; }
+  a { color:inherit; text-decoration:none; }
+
+  .grad-g    { background:linear-gradient(135deg,var(--green),var(--green3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .grad-gold { background:linear-gradient(135deg,var(--gold),var(--gold2));  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .grad-mix  { background:linear-gradient(135deg,var(--green),var(--gold2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+  .sec-eyebrow { font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:12px; }
+  .sec-title   { font-size:clamp(1.8rem,4vw,2.6rem); font-weight:900; line-height:1.3; margin-bottom:18px; }
+  .sec-sub     { font-size:0.95rem; font-weight:400; color:var(--slate); max-width:580px; line-height:1.95; margin-bottom:48px; }
+  .page        { max-width:1240px; margin:0 auto; padding:0 56px; }
+  .section-wrap { border-bottom:1px solid var(--dark3); }
+
+  /* NAV */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:200;
+    background:rgba(2,12,5,0.92); backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--dark3);
+    padding:0 56px; height:68px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .nav-links { display:flex; gap:36px; font-size:0.88rem; color:var(--slate); }
+  .nav-links a:hover { color:#fff; }
+  .nav-right { display:flex; align-items:center; gap:16px; }
+  .nav-lang { font-size:0.72rem; font-weight:600; color:var(--slate); border:1px solid var(--dark3); padding:6px 14px; border-radius:6px; transition:color 0.2s, border-color 0.2s; font-family:'Inter',sans-serif; }
+  .nav-lang:hover { color:#fff; border-color:var(--green); }
+  .nav-cta { font-size:0.82rem; font-weight:700; padding:10px 24px; border-radius:8px; background:linear-gradient(135deg,var(--green),var(--green3)); color:#000; transition:opacity 0.2s, transform 0.2s; }
+  .nav-cta:hover { opacity:0.88; transform:translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    padding:140px 48px 100px;
+    background: radial-gradient(ellipse 80% 55% at 50% 25%,#020f06 0%,var(--dark) 70%),
+      radial-gradient(circle 500px at 15% 85%,rgba(0,166,81,0.06) 0%,transparent 70%),
+      radial-gradient(circle 500px at 85% 20%,rgba(201,168,76,0.05) 0%,transparent 70%);
+    position:relative; overflow:hidden;
+  }
+  .hero-grid { position:absolute; inset:0; opacity:0.025; background-image:linear-gradient(rgba(0,166,81,1) 1px,transparent 1px),linear-gradient(90deg,rgba(0,166,81,1) 1px,transparent 1px); background-size:60px 60px; }
+  .hero-badge { display:inline-flex; align-items:center; gap:8px; font-size:0.72rem; font-weight:700; color:var(--green); border:1px solid rgba(0,166,81,0.25); border-radius:20px; padding:7px 20px; margin-bottom:40px; background:rgba(0,166,81,0.05); position:relative; z-index:1; }
+  .hero-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .hero h1 { font-size:clamp(2.6rem,6.5vw,5.4rem); font-weight:900; line-height:1.25; margin-bottom:28px; position:relative; z-index:1; }
+  .hero p  { font-size:1.1rem; font-weight:400; color:var(--slate); max-width:640px; margin:0 auto 52px; line-height:2.1; position:relative; z-index:1; }
+  .hero-btns { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-bottom:80px; position:relative; z-index:1; }
+  .btn-primary { padding:15px 38px; border-radius:10px; font-weight:800; font-size:0.95rem; background:linear-gradient(135deg,var(--green),var(--green3)); color:#000; transition:opacity 0.2s,transform 0.2s; border:none; cursor:pointer; font-family:'Cairo',sans-serif; }
+  .btn-primary:hover { opacity:0.88; transform:translateY(-2px); }
+  .btn-ghost  { padding:15px 38px; border-radius:10px; font-weight:600; font-size:0.95rem; border:1px solid var(--dark3); color:var(--slate); cursor:pointer; transition:border-color 0.2s,color 0.2s; font-family:'Cairo',sans-serif; }
+  .btn-ghost:hover { border-color:var(--green); color:#fff; }
+
+  /* STATS */
+  .stats-bar { display:flex; justify-content:center; gap:64px; flex-wrap:wrap; padding-top:48px; border-top:1px solid var(--dark3); width:100%; position:relative; z-index:1; }
+  .stat { text-align:center; }
+  .stat-num { font-size:2.2rem; font-weight:900; font-family:'Inter',sans-serif; }
+  .stat-lbl { font-size:0.72rem; color:var(--muted); margin-top:4px; }
+
+  /* MISSION */
+  .mission-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:56px; }
+  .mission-card { background:var(--dark2); padding:44px 36px; border:1px solid transparent; position:relative; overflow:hidden; transition:border-color 0.3s, background 0.3s; }
+  .mission-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--gold),var(--green)); transform:scaleX(0); transform-origin:right; transition:transform 0.4s; }
+  .mission-card:hover { background:#061008; border-color:rgba(0,166,81,0.15); }
+  .mission-card:hover::before { transform:scaleX(1); }
+  .mission-icon { width:52px; height:52px; border-radius:14px; margin-bottom:24px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; background:rgba(0,166,81,0.07); border:1px solid rgba(0,166,81,0.15); }
+  .mission-card h3 { font-size:1.1rem; font-weight:800; margin-bottom:12px; }
+  .mission-card p  { font-size:0.85rem; color:var(--slate); line-height:1.9; }
+
+  /* ASSETS */
+  .assets-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:56px; }
+  .asset-card  { background:var(--dark2); border:1px solid var(--dark3); border-radius:16px; padding:28px; transition:border-color 0.3s, transform 0.3s; }
+  .asset-card:hover { border-color:rgba(0,166,81,0.3); transform:translateY(-3px); }
+  .asset-tag  { font-size:0.62rem; font-weight:700; color:var(--green); margin-bottom:12px; }
+  .asset-icon { font-size:2rem; margin-bottom:12px; }
+  .asset-card h3  { font-size:0.95rem; font-weight:800; margin-bottom:8px; }
+  .asset-card p   { font-size:0.82rem; color:var(--slate); line-height:1.9; }
+  .asset-yield    { font-size:0.72rem; font-weight:700; color:var(--gold2); margin-top:14px; }
+
+  /* HOW IT WORKS */
+  .how-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; margin-top:56px; }
+  .how-step  { padding:40px 32px; background:var(--dark2); position:relative; }
+  /* RTL: step connector arrow on LEFT */
+  .how-step:not(:last-child)::after { content:'←'; position:absolute; left:-12px; top:44px; color:var(--muted); font-size:1rem; z-index:1; }
+  .step-num { font-size:3rem; font-weight:900; line-height:1; margin-bottom:20px; opacity:0.12; background:linear-gradient(135deg,var(--green),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-family:'Inter',sans-serif; }
+  .how-step h4 { font-size:1rem; font-weight:800; margin-bottom:10px; }
+  .how-step p  { font-size:0.85rem; color:var(--slate); line-height:1.9; }
+
+  /* TOKENS */
+  .tokens-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:56px; }
+  .token-card  { background:var(--dark2); border-radius:20px; padding:36px; border:1px solid var(--dark3); text-align:center; transition:border-color 0.3s; }
+  .token-symbol { font-size:2.4rem; font-weight:900; margin-bottom:8px; font-family:'Inter',sans-serif; }
+  .token-name   { font-size:0.65rem; font-weight:700; color:var(--muted); margin-bottom:16px; }
+  .token-card p { font-size:0.85rem; color:var(--slate); line-height:1.9; }
+  .token-tags   { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:20px; }
+  .token-tag    { font-size:0.62rem; font-weight:700; padding:4px 10px; border-radius:20px; }
+  .tt-green { background:rgba(0,166,81,0.08); border:1px solid rgba(0,166,81,0.2); color:var(--green); }
+  .tt-gold  { background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.2); color:var(--gold2); }
+  .tt-slate { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--slate); }
+
+  /* VISION */
+  .vision-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; margin-top:56px; }
+  .vision-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .vision-stat { background:var(--dark2); border:1px solid var(--dark3); border-radius:14px; padding:24px; }
+  .vision-stat .num { font-size:1.8rem; font-weight:900; margin-bottom:4px; font-family:'Inter',sans-serif; }
+  .vision-stat .lbl { font-size:0.72rem; color:var(--muted); }
+  /* RTL-safe vision points */
+  .vision-points { display:flex; flex-direction:column; gap:16px; margin-top:28px; }
+  .vision-point  { display:flex; gap:14px; align-items:flex-start; }
+  .vp-dot  { width:8px; height:8px; border-radius:50%; background:var(--green); flex-shrink:0; margin-top:8px; }
+  .vp-text { font-size:0.9rem; color:var(--slate); line-height:1.85; }
+
+  /* CTA */
+  .cta-wrap { text-align:center; background:radial-gradient(ellipse 70% 80% at 50% 50%,#020f06 0%,var(--dark) 70%); border-top:1px solid var(--dark3); }
+  .cta-wrap section { padding:120px 40px; }
+  .cta-wrap h2 { font-size:clamp(2rem,5vw,3.5rem); font-weight:900; line-height:1.25; margin-bottom:20px; }
+  .cta-wrap p  { color:var(--slate); max-width:520px; margin:0 auto 48px; font-size:1rem; font-weight:400; line-height:2; }
+  .cta-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+
+  /* FOOTER */
+  footer { border-top:1px solid var(--dark3); padding:48px 56px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:24px; max-width:1240px; margin:0 auto; }
+  .footer-links { display:flex; gap:28px; font-size:0.8rem; color:var(--muted); }
+  .footer-links a:hover { color:var(--slate); }
+  .footer-copy { font-size:0.72rem; color:var(--muted); font-family:'Inter',sans-serif; }
+
+  /* RESPONSIVE */
+  @media(max-width:1024px){
+    nav { padding:0 32px; }
+    .nav-links { display:none; }
+    .page { padding:0 32px; }
+    section { padding:80px 0; }
+    .mission-grid,.assets-grid,.tokens-grid,.vision-grid { grid-template-columns:1fr; }
+    .how-steps { grid-template-columns:repeat(2,1fr); }
+    footer { padding:40px 32px; }
+  }
+  @media(max-width:640px){
+    .page { padding:0 20px; }
+    nav { padding:0 20px; }
+    .how-steps { grid-template-columns:1fr; }
+    .how-step:not(:last-child)::after { display:none; }
+    .stats-bar { gap:32px; }
+    footer { flex-direction:column; text-align:center; }
+    .footer-links { justify-content:center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div>
+    <svg width="110" height="40" viewBox="0 0 160 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00a651"/><stop offset="100%" stop-color="#00c261"/></linearGradient>
+        <linearGradient id="gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c9a84c"/><stop offset="100%" stop-color="#e8c46a"/></linearGradient>
+      </defs>
+      <circle cx="14" cy="10" r="6" fill="url(#gg)"/>
+      <circle cx="34" cy="30" r="6" fill="url(#gg)" opacity="0.6"/>
+      <circle cx="54" cy="10" r="6" fill="url(#gd)"/>
+      <line x1="14" y1="16" x2="34" y2="25" stroke="url(#gg)" stroke-width="1.5" opacity="0.5"/>
+      <line x1="34" y1="25" x2="54" y2="16" stroke="url(#gd)" stroke-width="1.5" opacity="0.5"/>
+      <line x1="14" y1="10" x2="54" y2="10" stroke="#00a651" stroke-width="1" opacity="0.2"/>
+      <text x="66" y="30" font-family="'Inter',sans-serif" font-size="24" font-weight="900" fill="#ffffff">SWR</text>
+      <rect x="66" y="36" width="80" height="1.5" rx="0.75" fill="url(#gg)" opacity="0.4"/>
+      <text x="66" y="46" font-family="'Inter',sans-serif" font-size="7" fill="#00a651" letter-spacing="1.5">SAUDI REAL WORLD ASSETS</text>
+    </svg>
+  </div>
+  <div class="nav-links">
+    <a href="#assets">الأصول</a>
+    <a href="#how">كيف يعمل</a>
+    <a href="#tokens">الرموز</a>
+    <a href="#vision">رؤية 2030</a>
+    <a href="#waitlist">تواصل</a>
+  </div>
+  <div class="nav-right">
+    <a href="index.html" class="nav-lang">EN</a>
+    <a href="#waitlist" class="nav-cta">سجّل مبكراً</a>
+  </div>
+</nav>
+
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-badge">منصة SWR — المملكة العربية السعودية 2026</div>
+  <h1>
+    امتلك جزءاً من<br>
+    <span class="grad-g">المملكة العربية السعودية.</span>
+  </h1>
+  <p>
+    SWR يحول الأصول الواقعية السعودية — العقارات والصكوك والبنية التحتية والسلع — إلى رموز رقمية تتيح الاستثمار لكل شخص بدءاً من 100 ريال.
+  </p>
+  <div class="hero-btns">
+    <a href="#waitlist" class="btn-primary">سجّل للحصول على وصول مبكر</a>
+    <a href="#how" class="btn-ghost">كيف يعمل؟</a>
+  </div>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num grad-g">+2.5T</div><div class="stat-lbl">سوق العقار السعودي (ر.س)</div></div>
+    <div class="stat"><div class="stat-num grad-gold">100 ر.س</div><div class="stat-lbl">الحد الأدنى للاستثمار</div></div>
+    <div class="stat"><div class="stat-num grad-g">24/7</div><div class="stat-lbl">تداول في السوق الثانوي</div></div>
+    <div class="stat"><div class="stat-num grad-gold">T+0</div><div class="stat-lbl">تسوية فورية</div></div>
+  </div>
+</div>
+
+
+<!-- MISSION -->
+<div class="section-wrap">
+<section>
+  <div class="page">
+    <div class="sec-eyebrow">ما نقدمه</div>
+    <h2 class="sec-title">أصول واقعية. <span class="grad-g">وصول رقمي.</span></h2>
+    <p class="sec-sub">SWR منصة بلوكتشين منظمة تحول أكبر الأصول الواقعية في المملكة إلى رموز رقمية قابلة للتداول — مع الامتثال الكامل لهيئة السوق المالية والاعتماد الشرعي.</p>
+    <div class="mission-grid">
+      <div class="mission-card">
+        <div class="mission-icon">🏗️</div>
+        <h3>التوكين</h3>
+        <p>جهات الإصدار ترفع الوثائق القانونية وتحدد هيكل الرمز وتصدر رموز ملكية جزئية عبر بوابة الإصدار المعتمدة من هيئة السوق المالية. كل رمز يمثل ملكية قانونية في شركة ذات غرض خاص سعودية.</p>
+      </div>
+      <div class="mission-card">
+        <div class="mission-icon">💼</div>
+        <h3>الاستثمار</h3>
+        <p>المستثمرون المعتمدون يشترون رموز الأصول بدءاً من 100 ريال. التحقق من الهوية KYC والامتثال الشرعي مفروضان على السلسلة. لوحة تحكم تعرض التقييمات الفورية والعوائد المستحقة.</p>
+      </div>
+      <div class="mission-card">
+        <div class="mission-icon">🔄</div>
+        <h3>التداول والكسب</h3>
+        <p>تداول الرموز 24/7 في السوق الثانوي المتوافق مع تسوية T+0. العوائد — إيجارات وأرباح صكوك وتوزيعات — تُوزَّع تلقائياً بـ SARX (ريال سعودي رقمي) على محفظتك.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+
+<!-- ASSET CLASSES -->
+<div class="section-wrap" id="assets">
+<section>
+  <div class="page">
+    <div class="sec-eyebrow">فئات الأصول</div>
+    <h2 class="sec-title">ست <span class="grad-gold">فئات للأصول</span></h2>
+    <p class="sec-sub">نبدأ بالعقارات والصكوك السعودية — ثم نتوسع إلى البنية التحتية والسلع والملكية الخاصة وأسواق الكربون.</p>
+    <div class="assets-grid">
+      <div class="asset-card">
+        <div class="asset-tag">المرحلة الأولى · متاح</div>
+        <div class="asset-icon">🏙️</div>
+        <h3>العقارات</h3>
+        <p>عقارات سكنية وتجارية في الرياض وجدة وممر نيوم. ملكية جزئية مع توزيع عوائد إيجارية ربع سنوية.</p>
+        <div class="asset-yield">عائد مستهدف: 6–9% سنوياً</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-tag">المرحلة الأولى · متاح</div>
+        <div class="asset-icon">📜</div>
+        <h3>الصكوك</h3>
+        <p>سندات إسلامية موكَّنة من شركات سعودية ومطوري مشاريع رؤية 2030. معتمدة شرعياً. مدفوعات الكوبون نصف السنوية على السلسلة.</p>
+        <div class="asset-yield">عائد مستهدف: 5–7% سنوياً</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-tag">المرحلة الثانية · 2027</div>
+        <div class="asset-icon">⚡</div>
+        <h3>البنية التحتية</h3>
+        <p>محطات طاقة ومحطات مياه ومراكز لوجستية ومشاريع مدعومة باتفاقيات شراء حكومية طويلة الأمد. عائد مستقر.</p>
+        <div class="asset-yield">عائد مستهدف: 7–10% سنوياً</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-tag">المرحلة الثانية · 2027</div>
+        <div class="asset-icon">🥇</div>
+        <h3>السلع الأولية</h3>
+        <p>الذهب المادي وعائدات النفط والمنتجات الزراعية. دعم فيزيائي كامل مع تدقيق مستقل شهري. تحوط من التضخم.</p>
+        <div class="asset-yield">سعر مرتبط بالسوق الفوري</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-tag">المرحلة الثالثة · 2028</div>
+        <div class="asset-icon">🤝</div>
+        <h3>الملكية الخاصة</h3>
+        <p>ملكية جزئية في شركات سعودية خاصة عالية النمو. سيولة ثانوية للحصص غير السائلة. أسهم مفلترة وفق الشريعة فقط.</p>
+        <div class="asset-yield">مشاركة في النمو الرأسمالي</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-tag">المرحلة الثالثة · 2028</div>
+        <div class="asset-icon">🌱</div>
+        <h3>أرصدة الكربون</h3>
+        <p>أرصدة كربون سعودية موثقة بنسب لا يمكن تغييرها على السلسلة. منسجمة مع مبادرة السعودية الخضراء وهدف الحياد الكربوني 2060.</p>
+        <div class="asset-yield">سعر مرتبط بالسوق</div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+
+<!-- HOW IT WORKS -->
+<div class="section-wrap" id="how">
+<section>
+  <div class="page">
+    <div class="sec-eyebrow">العملية</div>
+    <h2 class="sec-title">كيف <span class="grad-g">يعمل SWR</span></h2>
+    <p class="sec-sub">أربع خطوات من اختيار الأصل إلى استلام العائد على السلسلة — شفافة ومنظمة ومعتمدة شرعياً في كل مرحلة.</p>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="step-num">01</div>
+        <h4>تحقق من هويتك</h4>
+        <p>أكمل التحقق KYC/AML في أقل من 10 دقائق. هويتك تُعتمد على السلسلة — يمكنك تملّك رموز الأصول المنظمة والتداول بها فوراً بعد الموافقة.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">02</div>
+        <h4>تصفّح الأصول</h4>
+        <p>استعرض الأصول الموكَّنة — كل أصل مع وثائق قانونية وشهادة شرعية وسجل عوائد وتفاصيل الشركة ذات الغرض الخاص. صنّف حسب الفئة أو العائد أو مستوى المخاطرة.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">03</div>
+        <h4>استثمر من 100 ريال</h4>
+        <p>اشترِ رموز الأصول باستخدام SARX (ريال سعودي رقمي) مباشرةً في محفظة الحرة. تتم التسويات في ثوانٍ. سجل الملكية الكامل على السلسلة من اليوم الأول.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">04</div>
+        <h4>اكسب وتداول</h4>
+        <p>استلم العوائد تلقائياً بـ SARX — دون الحاجة للمطالبة. تداول رموزك في السوق الثانوي 24/7 بتسوية T+0 مع تطبيق الامتثال الكامل.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+
+<!-- TOKENS -->
+<div class="section-wrap" id="tokens">
+<section>
+  <div class="page">
+    <div class="sec-eyebrow">هيكل الرموز</div>
+    <h2 class="sec-title">نظام <span class="grad-gold">ثلاثي الرموز</span></h2>
+    <p class="sec-sub">فصل واضح بين رموز الفائدة والأصول والتسوية — كل منها بدور محدد وهيكل متوافق مع الشريعة.</p>
+    <div class="tokens-grid">
+      <div class="token-card" style="border-color:rgba(0,166,81,0.3);">
+        <div class="token-symbol grad-g">$SWR</div>
+        <div class="token-name">رمز الفائدة والحوكمة</div>
+        <p>وقود شبكة SWR. يُستخدم لرسوم المعاملات والتحقق من السلسلة والتصويت على القرارات وخصومات الرسوم. عرض ثابت: 200 مليون رمز. ليس ورقة مالية.</p>
+        <div class="token-tags">
+          <span class="token-tag tt-green">رسوم الغاز</span>
+          <span class="token-tag tt-green">التحقق</span>
+          <span class="token-tag tt-green">الحوكمة</span>
+          <span class="token-tag tt-green">خصم 50%</span>
+        </div>
+      </div>
+      <div class="token-card" style="border-color:rgba(201,168,76,0.3);">
+        <div class="token-symbol grad-gold">$xASSET</div>
+        <div class="token-name">رموز الأصول</div>
+        <p>رمز واحد لكل أصل واقعي (مثل $xROSHN1، $xGOLD). كل رمز = ملكية قانونية جزئية في الشركة السعودية ذات الغرض الخاص. تحمل عوائد. منظمة من هيئة السوق المالية. مقيدة بقائمة بيضاء KYC.</p>
+        <div class="token-tags">
+          <span class="token-tag tt-gold">ملكية قانونية</span>
+          <span class="token-tag tt-gold">عوائد</span>
+          <span class="token-tag tt-gold">شرعي ✓</span>
+        </div>
+      </div>
+      <div class="token-card" style="border-color:rgba(255,255,255,0.08);">
+        <div class="token-symbol" style="background:linear-gradient(135deg,#e2e8f0,#94a3b8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">$SARX</div>
+        <div class="token-name">الريال السعودي الرقمي</div>
+        <p>عملة مستقرة مرتبطة بالريال لجميع تسويات المنصة ومدفوعات العوائد والتداول. مدعومة بالكامل، ضمن صندوق مؤسسة النقد، قابلة للاسترداد 1:1 بالريال عبر البنوك الشريكة المرخصة.</p>
+        <div class="token-tags">
+          <span class="token-tag tt-slate">ربط 1:1 ريال</span>
+          <span class="token-tag tt-slate">صندوق SAMA</span>
+          <span class="token-tag tt-slate">استرداد فوري</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+
+<!-- VISION 2030 -->
+<div class="section-wrap" id="vision">
+<section>
+  <div class="page">
+    <div class="sec-eyebrow">لماذا المملكة العربية السعودية</div>
+    <h2 class="sec-title">مبني لـ <span class="grad-g">رؤية 2030</span></h2>
+    <div class="vision-grid">
+      <div>
+        <p class="sec-sub">تحول المملكة يخلق أضخم خط أنابيب من الأصول القابلة للتوكين في العالم — وSWR هو البنية التحتية للوصول إليها.</p>
+        <div class="vision-points">
+          <div class="vision-point">
+            <div class="vp-dot"></div>
+            <div class="vp-text"><strong>نيوم</strong> — مدينة ذكية بـ 500 مليار دولار. بنية تحتية وعقارات وأصول مرافق قابلة للتوكين من اليوم الأول للبناء.</div>
+          </div>
+          <div class="vision-point">
+            <div class="vp-dot"></div>
+            <div class="vp-text"><strong>مليون وحدة سكنية</strong> — الهيئة الوطنية للإسكان وروشن تبنيان أضخم برنامج إسكان في تاريخ المملكة. كل مبنى أصل قابل للتوكين.</div>
+          </div>
+          <div class="vision-point">
+            <div class="vp-dot"></div>
+            <div class="vp-text"><strong>إطار الأوراق المالية الرقمية</strong> (هيئة السوق المالية 2023) — المملكة لديها بالفعل إطار قانوني للأوراق المالية الرقمية. نعمل داخله، لا حوله.</div>
+          </div>
+          <div class="vision-point">
+            <div class="vp-dot"></div>
+            <div class="vp-text"><strong>اقتصاد إسلامي أولاً</strong> — هيئتنا الشرعية تعتمد كل أصل. الوصول لسوق الصكوك العالمي البالغ 800 مليار دولار الذي تتجاهله جميع المنصات الغربية.</div>
+          </div>
+        </div>
+      </div>
+      <div class="vision-stat-grid">
+        <div class="vision-stat">
+          <div class="num grad-g">1.8T ر.س</div>
+          <div class="lbl">مشاريع رؤية 2030</div>
+        </div>
+        <div class="vision-stat">
+          <div class="num grad-gold">+35M</div>
+          <div class="lbl">مستثمر سعودي محتمل</div>
+        </div>
+        <div class="vision-stat">
+          <div class="num grad-g">2060</div>
+          <div class="lbl">هدف الحياد الكربوني</div>
+        </div>
+        <div class="vision-stat">
+          <div class="num grad-gold">800B</div>
+          <div class="lbl">سوق الصكوك العالمي ($)</div>
+        </div>
+        <div class="vision-stat" style="grid-column:span 2;">
+          <div class="num grad-mix">+2.5T ر.س</div>
+          <div class="lbl">إجمالي سوق العقار السعودي</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+
+<!-- CTA -->
+<div class="cta-wrap" id="waitlist">
+<section>
+  <div class="page">
+    <div class="sec-eyebrow" style="text-align:center;">وصول مبكر</div>
+    <h2>كن أول <span class="grad-g">المستثمرين.</span></h2>
+    <p>SWR ينطلق في الربع الثالث من 2026. سجّل الآن للحصول على وصول مبكر للمستثمرين وتحديثات المنصة وأولوية في التحقق من الهوية قبل الإطلاق العام.</p>
+    <div class="cta-btns">
+      <a href="mailto:founders@swr.sa" class="btn-primary">سجّل الآن</a>
+      <a href="index.html" class="btn-ghost">English Version</a>
+    </div>
+    <p style="font-size:0.75rem; color:var(--muted); margin-top:24px;">أو تواصل معنا مباشرة: <a href="mailto:founders@swr.sa" style="color:var(--green);">founders@swr.sa</a></p>
+  </div>
+</section>
+</div>
+
+
+<!-- FOOTER -->
+<footer>
+  <div style="display:flex; align-items:center; gap:12px;">
+    <svg width="80" height="28" viewBox="0 0 160 50" fill="none">
+      <defs>
+        <linearGradient id="fg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00a651"/><stop offset="100%" stop-color="#00c261"/></linearGradient>
+        <linearGradient id="fd2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c9a84c"/><stop offset="100%" stop-color="#e8c46a"/></linearGradient>
+      </defs>
+      <circle cx="14" cy="10" r="6" fill="url(#fg2)"/>
+      <circle cx="34" cy="30" r="6" fill="url(#fg2)" opacity="0.6"/>
+      <circle cx="54" cy="10" r="6" fill="url(#fd2)"/>
+      <line x1="14" y1="16" x2="34" y2="25" stroke="url(#fg2)" stroke-width="1.5" opacity="0.5"/>
+      <line x1="34" y1="25" x2="54" y2="16" stroke="url(#fd2)" stroke-width="1.5" opacity="0.5"/>
+      <text x="66" y="30" font-family="'Inter',sans-serif" font-size="24" font-weight="900" fill="#ffffff">SWR</text>
+    </svg>
+    <span style="font-size:0.72rem; color:var(--muted);">الأصول الواقعية السعودية</span>
+  </div>
+  <div class="footer-links">
+    <a href="#">الورقة البيضاء</a>
+    <a href="#">الخصوصية</a>
+    <a href="#">الشروط</a>
+    <a href="index.html" style="font-family:'Inter',sans-serif;">English</a>
+  </div>
+  <div class="footer-copy">© 2026 SWR Platform. جميع الحقوق محفوظة.</div>
+</footer>
+
+</body>
+</html>
