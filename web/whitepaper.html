@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWR Whitepaper v1.0 — Saudi Real World Assets</title>
+<meta name="description" content="SWR Technical Whitepaper — Tokenizing Saudi Arabia's real-world assets on Ethereum. Shariah-compliant. CMA-regulated.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:#00a651; --green3:#00c261; --gold:#c9a84c; --gold2:#e8c46a;
+    --dark:#020c05; --dark2:#041208; --dark3:#071a0c; --dark4:#0a2412;
+    --slate:#94a3b8; --muted:#334155; --red:#ef4444;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--dark);font-family:'Inter',system-ui,sans-serif;color:#e2e8f0;line-height:1.75;overflow-x:hidden;}
+  a{color:var(--green);text-decoration:none;}
+  a:hover{text-decoration:underline;text-underline-offset:3px;}
+
+  /* ── LAYOUT ── */
+  .shell{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+
+  /* ── SIDEBAR TOC ── */
+  .toc{width:260px;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;background:var(--dark2);border-right:1px solid var(--dark3);padding:0;display:flex;flex-direction:column;}
+  .toc-header{padding:24px 20px;border-bottom:1px solid var(--dark3);}
+  .toc-logo{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .toc-title{font-size:0.72rem;font-weight:700;color:#fff;}
+  .toc-ver{font-size:0.62rem;color:var(--muted);}
+  .toc-nav{padding:16px 0;flex:1;}
+  .toc-section{padding:0;}
+  .toc-group{font-size:0.55rem;font-weight:700;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;padding:12px 20px 4px;}
+  .toc-link{display:block;font-size:0.72rem;color:var(--slate);padding:6px 20px;transition:color 0.15s,background 0.15s;border-left:2px solid transparent;}
+  .toc-link:hover{color:#fff;background:var(--dark3);text-decoration:none;}
+  .toc-link.active{color:var(--green);border-left-color:var(--green);background:rgba(0,166,81,0.06);}
+  .toc-footer{padding:16px 20px;border-top:1px solid var(--dark3);}
+  .toc-footer a{font-size:0.65rem;color:var(--muted);display:block;margin-bottom:4px;}
+  .toc-footer a:hover{color:var(--slate);}
+
+  /* ── CONTENT ── */
+  .content{margin-left:260px;max-width:900px;padding:64px 80px;min-height:100vh;}
+
+  /* ── COVER ── */
+  .cover{min-height:60vh;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:64px;margin-bottom:80px;border-bottom:1px solid var(--dark3);position:relative;}
+  .cover-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 50%,rgba(0,166,81,0.04),transparent);pointer-events:none;}
+  .cover-tag{font-size:0.6rem;font-weight:700;letter-spacing:0.3em;color:var(--green);text-transform:uppercase;margin-bottom:20px;}
+  .cover h1{font-size:3.2rem;font-weight:900;line-height:1.08;letter-spacing:-0.02em;margin-bottom:16px;color:#fff;}
+  .cover-sub{font-size:1.05rem;color:var(--slate);font-weight:300;max-width:600px;line-height:1.85;margin-bottom:40px;}
+  .cover-meta{display:flex;gap:40px;flex-wrap:wrap;}
+  .cover-meta-item{display:flex;flex-direction:column;gap:3px;}
+  .cover-meta-label{font-size:0.55rem;font-weight:700;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;}
+  .cover-meta-value{font-size:0.82rem;color:var(--slate);}
+  .cover-disclaimer{margin-top:32px;padding:14px 18px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:0.72rem;color:#fca5a5;line-height:1.7;}
+
+  /* ── TYPOGRAPHY ── */
+  .wp-section{margin-bottom:80px;scroll-margin-top:32px;}
+  .wp-section h2{font-size:1.6rem;font-weight:900;color:#fff;margin-bottom:8px;letter-spacing:-0.01em;padding-bottom:16px;border-bottom:1px solid var(--dark3);}
+  .section-num{font-size:0.7rem;font-weight:700;color:var(--green);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
+  .wp-section h3{font-size:1.1rem;font-weight:700;color:#fff;margin:40px 0 14px;}
+  .wp-section h4{font-size:0.9rem;font-weight:700;color:var(--slate);margin:28px 0 10px;text-transform:uppercase;letter-spacing:0.06em;}
+  .wp-section p{font-size:0.92rem;color:#cbd5e1;line-height:1.85;margin-bottom:18px;}
+  .wp-section ul,.wp-section ol{padding-left:20px;margin-bottom:18px;}
+  .wp-section li{font-size:0.92rem;color:#cbd5e1;line-height:1.85;margin-bottom:6px;}
+  .wp-section li::marker{color:var(--green);}
+  strong{color:#e2e8f0;font-weight:600;}
+
+  /* ── CALLOUTS ── */
+  .callout{border-radius:10px;padding:18px 22px;margin:28px 0;font-size:0.88rem;line-height:1.75;}
+  .callout-green{background:rgba(0,166,81,0.06);border:1px solid rgba(0,166,81,0.2);border-left:3px solid var(--green);}
+  .callout-gold{background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-left:3px solid var(--gold);}
+  .callout-slate{background:rgba(148,163,184,0.05);border:1px solid rgba(148,163,184,0.15);border-left:3px solid var(--muted);}
+  .callout p{margin-bottom:0;color:inherit;}
+  .callout-green p{color:#86efac;}
+  .callout-gold p{color:#fde68a;}
+  .callout-slate p{color:var(--slate);}
+
+  /* ── TABLES ── */
+  .table-wrap{overflow-x:auto;margin:24px 0;}
+  table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+  thead th{padding:10px 16px;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;color:var(--muted);text-align:left;text-transform:uppercase;border-bottom:1px solid var(--dark3);}
+  tbody td{padding:12px 16px;color:#cbd5e1;border-bottom:1px solid rgba(7,26,12,0.8);}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:rgba(0,166,81,0.02);}
+  tbody td:first-child{color:#e2e8f0;font-weight:500;}
+
+  /* ── CODE ── */
+  pre{background:var(--dark2);border:1px solid var(--dark3);border-radius:10px;padding:20px 24px;overflow-x:auto;margin:24px 0;font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.7;color:#86efac;}
+  code{font-family:'JetBrains Mono',monospace;font-size:0.82em;background:var(--dark2);border:1px solid var(--dark3);padding:2px 6px;border-radius:4px;color:#86efac;}
+
+  /* ── STAT CARDS ── */
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0;}
+  .stat-card{background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:20px 22px;}
+  .stat-card .num{font-size:1.6rem;font-weight:900;margin-bottom:4px;}
+  .stat-card .lbl{font-size:0.62rem;font-weight:700;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;}
+  .grad-g{background:linear-gradient(135deg,var(--green),var(--green3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .grad-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+  /* ── FLOW DIAGRAM ── */
+  .flow{background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:28px;margin:24px 0;overflow-x:auto;}
+  .flow-steps{display:flex;align-items:center;gap:0;flex-wrap:nowrap;min-width:max-content;}
+  .flow-step{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;}
+  .flow-num{width:36px;height:36px;border-radius:50%;background:rgba(0,166,81,0.1);border:1px solid rgba(0,166,81,0.3);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800;color:var(--green);}
+  .flow-label{font-size:0.7rem;color:var(--slate);text-align:center;line-height:1.4;max-width:90px;}
+  .flow-arrow{font-size:1rem;color:var(--muted);padding:0 8px;margin-bottom:16px;}
+
+  /* ── PILL TAGS ── */
+  .pill{display:inline-flex;font-size:0.6rem;font-weight:700;padding:3px 10px;border-radius:20px;margin:2px;}
+  .pill-g{background:rgba(0,166,81,0.1);border:1px solid rgba(0,166,81,0.25);color:var(--green);}
+  .pill-gold{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);color:var(--gold2);}
+  .pill-red{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#fca5a5;}
+  .pill-slate{background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.2);color:var(--slate);}
+
+  /* ── CONTRACT BOX ── */
+  .contract-box{background:var(--dark2);border:1px solid rgba(0,166,81,0.2);border-radius:10px;padding:16px 20px;margin:12px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .cb-name{font-size:0.85rem;font-weight:700;color:#fff;}
+  .cb-addr{font-size:0.7rem;font-family:'JetBrains Mono',monospace;color:var(--muted);}
+  .cb-link{font-size:0.65rem;color:var(--green);white-space:nowrap;}
+
+  /* ── ROADMAP ── */
+  .roadmap{display:flex;flex-direction:column;gap:0;margin:24px 0;}
+  .road-item{display:grid;grid-template-columns:120px 1fr;gap:0;}
+  .road-period{padding:20px 20px 20px 0;font-size:0.72rem;font-weight:700;color:var(--green);border-right:2px solid var(--dark3);text-align:right;position:relative;}
+  .road-period::after{content:'';position:absolute;right:-5px;top:24px;width:8px;height:8px;border-radius:50%;background:var(--green);border:2px solid var(--dark);}
+  .road-body{padding:16px 0 24px 24px;}
+  .road-title{font-size:0.9rem;font-weight:700;color:#fff;margin-bottom:8px;}
+  .road-items{display:flex;flex-wrap:wrap;gap:6px;}
+
+  /* ── ALLOCATION BARS ── */
+  .alloc-row{display:grid;grid-template-columns:180px 1fr 60px;gap:12px;align-items:center;margin-bottom:12px;}
+  .alloc-label{font-size:0.78rem;color:#cbd5e1;}
+  .alloc-bar-bg{background:var(--dark3);border-radius:4px;height:8px;overflow:hidden;}
+  .alloc-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--green3));}
+  .alloc-pct{font-size:0.78rem;font-weight:700;color:var(--green);text-align:right;}
+
+  /* ── RISK TABLE ── */
+  .risk-row{display:grid;grid-template-columns:130px 60px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid var(--dark3);align-items:start;}
+  .risk-row:last-child{border-bottom:none;}
+  .risk-label{font-size:0.82rem;font-weight:600;color:#e2e8f0;}
+  .sev-high{color:#fca5a5;font-size:0.72rem;font-weight:700;}
+  .sev-med{color:#fde68a;font-size:0.72rem;font-weight:700;}
+  .sev-low{color:#86efac;font-size:0.72rem;font-weight:700;}
+  .risk-desc{font-size:0.82rem;color:var(--slate);line-height:1.7;}
+
+  @media(max-width:900px){
+    .shell{grid-template-columns:1fr;}
+    .toc{display:none;}
+    .content{margin-left:0;padding:40px 24px;}
+    .stat-row{grid-template-columns:1fr 1fr;}
+    .cover h1{font-size:2.2rem;}
+    .alloc-row{grid-template-columns:120px 1fr 50px;}
+    .road-item{grid-template-columns:90px 1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ── SIDEBAR TOC ── -->
+<aside class="toc">
+  <div class="toc-header">
+    <div class="toc-logo">
+      <svg width="20" height="20" viewBox="0 0 60 60" fill="none">
+        <circle cx="10" cy="10" r="7" fill="#00a651"/>
+        <circle cx="30" cy="35" r="7" fill="#00a651" opacity="0.6"/>
+        <circle cx="50" cy="10" r="7" fill="#c9a84c"/>
+        <line x1="10" y1="17" x2="30" y2="28" stroke="#00a651" stroke-width="2" opacity="0.5"/>
+        <line x1="30" y1="28" x2="50" y2="17" stroke="#c9a84c" stroke-width="2" opacity="0.5"/>
+      </svg>
+      <div>
+        <div class="toc-title">SWR Whitepaper</div>
+        <div class="toc-ver">Version 1.0 · June 2026</div>
+      </div>
+    </div>
+  </div>
+  <nav class="toc-nav">
+    <div class="toc-group">Overview</div>
+    <a href="#abstract" class="toc-link">Abstract</a>
+    <a href="#executive-summary" class="toc-link">Executive Summary</a>
+    <div class="toc-group">Foundation</div>
+    <a href="#problem" class="toc-link">1. Problem Statement</a>
+    <a href="#solution" class="toc-link">2. Solution Overview</a>
+    <a href="#market" class="toc-link">3. Market Opportunity</a>
+    <div class="toc-group">Technology</div>
+    <a href="#architecture" class="toc-link">4. Technical Architecture</a>
+    <a href="#contracts" class="toc-link">5. Smart Contracts</a>
+    <a href="#tokens" class="toc-link">6. Token Architecture</a>
+    <a href="#security" class="toc-link">7. Security</a>
+    <div class="toc-group">Product</div>
+    <a href="#assets" class="toc-link">8. Asset Classes</a>
+    <a href="#process" class="toc-link">9. Tokenization Process</a>
+    <a href="#platform" class="toc-link">10. Platform Products</a>
+    <div class="toc-group">Compliance</div>
+    <a href="#regulatory" class="toc-link">11. Regulatory</a>
+    <a href="#shariah" class="toc-link">12. Shariah Compliance</a>
+    <div class="toc-group">Economics</div>
+    <a href="#tokenomics" class="toc-link">13. Tokenomics</a>
+    <a href="#revenue" class="toc-link">14. Revenue Model</a>
+    <a href="#roadmap" class="toc-link">15. Roadmap</a>
+    <a href="#risks" class="toc-link">16. Risk Factors</a>
+    <div class="toc-group">Legal</div>
+    <a href="#disclaimer" class="toc-link">Disclaimer</a>
+  </nav>
+  <div class="toc-footer">
+    <a href="index.html">← Back to Site</a>
+    <a href="dashboard.html">Try Live Demo →</a>
+    <a href="https://github.com/na6ksa/swr" target="_blank">GitHub ↗</a>
+  </div>
+</aside>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="content">
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-bg"></div>
+  <div class="cover-tag">Technical Whitepaper · Version 1.0</div>
+  <h1>Saudi Real World Assets<br><span style="background:linear-gradient(135deg,#00a651,#e8c46a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">on the Blockchain</span></h1>
+  <div class="cover-sub">SWR is a regulated platform that tokenizes Saudi Arabia's real-world assets — real estate, sukuk, infrastructure, and commodities — making institutional-grade investments accessible to every verified investor from SAR 100, with on-chain yield distribution and 24/7 secondary trading.</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><span class="cover-meta-label">Version</span><span class="cover-meta-value">1.0 — June 2026</span></div>
+    <div class="cover-meta-item"><span class="cover-meta-label">Network</span><span class="cover-meta-value">Ethereum Sepolia (Testnet) → Mainnet 2027</span></div>
+    <div class="cover-meta-item"><span class="cover-meta-label">Contracts</span><span class="cover-meta-value">5 deployed · All verified on Etherscan</span></div>
+    <div class="cover-meta-item"><span class="cover-meta-label">Contact</span><span class="cover-meta-value">founders@swr.sa</span></div>
+  </div>
+  <div class="cover-disclaimer">⚠️ <strong>Testnet Demo.</strong> All contracts are currently deployed on Ethereum Sepolia testnet for demonstration. No real assets have been tokenized and no real money is involved. This whitepaper describes the intended mainnet system. Nothing herein constitutes investment advice or a public offering of securities.</div>
+</div>
+
+
+<!-- ABSTRACT -->
+<section class="wp-section" id="abstract">
+  <div class="section-num">Abstract</div>
+  <h2>Abstract</h2>
+  <p>SWR is a regulated, Shariah-compliant tokenization platform built for the Saudi Arabian real-world asset market. Using Ethereum smart contracts, SWR converts illiquid Saudi assets — real estate, sukuk, infrastructure, and commodities — into regulated ERC-20 security tokens (<strong>$xASSET</strong>) that can be purchased, traded, and used to earn on-chain yield by any KYC-verified investor, starting from SAR 100.</p>
+  <p>The platform enforces compliance on every transaction through an on-chain KYC registry (<strong>KYCWhitelist.sol</strong>), distributes yield automatically in the SAR-pegged stablecoin SARX through an O(1)-complexity distributor (<strong>YieldDistributor.sol</strong>), and is secured by a 48-hour admin timelock and Gnosis Safe multisig on mainnet.</p>
+  <p>Saudi Arabia's Vision 2030 creates a SAR 1.8 trillion pipeline of tokenizable assets. SWR is purpose-built to serve this market — operating under CMA regulatory oversight with full Shariah Supervisory Board certification on every listed asset.</p>
+</section>
+
+
+<!-- EXECUTIVE SUMMARY -->
+<section class="wp-section" id="executive-summary">
+  <div class="section-num">Executive Summary</div>
+  <h2>Executive Summary</h2>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="num grad-g">SAR 2.5T+</div><div class="lbl">Saudi real estate market</div></div>
+    <div class="stat-card"><div class="num grad-gold">SAR 100</div><div class="lbl">Minimum investment</div></div>
+    <div class="stat-card"><div class="num grad-g">35M+</div><div class="lbl">Saudi potential investors</div></div>
+  </div>
+
+  <p>Saudi Arabia holds one of the world's largest concentrations of tokenizable real-world wealth. The Kingdom's real estate market exceeds SAR 2.5 trillion. Its sukuk issuance pipeline is the largest in the GCC. Vision 2030 has catalysed SAR 1.8 trillion in infrastructure projects. Yet the vast majority of Saudis cannot access these assets — minimums are too high, liquidity is absent, and the operational burden is prohibitive.</p>
+
+  <p>SWR solves this by converting assets into on-chain tokens. Each <strong>$xASSET</strong> token represents legally-binding fractional ownership in a Saudi SPV holding the underlying asset. KYC enforcement, investment-limit checks, and Shariah compliance are coded into the token — not bolted on after the fact. Yield is distributed automatically in SARX when asset managers deposit rental income or sukuk coupons.</p>
+
+  <div class="callout callout-green">
+    <p><strong>Key differentiator:</strong> SWR is not a fund wrapper or a synthetic instrument. Every token is direct legal ownership in a Saudi entity. Investors hold the asset, not a claim on a platform.</p>
+  </div>
+
+  <p>The platform is live on Sepolia testnet with 5 deployed and verified contracts, a full investor dashboard in English and Arabic, an issuance portal, and end-to-end tested yield distribution. CMA regulatory engagement begins Q3 2026 ahead of a mainnet launch targeting Q2 2027.</p>
+</section>
+
+
+<!-- PROBLEM -->
+<section class="wp-section" id="problem">
+  <div class="section-num">Section 1</div>
+  <h2>Problem Statement</h2>
+
+  <h3>1.1 Structural Exclusion</h3>
+  <p>Saudi Arabia's most valuable assets are systematically inaccessible to ordinary investors. Purchasing a residential property in Riyadh requires a minimum of SAR 500,000–2,000,000. Investment-grade commercial real estate starts at SAR 5 million. Sukuk are issued in tranches of SAR 250,000. The result: over 95% of Saudi citizens are locked out of the asset classes that generate the most wealth.</p>
+
+  <h3>1.2 Liquidity Vacuum</h3>
+  <p>Saudi real estate trades at settlement cycles of 30–90 days with substantial transaction costs (2–5% in agent fees, registration, and transfer taxes). There is no secondary market. Once capital is deployed, it is locked until a willing buyer is found — a process that can take months or years. Private sukuk holdings are similarly illiquid.</p>
+
+  <h3>1.3 Yield Friction</h3>
+  <p>Rental income and sukuk coupons are distributed manually — landlords collect rent, intermediaries process payments, and investors receive funds weeks after the source event. This creates cash flow uncertainty, counterparty risk, and significant operational overhead that erodes returns.</p>
+
+  <h3>1.4 Geographic Barriers</h3>
+  <p>International institutional capital that could flow into Saudi assets faces prohibitive KYC/AML requirements, currency conversion risk, and legal uncertainty around foreign ownership of Saudi property. This limits the capital base for Vision 2030 assets to a fraction of what global demand could support.</p>
+
+  <div class="callout callout-gold">
+    <p><strong>The core problem:</strong> Saudi Arabia has the assets. It has the investors. It has the appetite. What it lacks is infrastructure that connects them efficiently, transparently, and at a price point accessible to anyone.</p>
+  </div>
+</section>
+
+
+<!-- SOLUTION -->
+<section class="wp-section" id="solution">
+  <div class="section-num">Section 2</div>
+  <h2>Solution Overview</h2>
+
+  <h3>2.1 The SWR Stack</h3>
+  <p>SWR replaces five traditional intermediaries — valuers, custodians, transfer agents, yield administrators, and compliance officers — with smart contracts. The result is a system that operates 24/7, settles in seconds, enforces compliance automatically, and distributes yield the moment it is deposited.</p>
+
+  <div class="flow">
+    <div class="flow-steps">
+      <div class="flow-step"><div class="flow-num">1</div><div class="flow-label">Asset Sponsor submits asset</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">2</div><div class="flow-label">SPV structured in Saudi Arabia</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">3</div><div class="flow-label">Shariah Board certifies</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">4</div><div class="flow-label">CMA approves issuance</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">5</div><div class="flow-label">Tokens issued on-chain</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">6</div><div class="flow-label">Investors buy from SAR 100</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">7</div><div class="flow-label">Yield deposited in SARX</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">8</div><div class="flow-label">Investors claim any time</div></div>
+    </div>
+  </div>
+
+  <h3>2.2 Five Core Principles</h3>
+  <ul>
+    <li><strong>Legal first.</strong> Every token is backed by legal ownership in a registered Saudi SPV. Blockchain records ownership; Saudi law enforces it.</li>
+    <li><strong>Compliance by default.</strong> KYC verification, investment limits, and Shariah status are enforced in the token's transfer logic — not by a gatekeeper that can be bypassed.</li>
+    <li><strong>Trustless yield.</strong> Asset managers deposit SARX into the YieldDistributor contract. The math is immutable and public — no human can redirect yield payments.</li>
+    <li><strong>Shariah-native.</strong> Yield comes from asset ownership income (rent, profit-sharing, commodity margin) — never from interest. Every asset is certified before listing.</li>
+    <li><strong>Auditable by anyone.</strong> All code is open source, all contracts are verified on Etherscan, and all transactions are publicly visible on-chain.</li>
+  </ul>
+</section>
+
+
+<!-- MARKET -->
+<section class="wp-section" id="market">
+  <div class="section-num">Section 3</div>
+  <h2>Market Opportunity</h2>
+
+  <h3>3.1 Total Addressable Market</h3>
+  <div class="stat-row">
+    <div class="stat-card"><div class="num grad-g">SAR 2.5T</div><div class="lbl">Saudi Real Estate</div></div>
+    <div class="stat-card"><div class="num grad-gold">$800B</div><div class="lbl">Global Sukuk Market</div></div>
+    <div class="stat-card"><div class="num grad-g">SAR 1.8T</div><div class="lbl">Vision 2030 Pipeline</div></div>
+  </div>
+
+  <p>The global RWA tokenization market is projected to reach $10 trillion by 2030 (BCG, 2023). Saudi Arabia occupies a uniquely advantaged position: it has the assets, the regulatory intent (CMA Digital Securities Framework, 2023), the investor base (35M+ citizens with high savings rates), and a government mandate (Vision 2030) explicitly targeting financial market modernization.</p>
+
+  <h3>3.2 Vision 2030 as a Tokenization Engine</h3>
+  <p>Vision 2030 is generating the world's largest single pipeline of tokenizable assets:</p>
+  <ul>
+    <li><strong>NEOM</strong> — $500B smart city with residential, commercial, and infrastructure assets across THE LINE, SINDALAH, and OXAGON</li>
+    <li><strong>ROSHN</strong> — National housing developer targeting 400,000 homes by 2030, each a fractional ownership opportunity</li>
+    <li><strong>NEOM Green Hydrogen</strong> — $8.4B infrastructure project with 25-year offtake agreements</li>
+    <li><strong>Saudi Aramco sukuk</strong> — The world's largest corporate sukuk issuer, historically institutional-only</li>
+    <li><strong>ACWA Power</strong> — SAR 50B in renewable energy projects across the Kingdom</li>
+  </ul>
+
+  <h3>3.3 Serviceable Addressable Market</h3>
+  <p>SWR's near-term focus is the Saudi domestic investor market — approximately 35 million Saudis, with a national savings rate of ~6% of GDP (SAR 180B+ annually). Even capturing 0.1% of annual savings flow in the first three years represents SAR 540M AUM. Our internal target is SAR 3B AUM by 2028.</p>
+</section>
+
+
+<!-- ARCHITECTURE -->
+<section class="wp-section" id="architecture">
+  <div class="section-num">Section 4</div>
+  <h2>Technical Architecture</h2>
+
+  <h3>4.1 Blockchain Layer</h3>
+  <p>SWR's v1 platform is deployed on Ethereum — the most battle-tested programmable blockchain with the deepest institutional adoption, the strongest developer ecosystem, and the most audited smart contract tooling available. Ethereum's proof-of-stake consensus provides finality within 2 epochs (~12 seconds) and energy consumption equivalent to a small town — not a country.</p>
+
+  <p>For mainnet, SWR evaluates deploying on Ethereum Layer 2 networks (Arbitrum or Base) to reduce transaction costs from ~$2–5 per transaction to ~$0.01–0.05, making SAR 100 minimum investments economically viable without gas costs dominating the user experience.</p>
+
+  <h3>4.2 Three-Layer Architecture</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Layer</th><th>Component</th><th>Function</th></tr></thead>
+      <tbody>
+        <tr><td>Compliance</td><td>KYCWhitelist.sol</td><td>On-chain identity registry, tier enforcement, investment limits</td></tr>
+        <tr><td>Asset</td><td>AssetToken.sol</td><td>ERC-20 security token with transfer compliance hooks</td></tr>
+        <tr><td>Asset</td><td>YieldDistributor.sol</td><td>O(1) pro-rata SARX yield distribution per asset</td></tr>
+        <tr><td>Platform</td><td>SWRToken.sol</td><td>Platform utility token — governance, fees, staking</td></tr>
+        <tr><td>Governance</td><td>SWRTimelock.sol</td><td>48-hour delay on all admin actions</td></tr>
+        <tr><td>Frontend</td><td>dashboard.html</td><td>Investor portfolio, yield claim, asset explorer</td></tr>
+        <tr><td>Frontend</td><td>issuance.html</td><td>Asset sponsor portal for token issuance</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>4.3 Data Architecture</h3>
+  <p>SWR follows a hybrid on-chain/off-chain data model. The blockchain stores what must be immutable and verifiable: token balances, transfer history, yield epoch amounts, KYC approval hashes, and investment limits. Off-chain infrastructure (encrypted IPFS + S3) stores what is sensitive or too large for on-chain storage: KYC documents, asset valuations, SPV incorporation documents, and Shariah certificates. Only the <em>hash</em> of these documents is stored on-chain, allowing anyone to verify document integrity without exposing private investor data.</p>
+</section>
+
+
+<!-- CONTRACTS -->
+<section class="wp-section" id="contracts">
+  <div class="section-num">Section 5</div>
+  <h2>Smart Contracts</h2>
+
+  <h3>5.1 Deployed Contracts (Sepolia Testnet)</h3>
+
+  <div class="contract-box">
+    <div><div class="cb-name">KYCWhitelist.sol</div><div class="cb-addr">0xBB44656a76Bc785c0B959B9d448dbF9d83b16293</div></div>
+    <a href="https://sepolia.etherscan.io/address/0xBB44656a76Bc785c0B959B9d448dbF9d83b16293#code" target="_blank" class="cb-link">Verified Source ↗</a>
+  </div>
+  <div class="contract-box">
+    <div><div class="cb-name">AssetToken.sol (xROSHN1)</div><div class="cb-addr">0x34E21ec5E04d801C468F76c83782FA5D6F0fb1D6</div></div>
+    <a href="https://sepolia.etherscan.io/address/0x34E21ec5E04d801C468F76c83782FA5D6F0fb1D6#code" target="_blank" class="cb-link">Verified Source ↗</a>
+  </div>
+  <div class="contract-box">
+    <div><div class="cb-name">YieldDistributor.sol</div><div class="cb-addr">0xD1495DBDB0b488c97279513593726e296D0555dD</div></div>
+    <a href="https://sepolia.etherscan.io/address/0xD1495DBDB0b488c97279513593726e296D0555dD#code" target="_blank" class="cb-link">Verified Source ↗</a>
+  </div>
+  <div class="contract-box">
+    <div><div class="cb-name">SWRToken.sol</div><div class="cb-addr">0xd9c626CF5a04375524a7ad815Ab6EA0CCC3F4D71</div></div>
+    <a href="https://sepolia.etherscan.io/address/0xd9c626CF5a04375524a7ad815Ab6EA0CCC3F4D71#code" target="_blank" class="cb-link">Verified Source ↗</a>
+  </div>
+  <div class="contract-box">
+    <div><div class="cb-name">SARX (MockERC20 — testnet only)</div><div class="cb-addr">0xEf006D589A53a292771A78696FE79dCd9088B7f8</div></div>
+    <a href="https://sepolia.etherscan.io/address/0xEf006D589A53a292771A78696FE79dCd9088B7f8#code" target="_blank" class="cb-link">Verified Source ↗</a>
+  </div>
+
+  <h3>5.2 KYCWhitelist</h3>
+  <p>The KYCWhitelist contract is the platform's identity layer. It stores a mapping of approved investor addresses to their compliance record, and exposes <code>isWhitelisted(address)</code> which is called by AssetToken on every transfer. A compliance officer approved by the CMA holds <code>COMPLIANCE_ROLE</code> and is the only entity authorized to approve or revoke investors.</p>
+  <pre>struct Investor {
+    bool         approved;
+    InvestorTier tier;       // RETAIL | PROFESSIONAL | INSTITUTIONAL
+    uint256      approvedAt;
+    uint256      expiresAt;  // 365-day KYC expiry
+    bytes32      kycHash;    // SHA-256 of KYC document bundle
+    string       jurisdiction;
+    bool         shariahConsent;
+}</pre>
+
+  <p>Investment limits are enforced per tier:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tier</th><th>Arabic</th><th>Max Investment per Asset</th><th>Eligibility</th></tr></thead>
+      <tbody>
+        <tr><td>RETAIL</td><td>تجزئة</td><td>SAR 200,000</td><td>Any KYC-verified Saudi resident</td></tr>
+        <tr><td>PROFESSIONAL</td><td>محترف</td><td>SAR 2,000,000</td><td>SAR 5M net worth or SAR 1M invested p.a.</td></tr>
+        <tr><td>INSTITUTIONAL</td><td>مؤسسي</td><td>Unlimited</td><td>CMA-licensed entities</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.3 AssetToken</h3>
+  <p>AssetToken is an ERC-20 token with compliance logic embedded in the <code>_update</code> hook, which is called on every transfer, mint, and burn. The compliance logic enforces three invariants:</p>
+  <ol>
+    <li>Both sender and receiver must be KYC-whitelisted (ISSUER_ROLE holders are exempt as verified counterparties)</li>
+    <li>The receiver's new balance × token price must not exceed their tier investment limit (computed via <code>Math.mulDiv</code> to prevent precision-loss bypass)</li>
+    <li>Transfers are blocked when the contract is paused by the compliance officer</li>
+  </ol>
+  <p>The <code>_update</code> hook also notifies the YieldDistributor via <code>IYieldNotify.notifyTransfer(from, to)</code> <em>before</em> balance changes, allowing yield to be settled at the pre-transfer balance. This is the key mechanism that prevents balance-at-time exploits common in simpler yield distribution designs.</p>
+
+  <h3>5.4 YieldDistributor</h3>
+  <p>The YieldDistributor uses an O(1) cumulative-per-token accumulator pattern (inspired by Synthetix StakingRewards) rather than iterating over epochs at claim time. This guarantees that gas costs for claiming are constant regardless of how many yield epochs have occurred.</p>
+<pre>// When asset manager deposits SARX yield:
+accYieldPerToken += (amount × PRECISION) / totalSupply
+
+// When notifyTransfer fires (before balance changes):
+settledYield[holder] += balance × (accYieldPerToken - userAccYieldPerToken[holder]) / PRECISION
+userAccYieldPerToken[holder] = accYieldPerToken
+
+// When investor claims:
+claimable = settledYield[holder]  // O(1) — no loops</pre>
+  <p>This design ensures that yield always reflects the balance the investor held during each deposit — selling before claiming does not forfeit yield already earned, and buying after a deposit does not entitle the buyer to that past epoch.</p>
+</section>
+
+
+<!-- TOKENS -->
+<section class="wp-section" id="tokens">
+  <div class="section-num">Section 6</div>
+  <h2>Token Architecture</h2>
+
+  <h3>6.1 $SWR — Platform Utility Token</h3>
+  <p><strong>$SWR</strong> is the utility token of the SWR network. It is <em>not</em> a security token and does not represent ownership in any asset or in the SWR company. Its function is to align incentives across participants in the platform ecosystem.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Total Supply</td><td>200,000,000 SWR (fixed, no additional mint)</td></tr>
+        <tr><td>Standard</td><td>ERC-20 with ERC20Burnable</td></tr>
+        <tr><td>Decimals</td><td>18</td></tr>
+        <tr><td>Fee Discount</td><td>50% on platform fees when paid in SWR</td></tr>
+        <tr><td>Validator Minimum</td><td>10,000 SWR to run a validator node</td></tr>
+        <tr><td>Buyback &amp; Burn</td><td>30% of quarterly protocol revenue</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6.2 $xASSET — Security Tokens</h3>
+  <p><strong>$xASSET</strong> tokens (e.g. <strong>$xROSHN1</strong>, <strong>$xGOLD</strong>, <strong>$xNEOM1</strong>) are regulated digital securities. Each token represents pro-rata fractional ownership in a Saudi SPV that legally holds the underlying asset. These tokens are CMA-regulated, KYC-gated, and Shariah-certified on a per-asset basis.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Standard</td><td>ERC-20 with compliance transfer hooks</td></tr>
+        <tr><td>Decimals</td><td>6 (fractional token ownership possible)</td></tr>
+        <tr><td>Transfer</td><td>Restricted — both parties must be KYC-verified</td></tr>
+        <tr><td>Yield</td><td>Pro-rata in SARX via YieldDistributor</td></tr>
+        <tr><td>Naming</td><td>$x + AssetCode (e.g. $xROSHN1)</td></tr>
+        <tr><td>Legal backing</td><td>Registered Saudi SPV, CR number on-chain</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6.3 $SARX — SAR Stablecoin</h3>
+  <p><strong>$SARX</strong> is a SAR-pegged stablecoin used for all settlement, yield distribution, and secondary trading on the SWR platform. On testnet, SARX is a MockERC20 for demonstration purposes. On mainnet, SARX will be issued by a SAMA-sandbox licensed entity with 100% SAR collateral held in a licensed Saudi custodian bank.</p>
+  <div class="callout callout-slate">
+    <p><strong>Note on SARX:</strong> The platform is designed to be SARX-agnostic. Any SAR-pegged stablecoin approved by SAMA can be substituted as the yield distribution token by updating the YieldDistributor deployment parameter. SARX is not issued by SWR and is an independent regulatory filing.</p>
+  </div>
+</section>
+
+
+<!-- SECURITY -->
+<section class="wp-section" id="security">
+  <div class="section-num">Section 7</div>
+  <h2>Security</h2>
+
+  <h3>7.1 Internal Security Audit</h3>
+  <p>SWR completed a comprehensive internal security audit prior to testnet deployment. All identified vulnerabilities were remediated. Key findings and fixes:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Severity</th><th>Finding</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td><span class="pill pill-red">CRITICAL</span></td><td>Balance-at-time exploit in yield calculation</td><td>O(1) accumulator + notifyTransfer() before balance changes</td></tr>
+        <tr><td><span class="pill pill-red">CRITICAL</span></td><td>Unsafe ERC20 transfer (unchecked return value)</td><td>SafeERC20 safeTransfer/safeTransferFrom throughout</td></tr>
+        <tr><td><span class="pill pill-gold">HIGH</span></td><td>Investment limit bypass via integer truncation</td><td>Math.mulDiv() cross-multiplication prevents tokenPrice=0</td></tr>
+        <tr><td><span class="pill pill-gold">HIGH</span></td><td>Unbounded loop in pendingYield (gas DoS)</td><td>Eliminated — claim is now O(1) with accumulator pattern</td></tr>
+        <tr><td><span class="pill pill-slate">MEDIUM</span></td><td>Issuer had COMPLIANCE_ROLE (privilege concentration)</td><td>Separate complianceOfficer_ constructor parameter</td></tr>
+        <tr><td><span class="pill pill-slate">MEDIUM</span></td><td>Missing zero-address check on setYieldDistributor</td><td>require(distributor != address(0)) guard added</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7.2 Mainnet Security Model</h3>
+  <ul>
+    <li><strong>Third-party audit:</strong> Minimum two independent audits from CMA-approved firms before mainnet launch</li>
+    <li><strong>Bug bounty:</strong> SAR 3M bounty program live on Immunefi from mainnet deployment</li>
+    <li><strong>Multisig:</strong> Gnosis Safe 3-of-5 holds all admin roles on mainnet</li>
+    <li><strong>Timelock:</strong> All admin actions queue through a 48-hour SWRTimelock before execution</li>
+    <li><strong>Staged TVL:</strong> SAR 10M cap in Phase 1 → SAR 100M → unlimited as confidence grows</li>
+    <li><strong>Monitoring:</strong> Tenderly alerts + OpenZeppelin Defender for on-chain anomaly detection</li>
+  </ul>
+</section>
+
+
+<!-- ASSETS -->
+<section class="wp-section" id="assets">
+  <div class="section-num">Section 8</div>
+  <h2>Asset Classes</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Class</th><th>Phase</th><th>Target Yield</th><th>Yield Type</th><th>Shariah Basis</th></tr></thead>
+      <tbody>
+        <tr><td>🏙️ Real Estate</td><td>Phase 1 · 2026</td><td>6–9% p.a.</td><td>Rental income (quarterly)</td><td>Ijara (lease)</td></tr>
+        <tr><td>📜 Sukuk</td><td>Phase 1 · 2026</td><td>5–7% p.a.</td><td>Coupon payment (semi-annual)</td><td>Murabaha / Wakala</td></tr>
+        <tr><td>⚡ Infrastructure</td><td>Phase 2 · 2027</td><td>7–10% p.a.</td><td>Offtake revenue (monthly)</td><td>Musharaka</td></tr>
+        <tr><td>🥇 Commodities</td><td>Phase 2 · 2027</td><td>Spot-linked</td><td>Capital appreciation</td><td>Murabaha</td></tr>
+        <tr><td>🤝 Private Equity</td><td>Phase 3 · 2028</td><td>Equity return</td><td>Dividends / exit proceeds</td><td>Musharaka</td></tr>
+        <tr><td>🌱 Carbon Credits</td><td>Phase 3 · 2028</td><td>Market price</td><td>Credit sale proceeds</td><td>Under SSB review</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>8.1 Real Estate (Phase 1 — Live on Testnet)</h3>
+  <p>The first live asset on SWR is <strong>xROSHN1</strong> — a tokenized representation of ROSHN Riyadh Block 1. The asset is structured as follows: a Saudi SPV holds the property title; 1,000,000 tokens represent 100% equity in the SPV at SAR 10 per token (SAR 10M total). Rental income collected quarterly is deposited into the YieldDistributor contract as SARX, and automatically distributed to token holders proportional to their holdings at the time of each deposit.</p>
+
+  <h3>8.2 Sukuk (Phase 1 — Coming Soon)</h3>
+  <p>Sukuk tokenization follows AAOIFI Shariah Standards 14 (Murabaha) and 17 (Investment Sukuk). The SPV issues sukuk certificates; each $xSUKUK token represents a fractional interest in the certificate pool. Coupon payments are deposited on-chain in SARX every 6 months. At maturity, the principal is returned to token holders through the YieldDistributor.</p>
+</section>
+
+
+<!-- PROCESS -->
+<section class="wp-section" id="process">
+  <div class="section-num">Section 9</div>
+  <h2>Asset Tokenization Process</h2>
+
+  <h3>9.1 End-to-End Flow</h3>
+  <ol>
+    <li><strong>Submission:</strong> Asset sponsor submits asset details, financial statements, and ownership documents via the SWR Issuance Portal</li>
+    <li><strong>Due Diligence:</strong> SWR legal and technical team verifies asset legitimacy, SPV structure, and CMA compliance requirements</li>
+    <li><strong>SPV Formation:</strong> Saudi LLC or similar entity established as the SPV. Asset title transferred to SPV. CR number recorded</li>
+    <li><strong>Shariah Review:</strong> SWR's 3-member Shariah Supervisory Board reviews the SPV structure, asset type, and yield mechanism. Fatwa certificate issued</li>
+    <li><strong>CMA Approval:</strong> Prospectus (نشرة الإصدار) submitted to CMA. Approval received. Issuance terms confirmed</li>
+    <li><strong>Smart Contract Deploy:</strong> AssetToken deployed with SPV CR number, asset value, and KYCWhitelist address. YieldDistributor linked. Contracts verified on Etherscan</li>
+    <li><strong>Token Issuance:</strong> Total supply minted to issuer wallet. Issued to investors via subscription process</li>
+    <li><strong>Yield Lifecycle:</strong> Asset manager collects income, deposits SARX to YieldDistributor, investors claim any time</li>
+  </ol>
+
+  <h3>9.2 Listing Timeline</h3>
+  <p>From asset submission to investor availability: approximately 60–90 days (driven by CMA approval timeline). Smart contract deployment and KYC approval can begin in parallel with regulatory review.</p>
+</section>
+
+
+<!-- PLATFORM -->
+<section class="wp-section" id="platform">
+  <div class="section-num">Section 10</div>
+  <h2>Platform Products</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Product</th><th>Users</th><th>Status</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Investor Dashboard</td><td>Investors</td><td><span class="pill pill-g">Live — Testnet</span></td><td>Portfolio overview, holdings, yield claiming, asset explorer. EN + AR.</td></tr>
+        <tr><td>Issuance Portal</td><td>Asset Sponsors</td><td><span class="pill pill-g">Live — Testnet</span></td><td>Wizard-based asset tokenization flow, document upload, Shariah checklist</td></tr>
+        <tr><td>Arabic Dashboard</td><td>Investors</td><td><span class="pill pill-g">Live — Testnet</span></td><td>Full RTL Arabic interface with Cairo font. Identical functionality to EN</td></tr>
+        <tr><td>Secondary Market</td><td>Investors</td><td><span class="pill pill-slate">Roadmap 2027</span></td><td>KYC-enforced peer-to-peer token trading with T+0 settlement</td></tr>
+        <tr><td>Freehold Mobile Wallet</td><td>All users</td><td><span class="pill pill-slate">Roadmap 2027</span></td><td>iOS + Android non-custodial wallet with Nafath identity integration</td></tr>
+        <tr><td>Regulator Portal</td><td>CMA / SAMA</td><td><span class="pill pill-slate">Roadmap 2027</span></td><td>Read-only CMA dashboard for real-time investor and transaction monitoring</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- REGULATORY -->
+<section class="wp-section" id="regulatory">
+  <div class="section-num">Section 11</div>
+  <h2>Regulatory Compliance</h2>
+
+  <h3>11.1 Regulatory Roadmap</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Regulator</th><th>License / Framework</th><th>Target</th></tr></thead>
+      <tbody>
+        <tr><td>Saudi CMA</td><td>Fintech Lab Sandbox</td><td>Q3 2026</td></tr>
+        <tr><td>Saudi CMA</td><td>Digital Securities Issuance</td><td>Q1 2027</td></tr>
+        <tr><td>Saudi CMA</td><td>Capital Market Institution License</td><td>Q3 2027</td></tr>
+        <tr><td>SAMA</td><td>Payment Services Sandbox</td><td>Q4 2026</td></tr>
+        <tr><td>SAMA</td><td>SARX Stablecoin Framework</td><td>Q2 2027</td></tr>
+        <tr><td>ZATCA</td><td>Digital Asset Tax Classification</td><td>Q2 2026</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>11.2 KYC / AML Architecture</h3>
+  <p>SWR's compliance architecture integrates on-chain enforcement with off-chain KYC processes:</p>
+  <ul>
+    <li><strong>Identity verification:</strong> Nafath (Saudi national identity platform) integration for Saudi citizens; international investors via approved KYC providers</li>
+    <li><strong>AML screening:</strong> Real-time OFAC, UN, and SAMA sanctions screening at onboarding and on periodic refresh</li>
+    <li><strong>On-chain record:</strong> KYC approval hash stored on KYCWhitelist. Documents stored encrypted off-chain (IPFS + S3). Hash allows anyone to verify document integrity</li>
+    <li><strong>Expiry:</strong> 365-day KYC expiry enforced on-chain. isWhitelisted() returns false after expiry — investor cannot receive tokens until KYC is renewed</li>
+    <li><strong>Regulator access:</strong> REGULATOR_ROLE grants CMA examiners read-only access to full investor records via regulatorView()</li>
+  </ul>
+</section>
+
+
+<!-- SHARIAH -->
+<section class="wp-section" id="shariah">
+  <div class="section-num">Section 12</div>
+  <h2>Shariah Compliance</h2>
+
+  <h3>12.1 Shariah Supervisory Board</h3>
+  <p>SWR operates under a dedicated 3-member Shariah Supervisory Board (SSB) comprising qualified Islamic finance scholars. The SSB reviews every asset structure before listing and issues a Fatwa certificate that is published publicly. An annual comprehensive Shariah audit covers the entire platform.</p>
+
+  <h3>12.2 Core Shariah Principles</h3>
+  <ul>
+    <li><strong>Asset-backed:</strong> Every token represents real ownership — no synthetic instruments, no naked financial claims</li>
+    <li><strong>Riba-free:</strong> Yield derives from ownership income (rent, profit-sharing, commodity margin) — never from interest on debt</li>
+    <li><strong>Halal screening:</strong> Underlying assets are screened against prohibited industries (alcohol, gambling, conventional banking, weapons, pork)</li>
+    <li><strong>Gharar-free:</strong> Token terms, yield mechanics, and SPV structure are fully disclosed — no excessive uncertainty</li>
+    <li><strong>AAOIFI standards:</strong> Sukuk structures follow AAOIFI Shariah Standards 14 (Murabaha) and 17 (Investment Sukuk)</li>
+  </ul>
+
+  <h3>12.3 Shariah Certification On-Chain</h3>
+  <p>The <code>shariahCertified</code> boolean field in AssetToken is set at deployment and is publicly readable by anyone. The Fatwa certificate hash is stored in the asset metadata, allowing investors to verify authenticity before purchasing.</p>
+
+  <div class="callout callout-green">
+    <p><strong>Why this matters:</strong> The $800B global sukuk market is almost entirely inaccessible to retail investors. SWR's Shariah-first architecture opens this market to 35M+ Saudi investors who prioritize halal income — a demographic that conventional RWA platforms structurally cannot serve.</p>
+  </div>
+</section>
+
+
+<!-- TOKENOMICS -->
+<section class="wp-section" id="tokenomics">
+  <div class="section-num">Section 13</div>
+  <h2>Tokenomics</h2>
+
+  <h3>13.1 $SWR Token Allocation</h3>
+  <p>Total supply: <strong>200,000,000 SWR</strong> — fixed at deployment, no additional mint possible.</p>
+
+  <div style="margin:28px 0;">
+    <div class="alloc-row"><span class="alloc-label">Community &amp; Ecosystem (35%)</span><div class="alloc-bar-bg"><div class="alloc-bar" style="width:35%"></div></div><span class="alloc-pct">35%</span></div>
+    <div class="alloc-row"><span class="alloc-label">Team &amp; Advisors (20%)</span><div class="alloc-bar-bg"><div class="alloc-bar" style="width:20%;background:linear-gradient(90deg,#c9a84c,#e8c46a)"></div></div><span class="alloc-pct" style="color:var(--gold2)">20%</span></div>
+    <div class="alloc-row"><span class="alloc-label">Investors — SAFT (18%)</span><div class="alloc-bar-bg"><div class="alloc-bar" style="width:18%;background:linear-gradient(90deg,#818cf8,#a5b4fc)"></div></div><span class="alloc-pct" style="color:#a5b4fc">18%</span></div>
+    <div class="alloc-row"><span class="alloc-label">Protocol Treasury (15%)</span><div class="alloc-bar-bg"><div class="alloc-bar" style="width:15%;background:linear-gradient(90deg,#34d399,#6ee7b7)"></div></div><span class="alloc-pct" style="color:#6ee7b7">15%</span></div>
+    <div class="alloc-row"><span class="alloc-label">Staking Rewards (7%)</span><div class="alloc-bar-bg"><div class="alloc-bar" style="width:7%;background:linear-gradient(90deg,#f97316,#fb923c)"></div></div><span class="alloc-pct" style="color:#fb923c">7%</span></div>
+    <div class="alloc-row"><span class="alloc-label">Public Sale (5%)</span><div class="alloc-bar-bg"><div class="alloc-bar" style="width:5%;background:linear-gradient(90deg,#e879f9,#f0abfc)"></div></div><span class="alloc-pct" style="color:#f0abfc">5%</span></div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Allocation</th><th>Tokens</th><th>Vesting</th></tr></thead>
+      <tbody>
+        <tr><td>Community &amp; Ecosystem</td><td>70,000,000 SWR</td><td>4-year linear, no cliff. Governance-controlled disbursement</td></tr>
+        <tr><td>Team &amp; Advisors</td><td>40,000,000 SWR</td><td>4-year linear, 1-year cliff</td></tr>
+        <tr><td>Investors (SAFT)</td><td>36,000,000 SWR</td><td>2-year linear, 6-month cliff</td></tr>
+        <tr><td>Protocol Treasury</td><td>30,000,000 SWR</td><td>Governance-controlled. Used for buyback &amp; burn</td></tr>
+        <tr><td>Staking Rewards</td><td>14,000,000 SWR</td><td>Released over 10 years on emissions schedule</td></tr>
+        <tr><td>Public Sale</td><td>10,000,000 SWR</td><td>No lock</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>13.2 Value Accrual</h3>
+  <p>$SWR captures value from platform growth through three mechanisms: (1) <strong>fee discount demand</strong> — paying platform fees in SWR instead of SARX gives a 50% discount, creating sustained buy pressure proportional to platform volume; (2) <strong>buyback and burn</strong> — 30% of quarterly protocol revenue is used to purchase SWR from the open market and burn it permanently; (3) <strong>validator staking</strong> — validator nodes must stake minimum 10,000 SWR, reducing circulating supply as the network grows.</p>
+</section>
+
+
+<!-- REVENUE -->
+<section class="wp-section" id="revenue">
+  <div class="section-num">Section 14</div>
+  <h2>Revenue Model</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Revenue Stream</th><th>Rate</th><th>Paid By</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Issuance Fee</td><td>2.0% of asset value</td><td>Asset Sponsor</td><td>One-time at token launch. 50% discount if paid in SWR</td></tr>
+        <tr><td>Annual Management Fee</td><td>0.75% of AUM</td><td>Asset Sponsor</td><td>Charged quarterly from yield distributions</td></tr>
+        <tr><td>Trading Fee</td><td>0.3% per trade</td><td>Buyer</td><td>On secondary market transactions</td></tr>
+        <tr><td>Shariah Certification</td><td>SAR 15,000 per asset</td><td>Asset Sponsor</td><td>Pass-through to Shariah Supervisory Board</td></tr>
+        <tr><td>KYC Service Fee</td><td>SAR 50 per investor</td><td>Investor</td><td>One-time at onboarding (waived at launch)</td></tr>
+        <tr><td>White-Label License</td><td>Negotiated</td><td>Bank Partners</td><td>Saudi banks can license SWR infrastructure</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>14.1 Unit Economics (Year 3 Target)</h3>
+  <div class="stat-row">
+    <div class="stat-card"><div class="num grad-g">SAR 3B</div><div class="lbl">Target AUM</div></div>
+    <div class="stat-card"><div class="num grad-gold">SAR 22.5M</div><div class="lbl">Annual Mgmt Fee Revenue</div></div>
+    <div class="stat-card"><div class="num grad-g">300K+</div><div class="lbl">Target Investors</div></div>
+  </div>
+</section>
+
+
+<!-- ROADMAP -->
+<section class="wp-section" id="roadmap">
+  <div class="section-num">Section 15</div>
+  <h2>Roadmap</h2>
+
+  <div class="roadmap">
+    <div class="road-item">
+      <div class="road-period">Q1–Q2<br>2026</div>
+      <div class="road-body">
+        <div class="road-title">Foundation</div>
+        <div class="road-items">
+          <span class="pill pill-g">Testnet Live ✓</span>
+          <span class="pill pill-g">5 Contracts Verified ✓</span>
+          <span class="pill pill-g">Security Audit v2 ✓</span>
+          <span class="pill pill-g">EN + AR Dashboard ✓</span>
+          <span class="pill pill-slate">CMA Sandbox Application</span>
+          <span class="pill pill-slate">Legal Entity Formation</span>
+          <span class="pill pill-slate">Seed Round</span>
+        </div>
+      </div>
+    </div>
+    <div class="road-item">
+      <div class="road-period">Q3–Q4<br>2026</div>
+      <div class="road-body">
+        <div class="road-title">Beta</div>
+        <div class="road-items">
+          <span class="pill pill-slate">CMA Sandbox Approval</span>
+          <span class="pill pill-slate">3rd Party Audit Complete</span>
+          <span class="pill pill-slate">First SPV Structured (ROSHN)</span>
+          <span class="pill pill-slate">Private Beta — 500 Investors</span>
+          <span class="pill pill-slate">SARX Partner Identified</span>
+          <span class="pill pill-slate">Series A</span>
+        </div>
+      </div>
+    </div>
+    <div class="road-item">
+      <div class="road-period">Q1–Q2<br>2027</div>
+      <div class="road-body">
+        <div class="road-title">Mainnet Launch</div>
+        <div class="road-items">
+          <span class="pill pill-slate">Ethereum Mainnet Deploy</span>
+          <span class="pill pill-slate">5 Live Assets</span>
+          <span class="pill pill-slate">Public KYC Open</span>
+          <span class="pill pill-slate">SARX Integration</span>
+          <span class="pill pill-slate">Mobile Wallet Beta</span>
+          <span class="pill pill-slate">CMA Full License Target</span>
+        </div>
+      </div>
+    </div>
+    <div class="road-item">
+      <div class="road-period">2028</div>
+      <div class="road-body">
+        <div class="road-title">Scale</div>
+        <div class="road-items">
+          <span class="pill pill-slate">60+ Assets</span>
+          <span class="pill pill-slate">SAR 3B AUM</span>
+          <span class="pill pill-slate">Secondary Market Live</span>
+          <span class="pill pill-slate">3 Bank White-Label Partners</span>
+          <span class="pill pill-slate">Infrastructure Assets Live</span>
+        </div>
+      </div>
+    </div>
+    <div class="road-item">
+      <div class="road-period">2029–<br>2030</div>
+      <div class="road-body">
+        <div class="road-title">Vision 2030 Alignment</div>
+        <div class="road-items">
+          <span class="pill pill-slate">300+ Assets</span>
+          <span class="pill pill-slate">SAR 15B AUM</span>
+          <span class="pill pill-slate">NEOM Asset Tokenizations</span>
+          <span class="pill pill-slate">GCC Expansion</span>
+          <span class="pill pill-slate">300K+ Investors</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- RISKS -->
+<section class="wp-section" id="risks">
+  <div class="section-num">Section 16</div>
+  <h2>Risk Factors</h2>
+
+  <div style="margin-top:24px;">
+    <div class="risk-row">
+      <div class="risk-label">Regulatory Risk</div>
+      <div class="sev-high">HIGH</div>
+      <div class="risk-desc">CMA may not grant approval, or may impose conditions that significantly restrict the business model. Mitigation: Early engagement with CMA Fintech Lab; legal counsel from CMA-experienced Saudi firms; modular platform design adaptable to regulatory feedback.</div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-label">Smart Contract Risk</div>
+      <div class="sev-med">MEDIUM</div>
+      <div class="risk-desc">Despite audits, smart contracts may contain undiscovered vulnerabilities. Mitigation: Multiple independent audits; bug bounty program; staged TVL caps; emergency pause function; upgradeability via timelocked governance.</div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-label">Liquidity Risk</div>
+      <div class="sev-med">MEDIUM</div>
+      <div class="risk-desc">Secondary market for asset tokens may have insufficient liquidity for investors wishing to exit. Mitigation: Market maker agreements; minimum holding periods disclosed; liquidity pools funded by protocol treasury.</div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-label">Oracle / SARX Risk</div>
+      <div class="sev-med">MEDIUM</div>
+      <div class="risk-desc">SARX stablecoin peg may break or the issuer may become insolvent. Mitigation: SARX issuer must be SAMA-licensed; platform is stablecoin-agnostic and can switch to an alternative SAR stablecoin.</div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-label">Key Person Risk</div>
+      <div class="sev-med">MEDIUM</div>
+      <div class="risk-desc">Founding team departure could impair operations. Mitigation: Gnosis Safe multisig; protocol code is open source; governance mechanism allows community to continue operation.</div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-label">Asset Risk</div>
+      <div class="sev-low">LOW</div>
+      <div class="risk-desc">Underlying real estate or sukuk may decline in value or default. Mitigation: All assets are real-world owned in Saudi SPVs; investors bear asset-level risk (clearly disclosed); no leverage in the protocol.</div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-label">Technical Risk</div>
+      <div class="sev-low">LOW</div>
+      <div class="risk-desc">Ethereum network congestion or L2 migration issues. Mitigation: Platform is chain-agnostic in design; all critical data is portable; no proprietary consensus mechanism.</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- DISCLAIMER -->
+<section class="wp-section" id="disclaimer">
+  <div class="section-num">Legal</div>
+  <h2>Disclaimer</h2>
+
+  <div class="callout callout-slate">
+    <p style="margin-bottom:12px;"><strong>NOT INVESTMENT ADVICE.</strong> This whitepaper is for informational purposes only. It does not constitute investment advice, a prospectus, an offer to sell securities, or a solicitation of any investment. Nothing in this document should be relied upon as a basis for any investment decision.</p>
+    <p style="margin-bottom:12px;"><strong>TESTNET DEMO.</strong> The platform described in this whitepaper is currently operating on Ethereum Sepolia testnet. No real assets have been tokenized. No real money is involved. The testnet system is a proof of concept and technology demonstration only.</p>
+    <p style="margin-bottom:12px;"><strong>REGULATORY STATUS.</strong> SWR has not yet received CMA approval or any other regulatory license to operate as a capital market institution or to offer securities. All regulatory timelines mentioned herein are targets, not guarantees. The regulatory environment for digital assets in Saudi Arabia continues to evolve.</p>
+    <p style="margin-bottom:12px;"><strong>FORWARD-LOOKING STATEMENTS.</strong> This whitepaper contains forward-looking statements regarding market opportunity, platform functionality, regulatory timelines, and financial projections. These involve risks and uncertainties. Actual results may differ materially.</p>
+    <p><strong>SHARIAH CERTIFICATION.</strong> The Shariah-compliance status described in this document applies to the intended mainnet system design. No Fatwa certificates have been issued for the testnet demo. Formal Shariah certification will be obtained from a qualified Supervisory Board prior to mainnet launch and issuance of any real asset tokens.</p>
+  </div>
+
+  <p style="margin-top:32px;font-size:0.82rem;color:var(--muted);">SWR Platform · Riyadh, Saudi Arabia · <a href="mailto:founders@swr.sa">founders@swr.sa</a> · <a href="https://github.com/na6ksa/swr" target="_blank">github.com/na6ksa/swr</a></p>
+  <p style="font-size:0.78rem;color:var(--muted);margin-top:8px;">Whitepaper Version 1.0 · June 2026 · All rights reserved</p>
+</section>
+
+</main>
+</div>
+
+<script>
+// Highlight active TOC link on scroll
+const links = document.querySelectorAll('.toc-link');
+const sections = document.querySelectorAll('.wp-section, .cover');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
