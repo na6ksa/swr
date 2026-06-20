@@ -81,6 +81,7 @@ async function main() {
     await kyc.getAddress(),
     ADMIN,
     ASSET_ISSUER,
+    COMPLIANCE_OFFICER,   // new param: dedicated compliance officer
     "ROSHN-RUH-B1-2026",
     "REAL_ESTATE",
     "1010123456",

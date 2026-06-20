@@ -35,6 +35,7 @@ describe("YieldDistributor", function () {
       await kyc.getAddress(),
       admin.address,
       issuer.address,
+      compliance.address,  // dedicated compliance officer (new param)
       "TEST-001",
       "REAL_ESTATE",
       "0000000000",

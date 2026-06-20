@@ -36,6 +36,7 @@ describe("AssetToken", function () {
       await kyc.getAddress(),
       admin.address,
       issuer.address,
+      compliance.address,    // dedicated compliance officer (new param)
       "ROSHN-RUH-B1-2026",
       "REAL_ESTATE",
       "1010123456",          // Saudi CR number
@@ -115,16 +116,16 @@ describe("AssetToken", function () {
   describe("Pause / Unpause", () => {
     const COMPLIANCE_ROLE = ethers.keccak256(ethers.toUtf8Bytes("COMPLIANCE_ROLE"));
 
-    it("issuer (compliance) can pause transfers", async () => {
-      await asset.connect(issuer).pause();
+    it("compliance officer can pause transfers", async () => {
+      await asset.connect(compliance).pause();
       await expect(
         asset.connect(issuer).transfer(investor1.address, 100n)
       ).to.be.reverted;
     });
 
-    it("issuer can unpause", async () => {
-      await asset.connect(issuer).pause();
-      await asset.connect(issuer).unpause();
+    it("compliance officer can unpause", async () => {
+      await asset.connect(compliance).pause();
+      await asset.connect(compliance).unpause();
       await asset.connect(issuer).transfer(investor1.address, 100n);
       expect(await asset.balanceOf(investor1.address)).to.equal(100n);
     });
@@ -137,8 +138,8 @@ describe("AssetToken", function () {
   describe("forcedTransfer", () => {
     it("compliance can force transfer (court order)", async () => {
       await asset.connect(issuer).transfer(investor1.address, 1000n);
-      await asset.connect(issuer).pause(); // even while paused
-      await asset.connect(issuer).forcedTransfer(
+      await asset.connect(compliance).pause(); // even while paused
+      await asset.connect(compliance).forcedTransfer(
         investor1.address, investor2.address, 500n, "Court order #SA-2026-001"
       );
       expect(await asset.balanceOf(investor2.address)).to.equal(500n);

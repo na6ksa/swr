@@ -17,13 +17,13 @@ contract KYCWhitelist is AccessControl {
     enum InvestorTier { NONE, RETAIL, PROFESSIONAL, INSTITUTIONAL }
 
     struct Investor {
-        bool      approved;
+        bool         approved;
         InvestorTier tier;
-        uint256   approvedAt;
-        uint256   expiresAt;     // KYC must be renewed (365 days)
-        bytes32   kycHash;       // hash of KYC document bundle (stored off-chain)
-        string    jurisdiction;  // "SA", "UAE", etc.
-        bool      shariahConsent;
+        uint256      approvedAt;
+        uint256      expiresAt;      // KYC must be renewed (365 days)
+        bytes32      kycHash;        // hash of KYC document bundle (stored off-chain)
+        string       jurisdiction;   // "SA", "UAE", etc.
+        bool         shariahConsent;
     }
 
     mapping(address => Investor) private _investors;
@@ -34,14 +34,16 @@ contract KYCWhitelist is AccessControl {
     event InvestorApproved(address indexed investor, InvestorTier tier, uint256 expiresAt);
     event InvestorRevoked(address indexed investor, string reason);
     event InvestorUpdated(address indexed investor, InvestorTier newTier);
+    // FIX [LOW]: renewKYC now emits an event for the CMA audit trail
+    event KYCRenewed(address indexed investor, bytes32 newKycHash, uint256 newExpiresAt);
 
     constructor(address admin, address complianceOfficer) {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(COMPLIANCE_ROLE, complianceOfficer);
 
         // Default limits in SARX (6 decimals) — adjustable by admin
-        investmentLimit[InvestorTier.RETAIL]        = 200_000  * 1e6;  // SAR 200K
-        investmentLimit[InvestorTier.PROFESSIONAL]  = 2_000_000 * 1e6; // SAR 2M
+        investmentLimit[InvestorTier.RETAIL]        = 200_000   * 1e6;  // SAR 200K
+        investmentLimit[InvestorTier.PROFESSIONAL]  = 2_000_000 * 1e6;  // SAR 2M
         investmentLimit[InvestorTier.INSTITUTIONAL] = type(uint256).max; // unlimited
     }
 
@@ -90,8 +92,11 @@ contract KYCWhitelist is AccessControl {
         external onlyRole(COMPLIANCE_ROLE)
     {
         require(_investors[investor].approved, "KYC: not approved");
-        _investors[investor].kycHash  = newKycHash;
-        _investors[investor].expiresAt = block.timestamp + 365 days;
+        uint256 newExpiry = block.timestamp + 365 days;
+        _investors[investor].kycHash   = newKycHash;
+        _investors[investor].expiresAt = newExpiry;
+        // FIX [LOW]: emit event for regulator audit trail
+        emit KYCRenewed(investor, newKycHash, newExpiry);
     }
 
     function setInvestmentLimit(InvestorTier tier, uint256 limit)

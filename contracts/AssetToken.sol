@@ -4,7 +4,9 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./KYCWhitelist.sol";
+import "./IYieldNotify.sol";
 
 /**
  * @title AssetToken
@@ -13,9 +15,16 @@ import "./KYCWhitelist.sol";
  *         Compliance rules enforced on every transfer:
  *         1. Both sender and receiver must be KYC-whitelisted
  *            (ISSUER_ROLE holders are exempt as verified counterparties)
- *         2. Receiver's balance × token price must not exceed their tier limit
+ *         2. Receiver's portfolio value must not exceed their tier investment limit
  *         3. Transfers are pausable by compliance officer
  *         4. Forced transfer bypasses pause + KYC (court order / regulatory seizure)
+ *
+ * Security fixes applied (v2):
+ *   - MEDIUM: issuer_ no longer receives COMPLIANCE_ROLE (role separation)
+ *   - MEDIUM: setYieldDistributor has zero-address guard
+ *   - HIGH:   investment limit uses Math.mulDiv to avoid precision-loss bypass
+ *   - FIX:    _update notifies YieldDistributor before balance changes so yield
+ *             is correctly settled per holder (fixes CRITICAL balance-at-time bug)
  */
 contract AssetToken is ERC20, AccessControl, Pausable {
 
@@ -24,21 +33,21 @@ contract AssetToken is ERC20, AccessControl, Pausable {
 
     KYCWhitelist public immutable kyc;
 
-    // Asset metadata (immutable after deployment)
+    // Asset metadata
     string  public assetId;
-    string  public assetType;       // "REAL_ESTATE" | "SUKUK" | "COMMODITY" | "INFRASTRUCTURE"
-    string  public spvCR;           // Saudi CR number of the SPV
-    uint256 public assetValueSAR;   // Total asset value in SAR (6 decimals)
+    string  public assetType;
+    string  public spvCR;
+    uint256 public assetValueSAR;
     bool    public shariahCertified;
 
     // Yield tracking
     address public yieldDistributor;
     uint256 public totalYieldDistributed;
 
-    // Per-holder balance mirror (needed for limit checks at transfer time)
+    // Per-holder balance mirror for investment-limit checks at transfer time
     mapping(address => uint256) public holderBalance;
 
-    // Flag that lets forcedTransfer bypass pause and compliance checks
+    // Bypass flag for court-ordered forced transfers
     bool private _forcedMode;
 
     event YieldDistributorSet(address indexed distributor);
@@ -51,6 +60,7 @@ contract AssetToken is ERC20, AccessControl, Pausable {
         address kycWhitelist_,
         address admin_,
         address issuer_,
+        address complianceOfficer_,   // FIX [MEDIUM]: separate compliance officer
         string memory assetId_,
         string memory assetType_,
         string memory spvCR_,
@@ -58,6 +68,10 @@ contract AssetToken is ERC20, AccessControl, Pausable {
         bool shariahCertified_,
         uint256 totalSupply_
     ) ERC20(name_, symbol_) {
+        require(kycWhitelist_ != address(0), "AT: zero kyc");
+        require(admin_ != address(0), "AT: zero admin");
+        require(issuer_ != address(0), "AT: zero issuer");
+
         kyc              = KYCWhitelist(kycWhitelist_);
         assetId          = assetId_;
         assetType        = assetType_;
@@ -67,7 +81,8 @@ contract AssetToken is ERC20, AccessControl, Pausable {
 
         _grantRole(DEFAULT_ADMIN_ROLE, admin_);
         _grantRole(ISSUER_ROLE,        issuer_);
-        _grantRole(COMPLIANCE_ROLE,    issuer_);
+        // FIX [MEDIUM]: compliance role goes to dedicated officer, not issuer
+        _grantRole(COMPLIANCE_ROLE,    complianceOfficer_);
 
         _mint(issuer_, totalSupply_);
     }
@@ -75,44 +90,52 @@ contract AssetToken is ERC20, AccessControl, Pausable {
     // ── COMPLIANCE TRANSFER OVERRIDE ─────────────────────────
 
     function _update(address from, address to, uint256 value) internal override {
-        // Forced transfers (court orders) bypass all checks
         if (!_forcedMode) {
-            // Normal transfers must not be paused
             require(!paused(), "Pausable: paused");
 
-            // Minting (from=0) and burning (to=0) skip investor checks
             if (from != address(0) && to != address(0)) {
-
-                // ISSUER_ROLE holders are verified counterparties — exempt from KYC check
                 if (!hasRole(ISSUER_ROLE, from)) {
                     require(kyc.isWhitelisted(from), "SWR: sender not KYC verified");
                 }
                 require(kyc.isWhitelisted(to), "SWR: receiver not KYC verified");
 
-                // Investment limit always enforced — even on issuer distributions
+                // FIX [HIGH]: use Math.mulDiv to avoid precision loss from integer division.
+                // Old code: tokenPrice = assetValueSAR / supply (truncates to 0 when SAR < supply)
+                // New code: cross-multiply — avoids the bypass where tokenPrice == 0.
                 uint256 supply = totalSupply();
                 if (supply > 0) {
-                    uint256 tokenPrice = assetValueSAR / supply;
-                    uint256 newValue   = (holderBalance[to] + value) * tokenPrice;
-                    uint256 limit      = kyc.getInvestmentLimit(to);
-                    require(newValue <= limit, "SWR: exceeds investment tier limit");
+                    uint256 limit = kyc.getInvestmentLimit(to);
+                    if (limit != type(uint256).max) {
+                        // (holderBalance[to] + value) * assetValueSAR / supply <= limit
+                        uint256 newValueSAR = Math.mulDiv(
+                            holderBalance[to] + value,
+                            assetValueSAR,
+                            supply
+                        );
+                        require(newValueSAR <= limit, "SWR: exceeds investment tier limit");
+                    }
                 }
             }
         }
 
-        // Keep holderBalance in sync
+        // FIX [CRITICAL]: Notify YieldDistributor BEFORE balances change so it can
+        // settle each holder's pending yield at their current balance.
+        if (yieldDistributor != address(0)) {
+            IYieldNotify(yieldDistributor).notifyTransfer(from, to);
+        }
+
+        // Sync holderBalance mirror
         if (from != address(0)) holderBalance[from] -= value;
         if (to   != address(0)) holderBalance[to]   += value;
 
         super._update(from, to, value);
     }
 
-    // ── ISSUER / COMPLIANCE ACTIONS ──────────────────────────
+    // ── COMPLIANCE ACTIONS ───────────────────────────────────
 
     function pause()   external onlyRole(COMPLIANCE_ROLE) { _pause(); }
     function unpause() external onlyRole(COMPLIANCE_ROLE) { _unpause(); }
 
-    // Court order or regulatory seizure — bypasses pause and KYC
     function forcedTransfer(
         address from,
         address to,
@@ -128,6 +151,8 @@ contract AssetToken is ERC20, AccessControl, Pausable {
     function setYieldDistributor(address distributor)
         external onlyRole(DEFAULT_ADMIN_ROLE)
     {
+        // FIX [MEDIUM]: zero-address guard prevents bricking recordYieldDistribution
+        require(distributor != address(0), "AT: zero distributor");
         yieldDistributor = distributor;
         emit YieldDistributorSet(distributor);
     }

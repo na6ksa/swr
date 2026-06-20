@@ -47,13 +47,14 @@ contract SWRToken is ERC20, ERC20Burnable, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         buybackTreasury = treasury;
 
-        // Mint full supply at deployment to allocation addresses
-        _mint(communityMultisig, MAX_SUPPLY * 35 / 100);  // 35%
-        _mint(teamVesting,       MAX_SUPPLY * 20 / 100);  // 20%
-        _mint(investorVesting,   MAX_SUPPLY * 18 / 100);  // 18%
-        _mint(treasury,          MAX_SUPPLY * 15 / 100);  // 15%
-        _mint(stakingRewards,    MAX_SUPPLY *  7 / 100);  //  7%
-        _mint(publicSale,        MAX_SUPPLY *  5 / 100);  //  5%
+        // FIX [LOW]: use absolute amounts to prevent integer-division dust
+        // 200M total: 70M + 40M + 36M + 30M + 14M + 10M = 200M exactly
+        _mint(communityMultisig,  70_000_000 * 1e18);  // 35%
+        _mint(teamVesting,        40_000_000 * 1e18);  // 20%
+        _mint(investorVesting,    36_000_000 * 1e18);  // 18%
+        _mint(treasury,           30_000_000 * 1e18);  // 15%
+        _mint(stakingRewards,     14_000_000 * 1e18);  //  7%
+        _mint(publicSale,         10_000_000 * 1e18);  //  5%
     }
 
     // ── ADMIN ──────────────────────────────────────────
