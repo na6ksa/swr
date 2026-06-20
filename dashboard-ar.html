@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWR — لوحة تحكم المستثمر</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:#00a651; --green3:#00c261;
+    --gold:#c9a84c;  --gold2:#e8c46a;
+    --dark:#020c05;  --dark2:#041208;
+    --dark3:#071a0c; --dark4:#0a2412;
+    --slate:#94a3b8; --muted:#334155;
+    --red:#ef4444;   --orange:#f97316;
+    --blue:#818cf8;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--dark);font-family:'Cairo',system-ui,sans-serif;color:#fff;line-height:1.7;overflow-x:hidden;letter-spacing:0;}
+  a{color:inherit;text-decoration:none;}
+
+  .grad-g   {background:linear-gradient(135deg,var(--green),var(--green3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .grad-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+  .shell{display:flex;flex-direction:row-reverse;min-height:100vh;}
+
+  /* ── SIDEBAR (right in RTL) ── */
+  .sidebar{width:240px;flex-shrink:0;background:var(--dark2);border-left:1px solid var(--dark3);display:flex;flex-direction:column;padding:24px 0;position:sticky;top:0;height:100vh;}
+  .sidebar-logo{padding:0 20px 28px;border-bottom:1px solid var(--dark3);margin-bottom:20px;text-align:right;}
+  .sidebar-nav{display:flex;flex-direction:column;gap:2px;padding:0 12px;flex:1;}
+  .nav-item{display:flex;align-items:center;flex-direction:row-reverse;gap:12px;padding:10px 12px;border-radius:8px;font-size:0.88rem;color:var(--slate);cursor:pointer;transition:background 0.2s,color 0.2s;user-select:none;}
+  .nav-item:hover{background:var(--dark3);color:#fff;}
+  .nav-item.active{background:rgba(0,166,81,0.1);color:var(--green);font-weight:700;}
+  .nav-icon{font-size:1rem;width:20px;text-align:center;}
+  .sidebar-bottom{padding:16px 20px;border-top:1px solid var(--dark3);}
+  .kyc-badge{display:flex;align-items:center;flex-direction:row-reverse;gap:8px;background:rgba(0,166,81,0.08);border:1px solid rgba(0,166,81,0.2);border-radius:8px;padding:10px 12px;font-size:0.78rem;color:var(--green);font-weight:700;}
+  .kyc-badge.unverified{background:rgba(249,115,22,0.08);border-color:rgba(249,115,22,0.2);color:var(--orange);}
+  .kyc-badge.none{background:rgba(148,163,184,0.08);border-color:rgba(148,163,184,0.2);color:var(--slate);}
+  .kyc-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+  /* ── TOPBAR ── */
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .topbar{height:64px;border-bottom:1px solid var(--dark3);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;background:rgba(2,12,5,0.95);backdrop-filter:blur(12px);z-index:10;}
+  .topbar-title{font-size:1rem;font-weight:800;}
+  .topbar-left{display:flex;align-items:center;gap:10px;}
+  .wallet-chip{display:flex;align-items:center;gap:8px;background:var(--dark2);border:1px solid var(--dark3);border-radius:8px;padding:8px 14px;font-size:0.75rem;font-weight:600;direction:ltr;}
+  .wallet-dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+  .network-badge{font-size:0.65rem;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(0,166,81,0.1);border:1px solid rgba(0,166,81,0.25);color:var(--green);direction:ltr;}
+  .network-badge.wrong{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:var(--red);}
+  .lang-btn{display:flex;align-items:center;gap:4px;background:var(--dark2);border:1px solid var(--dark3);border-radius:8px;padding:6px 12px;font-size:0.72rem;font-weight:700;color:var(--slate);transition:color 0.2s;direction:ltr;}
+  .lang-btn:hover{color:#fff;}
+  .btn-sm{padding:8px 18px;border-radius:8px;font-size:0.82rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--green3));color:#000;cursor:pointer;border:none;transition:opacity 0.2s;white-space:nowrap;}
+  .btn-sm:hover{opacity:0.88;}
+  .btn-sm:disabled{opacity:0.4;cursor:not-allowed;}
+  .btn-outline{padding:8px 18px;border-radius:8px;font-size:0.82rem;font-weight:700;background:transparent;border:1px solid var(--dark3);color:var(--slate);cursor:pointer;transition:all 0.2s;}
+  .btn-outline:hover{border-color:var(--slate);color:#fff;}
+
+  /* ── OVERLAYS ── */
+  #connect-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:20px;padding:40px;text-align:center;}
+  #connect-overlay h2{font-size:1.6rem;font-weight:900;}
+  #connect-overlay p{font-size:0.9rem;color:var(--slate);max-width:380px;line-height:1.9;}
+  .btn-connect{padding:14px 36px;border-radius:12px;font-size:1rem;font-weight:900;background:linear-gradient(135deg,var(--green),var(--green3));color:#000;cursor:pointer;border:none;}
+  .metamask-icon{font-size:3rem;}
+  #wrong-network{display:none;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px;text-align:center;padding:40px;}
+  #wrong-network h2{font-size:1.3rem;font-weight:900;color:var(--red);}
+  #wrong-network p{font-size:0.88rem;color:var(--slate);max-width:360px;}
+  .btn-switch{padding:12px 28px;border-radius:10px;font-size:0.9rem;font-weight:800;background:var(--red);color:#fff;cursor:pointer;border:none;}
+
+  /* ── SECTIONS ── */
+  .section{display:none;padding:32px;flex:1;}
+  .section.active{display:block;}
+  .section-header{display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;margin-bottom:16px;}
+  .section-title{font-size:0.9rem;font-weight:800;}
+  .section-link{font-size:0.78rem;color:var(--green);cursor:pointer;}
+  .page-title{font-size:1.3rem;font-weight:900;margin-bottom:6px;text-align:right;}
+  .page-sub{font-size:0.85rem;color:var(--slate);margin-bottom:28px;text-align:right;}
+
+  /* ── PORTFOLIO HEADER ── */
+  .portfolio-header{background:var(--dark2);border:1px solid var(--dark3);border-radius:20px;padding:32px 36px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;flex-wrap:wrap;gap:24px;}
+  .portfolio-value{font-size:2.8rem;font-weight:900;line-height:1;direction:ltr;display:inline-block;}
+  .portfolio-label{font-size:0.7rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-align:right;}
+  .portfolio-stats{display:flex;gap:40px;flex-direction:row-reverse;}
+  .p-stat{text-align:right;}
+  .p-stat .v{font-size:1.4rem;font-weight:900;direction:ltr;display:inline-block;}
+  .p-stat .l{font-size:0.7rem;color:var(--muted);margin-top:4px;}
+
+  /* ── GRIDS ── */
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .metric-card{background:var(--dark2);border:1px solid var(--dark3);border-radius:14px;padding:22px 24px;text-align:right;}
+  .metric-card .num{font-size:1.8rem;font-weight:900;margin-bottom:4px;direction:ltr;display:block;text-align:right;}
+  .metric-card .lbl{font-size:0.7rem;color:var(--muted);}
+  .metric-card .sub{font-size:0.75rem;color:var(--slate);margin-top:4px;}
+
+  /* ── TABLES ── */
+  .table-wrap{background:var(--dark2);border:1px solid var(--dark3);border-radius:14px;overflow:hidden;margin-bottom:24px;}
+  table{width:100%;border-collapse:collapse;direction:rtl;}
+  thead th{padding:12px 20px;font-size:0.7rem;font-weight:700;color:var(--muted);text-align:right;border-bottom:1px solid var(--dark3);}
+  tbody td{padding:14px 20px;font-size:0.85rem;color:var(--slate);border-bottom:1px solid rgba(7,26,12,0.8);vertical-align:middle;text-align:right;}
+  tbody td:first-child{color:#fff;font-weight:700;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:rgba(0,166,81,0.03);}
+  .empty-row{text-align:center !important;color:var(--muted) !important;font-size:0.82rem !important;padding:32px !important;}
+  .token-chip{display:inline-flex;align-items:center;gap:6px;direction:ltr;}
+  .token-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;}
+  .yield-pct{color:var(--green);font-weight:700;}
+  .action-btn{padding:5px 14px;border-radius:6px;font-size:0.75rem;font-weight:700;background:rgba(0,166,81,0.08);border:1px solid rgba(0,166,81,0.2);color:var(--green);cursor:pointer;transition:background 0.2s;}
+  .action-btn:hover{background:rgba(0,166,81,0.18);}
+  .link-btn{font-size:0.72rem;color:var(--green);cursor:pointer;white-space:nowrap;direction:ltr;}
+  .link-btn:hover{text-decoration:underline;}
+
+  /* ── YIELD CARD ── */
+  .yield-card{background:var(--dark2);border:1px solid var(--dark3);border-radius:14px;padding:24px;}
+  .yield-list{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .yield-item{display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;padding:10px 14px;background:var(--dark3);border-radius:8px;}
+  .yield-item-left{display:flex;flex-direction:column;gap:3px;text-align:right;}
+  .yield-item-name{font-size:0.82rem;font-weight:700;}
+  .yield-item-date{font-size:0.65rem;color:var(--muted);}
+  .yield-item-amt{font-size:0.88rem;font-weight:700;color:var(--green);direction:ltr;}
+
+  /* ── MARKET ── */
+  .market-card{background:var(--dark2);border:1px solid var(--dark3);border-radius:14px;padding:24px;margin-bottom:16px;}
+  .market-list{display:flex;flex-direction:column;gap:8px;margin-top:16px;}
+  .market-item{display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;padding:14px 16px;border-radius:10px;border:1px solid var(--dark3);cursor:pointer;transition:border-color 0.2s,background 0.2s;}
+  .market-item:hover{border-color:rgba(0,166,81,0.3);background:rgba(0,166,81,0.03);}
+  .market-item-right{display:flex;align-items:center;gap:12px;}
+  .market-icon{width:38px;height:38px;border-radius:10px;background:rgba(0,166,81,0.08);border:1px solid rgba(0,166,81,0.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+  .market-name{font-size:0.85rem;font-weight:700;}
+  .market-type{font-size:0.68rem;color:var(--muted);margin-top:2px;}
+  .market-price{font-size:0.88rem;font-weight:700;direction:ltr;text-align:left;}
+  .market-yield{font-size:0.68rem;color:var(--green);margin-top:2px;direction:ltr;text-align:left;}
+  .tag{display:inline-flex;font-size:0.62rem;font-weight:700;padding:3px 8px;border-radius:20px;}
+  .tag-green{background:rgba(0,166,81,0.1);border:1px solid rgba(0,166,81,0.25);color:var(--green);}
+  .tag-muted{background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.15);color:var(--slate);}
+  .tag-gold{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);color:var(--gold2);}
+  .tag-blue{background:rgba(129,140,248,0.1);border:1px solid rgba(129,140,248,0.25);color:var(--blue);}
+
+  /* ── FILTER TABS ── */
+  .filter-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;flex-direction:row-reverse;}
+  .filter-tab{padding:6px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;border:1px solid var(--dark3);color:var(--slate);cursor:pointer;transition:all 0.2s;}
+  .filter-tab:hover{border-color:var(--slate);color:#fff;}
+  .filter-tab.active{background:rgba(0,166,81,0.1);border-color:rgba(0,166,81,0.3);color:var(--green);}
+
+  /* ── TRADE FORM ── */
+  .form-card{background:var(--dark2);border:1px solid var(--dark3);border-radius:16px;padding:28px;margin-bottom:20px;}
+  .form-card h3{font-size:0.9rem;font-weight:800;margin-bottom:4px;text-align:right;}
+  .form-card p{font-size:0.82rem;color:var(--slate);margin-bottom:24px;text-align:right;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+  .form-group{display:flex;flex-direction:column;gap:6px;}
+  .form-group.full{grid-column:span 2;}
+  label{font-size:0.72rem;font-weight:700;color:var(--slate);text-align:right;display:block;}
+  input,select{background:var(--dark);border:1px solid var(--dark3);border-radius:8px;padding:11px 14px;color:#fff;font-size:0.85rem;font-family:'Cairo',inherit;outline:none;transition:border-color 0.2s;width:100%;text-align:right;}
+  input:focus,select:focus{border-color:var(--green);}
+  input::placeholder{color:var(--muted);}
+  input:disabled{opacity:0.5;cursor:not-allowed;}
+  select option{background:var(--dark2);}
+  .form-preview{background:var(--dark3);border-radius:10px;padding:14px 16px;font-size:0.85rem;color:var(--slate);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-direction:row-reverse;}
+  .form-preview span:first-child{color:#fff;font-weight:700;direction:ltr;}
+  .alert{border-radius:10px;padding:12px 16px;font-size:0.82rem;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start;line-height:1.6;text-align:right;}
+  .alert-warn{background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);color:var(--orange);}
+  .alert-info{background:rgba(0,166,81,0.06);border:1px solid rgba(0,166,81,0.18);color:var(--green);}
+  .alert-error{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:var(--red);}
+
+  /* ── INFO ROWS ── */
+  .info-card{background:var(--dark2);border:1px solid var(--dark3);border-radius:14px;overflow:hidden;margin-bottom:16px;}
+  .info-row{display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;padding:14px 20px;border-bottom:1px solid rgba(7,26,12,0.8);}
+  .info-row:last-child{border-bottom:none;}
+  .info-label{font-size:0.82rem;color:var(--slate);}
+  .info-value{font-size:0.78rem;color:#fff;font-weight:600;display:flex;align-items:center;gap:8px;direction:ltr;}
+
+  /* ── TOAST ── */
+  #toast{position:fixed;bottom:28px;left:28px;padding:14px 20px;border-radius:10px;font-size:0.82rem;font-weight:600;color:#fff;background:var(--dark4);border:1px solid var(--dark3);opacity:0;transform:translateY(10px);transition:all 0.3s;z-index:999;max-width:340px;pointer-events:none;text-align:right;}
+  #toast.show{opacity:1;transform:translateY(0);}
+  #toast.success{background:rgba(0,166,81,0.15);border-color:rgba(0,166,81,0.4);}
+  #toast.error{background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.4);}
+
+  /* ── SPINNER ── */
+  .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-left:6px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  @media(max-width:1100px){.sidebar{width:200px;}.grid-3{grid-template-columns:1fr 1fr;}.portfolio-stats{gap:24px;}}
+  @media(max-width:840px){.sidebar{display:none;}.grid-3{grid-template-columns:1fr;}.grid-2{grid-template-columns:1fr;}.section{padding:20px;}.form-row{grid-template-columns:1fr;}.form-group.full{grid-column:span 1;}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="90" height="28" viewBox="0 0 160 50" fill="none">
+        <defs>
+          <linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00a651"/><stop offset="100%" stop-color="#00c261"/></linearGradient>
+          <linearGradient id="sd" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c9a84c"/><stop offset="100%" stop-color="#e8c46a"/></linearGradient>
+        </defs>
+        <circle cx="14" cy="10" r="6" fill="url(#sg)"/><circle cx="34" cy="30" r="6" fill="url(#sg)" opacity="0.6"/><circle cx="54" cy="10" r="6" fill="url(#sd)"/>
+        <line x1="14" y1="16" x2="34" y2="25" stroke="url(#sg)" stroke-width="1.5" opacity="0.5"/><line x1="34" y1="25" x2="54" y2="16" stroke="url(#sd)" stroke-width="1.5" opacity="0.5"/>
+        <text x="66" y="30" font-family="'Inter',sans-serif" font-size="22" font-weight="900" fill="#fff">SWR</text>
+      </svg>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span> لوحة التحكم</div>
+      <div class="nav-item" onclick="showSection('assets')"><span class="nav-icon">🏙️</span> أصولي</div>
+      <div class="nav-item" onclick="showSection('trade')"><span class="nav-icon">🔄</span> تداول</div>
+      <div class="nav-item" onclick="showSection('yield')"><span class="nav-icon">💰</span> العوائد</div>
+      <div class="nav-item" onclick="showSection('explore')"><span class="nav-icon">🔍</span> استكشاف</div>
+      <div class="nav-item" onclick="showSection('documents')"><span class="nav-icon">📋</span> وثائق</div>
+      <a href="issuance.html" class="nav-item"><span class="nav-icon">🏗️</span> إصدار</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div id="kyc-badge" class="kyc-badge none">
+        <div class="kyc-dot"></div>
+        <span id="kyc-label">غير متصل</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">نظرة عامة على المحفظة</div>
+      <div class="topbar-left">
+        <a href="dashboard.html" class="lang-btn"><span>EN</span><span style="color:var(--dark3);margin:0 2px">|</span><span style="opacity:0.5">AR</span></a>
+        <span id="network-badge" class="network-badge" style="display:none">Sepolia</span>
+        <div id="wallet-chip" class="wallet-chip" style="display:none">
+          <div class="wallet-dot"></div>
+          <span id="wallet-addr">—</span>
+        </div>
+        <button id="btn-connect" class="btn-sm" onclick="connectWallet()">ربط المحفظة</button>
+        <button id="btn-disconnect" class="btn-outline" style="display:none;" onclick="disconnectWallet()">قطع الاتصال</button>
+      </div>
+    </div>
+
+    <!-- CONNECT PROMPT -->
+    <div id="connect-overlay">
+      <div class="metamask-icon">🦊</div>
+      <h2>ربط محفظتك</h2>
+      <p>قم بربط MetaMask لعرض محفظتك المباشرة وأصولك المرمّزة والعوائد المستحقة على شبكة Sepolia التجريبية.</p>
+      <button class="btn-connect" onclick="connectWallet()">ربط MetaMask</button>
+    </div>
+
+    <!-- WRONG NETWORK -->
+    <div id="wrong-network">
+      <div style="font-size:2.5rem">⚠️</div>
+      <h2>شبكة خاطئة</h2>
+      <p>منصة SWR مُنشأة على شبكة Sepolia التجريبية. يرجى تحويل محفظتك للمتابعة.</p>
+      <button class="btn-switch" onclick="switchToSepolia()">التحويل إلى Sepolia</button>
+    </div>
+
+    <!-- ══════════════ SECTION 1: DASHBOARD ══════════════ -->
+    <div id="section-dashboard" class="section active">
+
+      <div class="portfolio-header">
+        <div>
+          <div class="portfolio-label">إجمالي قيمة المحفظة</div>
+          <div class="portfolio-value grad-g" id="port-value">— ر.س</div>
+          <div style="font-size:0.78rem;color:var(--slate);margin-top:6px;text-align:right;">xROSHN1 · مباشر من Sepolia</div>
+        </div>
+        <div class="portfolio-stats">
+          <div class="p-stat">
+            <div class="v grad-gold" id="port-yield">—</div>
+            <div class="l">العائد المستحق</div>
+          </div>
+          <div class="p-stat">
+            <div class="v" style="color:#fff" id="port-tokens">—</div>
+            <div class="l">رموز xROSHN1</div>
+          </div>
+          <div class="p-stat">
+            <div class="v" style="color:var(--green)" id="port-price">10 ر.س</div>
+            <div class="l">السعر / رمز</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="metric-card">
+          <div class="num grad-g" id="card-yield">—</div>
+          <div class="lbl">العائد المستحق</div>
+          <div class="sub" id="card-yield-sub">قم بربط المحفظة للتحميل</div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:#fff" id="card-swr">—</div>
+          <div class="lbl">رصيد رمز SWR</div>
+          <div class="sub" style="display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;">
+            <span>الحوكمة وخصومات الرسوم</span>
+            <span onclick="addToken('SWR')" style="cursor:pointer;color:var(--green);font-size:0.7rem;font-weight:700;">+ إضافة</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:var(--gold2)" id="card-sarx">—</div>
+          <div class="lbl">رصيد SARX</div>
+          <div class="sub" style="display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;">
+            <span>متاح للاستثمار</span>
+            <span onclick="addToken('SARX')" style="cursor:pointer;color:var(--green);font-size:0.7rem;font-weight:700;">+ إضافة</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:24px;">
+        <div>
+          <div class="section-header">
+            <div class="section-title">محفظتي</div>
+            <div class="section-link" onclick="loadAll()">↺ تحديث</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>الأصل</th><th>الرموز</th><th>القيمة (ر.س)</th><th>السعر</th><th></th></tr></thead>
+              <tbody id="dash-holdings"><tr><td colspan="5" class="empty-row">قم بربط المحفظة لعرض الأصول</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <div class="section-header"><div class="section-title">العائد المستحق</div></div>
+          <div class="yield-card">
+            <div style="font-size:0.68rem;color:var(--muted);text-align:right;">من عقد موزع العوائد على Sepolia</div>
+            <div class="yield-list" id="dash-yield-list">
+              <div class="yield-item">
+                <div class="yield-item-left"><div class="yield-item-name">—</div><div class="yield-item-date">قم بربط المحفظة للعرض</div></div>
+                <div class="yield-item-amt">—</div>
+              </div>
+            </div>
+            <div style="padding:16px 0 4px;">
+              <button id="btn-claim" class="btn-sm" style="width:100%;" onclick="claimYield()" disabled>استلام العائد →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">الأصول المميزة</div>
+        <div class="section-link" onclick="showSection('explore')">← عرض السوق</div>
+      </div>
+      <div class="market-card"><div class="market-list" id="dash-market"></div></div>
+    </div>
+
+    <!-- ══════════════ SECTION 2: MY ASSETS ══════════════ -->
+    <div id="section-assets" class="section">
+      <div class="page-title">أصولي</div>
+      <div class="page-sub">جميع الرموز المرتبطة بمحفظتك على شبكة Sepolia.</div>
+
+      <div class="grid-3" style="margin-bottom:24px;">
+        <div class="metric-card">
+          <div class="num grad-g" id="assets-portfolio">— ر.س</div>
+          <div class="lbl">قيمة المحفظة</div>
+          <div class="sub">xROSHN1 بالسعر الحالي</div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:var(--gold2)" id="assets-sarx">—</div>
+          <div class="lbl">رصيد SARX</div>
+          <div class="sub">عملة مستقرة مرتبطة بالريال</div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:#fff" id="assets-swr">—</div>
+          <div class="lbl">رمز SWR</div>
+          <div class="sub">رمز حوكمة المنصة</div>
+        </div>
+      </div>
+
+      <div class="section-header"><div class="section-title">الأصول المرمّزة</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>الرمز</th><th>الرصيد</th><th>القيمة (ر.س)</th><th>السعر</th><th>حصتك</th><th>Etherscan</th><th></th></tr></thead>
+          <tbody id="assets-table"><tr><td colspan="7" class="empty-row">قم بربط المحفظة لعرض الأصول</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="section-header"><div class="section-title">رموز المحفظة</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>الرمز</th><th>العقد</th><th>الرصيد</th><th>الخانات العشرية</th><th></th></tr></thead>
+          <tbody id="wallet-table"><tr><td colspan="5" class="empty-row">قم بربط المحفظة للعرض</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════ SECTION 3: TRADE ══════════════ -->
+    <div id="section-trade" class="section">
+      <div class="page-title">تداول</div>
+      <div class="page-sub">نقل رموز الأصول المنظمة إلى محافظ موثقة بـ KYC على شبكة Sepolia.</div>
+
+      <div class="grid-2">
+        <div>
+          <div class="form-card">
+            <h3>نقل رموز الأصول</h3>
+            <p>يجب أن يكون كل من المُرسِل والمُستلم موثقَيْن بـ KYC في عقد القائمة البيضاء.</p>
+            <div class="alert alert-warn">⚠️ نقل منظم — يجب أن تكون محفظة المستلم موثقة بـ KYC وإلا ستُرفض المعاملة.</div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>من</label>
+                <input type="text" id="trade-from" disabled placeholder="قم بربط المحفظة">
+              </div>
+              <div class="form-group">
+                <label>الرمز</label>
+                <select id="trade-token" onchange="updateTradePreview()">
+                  <option value="xROSHN1">xROSHN1 — روشن الرياض المرحلة الأولى</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group full">
+                <label>عنوان المستلم</label>
+                <input type="text" id="trade-to" placeholder="0x..." oninput="checkRecipientKYC(); updateTradePreview()" style="direction:ltr;text-align:left;">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>الكمية (رموز)</label>
+                <input type="number" id="trade-amount" placeholder="0" min="1" oninput="updateTradePreview()" style="direction:ltr;text-align:left;">
+              </div>
+              <div class="form-group">
+                <label>رصيدك</label>
+                <input type="text" id="trade-balance" disabled placeholder="—">
+              </div>
+            </div>
+
+            <div id="trade-kyc-status" style="display:none;" class="alert alert-info">✓ المستلم موثق بـ KYC</div>
+            <div id="trade-kyc-fail"   style="display:none;" class="alert alert-error">✗ المستلم غير موثق بـ KYC — ستُرفض المعاملة</div>
+
+            <div class="form-preview">
+              <span id="trade-preview">—</span>
+              <span>قيمة النقل</span>
+            </div>
+
+            <button class="btn-sm" style="width:100%;" onclick="executeTransfer()" id="btn-transfer">نقل الرموز →</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="form-card">
+            <h3>قواعد التداول</h3>
+            <p>xROSHN1 رمز أوراق مالية منظم. كل عملية نقل تُفحص على البلوكشين.</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="yield-item">
+                <span class="tag tag-green">مطلوب</span>
+                <div class="yield-item-left">
+                  <div class="yield-item-name">التحقق من KYC</div>
+                  <div class="yield-item-date">يجب أن يكون كلا الطرفين معتمدَيْن من قِبل الامتثال</div>
+                </div>
+              </div>
+              <div class="yield-item">
+                <span class="tag tag-gold">مُطبَّق</span>
+                <div class="yield-item-left">
+                  <div class="yield-item-name">حدود الاستثمار</div>
+                  <div class="yield-item-date">تجزئة: 200K ر.س · محترف: 2M ر.س · مؤسسي: غير محدود</div>
+                </div>
+              </div>
+              <div class="yield-item">
+                <span class="tag tag-blue">على السلسلة</span>
+                <div class="yield-item-left">
+                  <div class="yield-item-name">آلية الإيقاف</div>
+                  <div class="yield-item-date">مسؤول الامتثال يمكنه إيقاف جميع التحويلات إذا طلب المنظم</div>
+                </div>
+              </div>
+              <div class="yield-item">
+                <span class="tag tag-muted">صلاحية هيئة السوق</span>
+                <div class="yield-item-left">
+                  <div class="yield-item-name">التحويل القسري</div>
+                  <div class="yield-item-date">أوامر المحاكم تُتيح تحويلاً قسرياً يتجاوز القواعد العادية</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ SECTION 4: YIELD ══════════════ -->
+    <div id="section-yield" class="section">
+      <div class="page-title">مركز العوائد</div>
+      <div class="page-sub">جميع توزيعات العوائد لحيازاتك — مُشغَّل بعقد YieldDistributor على البلوكشين.</div>
+
+      <div class="grid-3" style="margin-bottom:24px;">
+        <div class="metric-card">
+          <div class="num grad-g" id="yield-pending">—</div>
+          <div class="lbl">المستحق الآن</div>
+          <div class="sub">جاهز للاستلام في محفظتك</div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:var(--gold2)" id="yield-epochs">—</div>
+          <div class="lbl">إجمالي الدورات</div>
+          <div class="sub">جولات توزيع العوائد</div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:#fff" id="yield-asset">—</div>
+          <div class="lbl">أصل التوزيع</div>
+          <div class="sub">يُوزَّع بعملة SARX المستقرة</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:24px;">
+        <button id="btn-claim-yield" class="btn-sm" onclick="claimYield()" disabled style="padding:12px 32px;">استلام كل العوائد →</button>
+      </div>
+
+      <div class="section-header"><div class="section-title">سجل الدورات</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>الوصف</th><th>إجمالي العائد</th><th>حصتك</th><th>مبلغك</th><th>التاريخ</th></tr></thead>
+          <tbody id="yield-epochs-table"><tr><td colspan="6" class="empty-row">قم بربط المحفظة لتحميل سجل الدورات</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="section-header"><div class="section-title">كيف تعمل العوائد</div></div>
+      <div class="info-card">
+        <div class="info-row"><div class="info-label">رمز العائد</div><div class="info-value">SARX (عملة مستقرة بالريال، 6 خانات عشرية)</div></div>
+        <div class="info-row"><div class="info-label">طريقة التوزيع</div><div class="info-value">تناسبي حسب حيازات xROSHN1 في وقت كل دورة</div></div>
+        <div class="info-row"><div class="info-label">طريقة الاستلام</div><div class="info-value">سحب ذاتي — تستلم متى تشاء، لا انتهاء صلاحية</div></div>
+        <div class="info-row"><div class="info-label">العقد</div><div class="info-value"><a href="https://sepolia.etherscan.io/address/0xD1495DBDB0b488c97279513593726e296D0555dD#code" target="_blank" class="link-btn">0xD1495…55dD ↗</a></div></div>
+      </div>
+    </div>
+
+    <!-- ══════════════ SECTION 5: EXPLORE ══════════════ -->
+    <div id="section-explore" class="section">
+      <div class="page-title">استكشاف الأصول</div>
+      <div class="page-sub">أصول عقارية حقيقية مرمّزة ومتوافقة مع الشريعة الإسلامية على منصة SWR.</div>
+
+      <div class="filter-tabs">
+        <div class="filter-tab active" onclick="filterAssets('all',this)">الكل</div>
+        <div class="filter-tab" onclick="filterAssets('real-estate',this)">عقارات</div>
+        <div class="filter-tab" onclick="filterAssets('sukuk',this)">صكوك</div>
+        <div class="filter-tab" onclick="filterAssets('infrastructure',this)">بنية تحتية</div>
+        <div class="filter-tab" onclick="filterAssets('commodity',this)">سلع</div>
+      </div>
+
+      <div class="market-card"><div class="market-list" id="explore-items"></div></div>
+    </div>
+
+    <!-- ══════════════ SECTION 6: DOCUMENTS ══════════════ -->
+    <div id="section-documents" class="section">
+      <div class="page-title">الوثائق والعقود</div>
+      <div class="page-sub">سجل العقود على البلوكشين والوثائق التنظيمية لمنصة SWR.</div>
+
+      <div class="section-header"><div class="section-title">العقود المنشورة — شبكة Sepolia التجريبية</div></div>
+      <div class="info-card">
+        <div class="info-row"><div class="info-label">القائمة البيضاء KYCWhitelist</div><div class="info-value">0xBB44656a…16293 <a href="https://sepolia.etherscan.io/address/0xBB44656a76Bc785c0B959B9d448dbF9d83b16293#code" target="_blank" class="link-btn">عرض ↗</a></div></div>
+        <div class="info-row"><div class="info-label">رمز SWR</div><div class="info-value">0xd9c626CF…F4D71 <a href="https://sepolia.etherscan.io/address/0xd9c626CF5a04375524a7ad815Ab6EA0CCC3F4D71#code" target="_blank" class="link-btn">عرض ↗</a></div></div>
+        <div class="info-row"><div class="info-label">عملة SARX المستقرة</div><div class="info-value">0xEf006D58…8B7f8 <a href="https://sepolia.etherscan.io/address/0xEf006D589A53a292771A78696FE79dCd9088B7f8#code" target="_blank" class="link-btn">عرض ↗</a></div></div>
+        <div class="info-row"><div class="info-label">رمز الأصل xROSHN1</div><div class="info-value">0x34E21ec5…b1D6 <a href="https://sepolia.etherscan.io/address/0x34E21ec5E04d801C468F76c83782FA5D6F0fb1D6#code" target="_blank" class="link-btn">عرض ↗</a></div></div>
+        <div class="info-row"><div class="info-label">موزع العوائد</div><div class="info-value">0xD1495DB…55dD <a href="https://sepolia.etherscan.io/address/0xD1495DBDB0b488c97279513593726e296D0555dD#code" target="_blank" class="link-btn">عرض ↗</a></div></div>
+      </div>
+
+      <div class="section-header"><div class="section-title">وثائق الأصل — xROSHN1</div></div>
+      <div class="info-card">
+        <div class="info-row"><div class="info-label" style="display:flex;align-items:center;gap:8px;"><span>📄</span> رقم الأصل</div><div class="info-value">ROSHN-RUH-B1-2026</div></div>
+        <div class="info-row"><div class="info-label" style="display:flex;align-items:center;gap:8px;"><span>🏢</span> رقم السجل التجاري (SPV)</div><div class="info-value">1010123456</div></div>
+        <div class="info-row"><div class="info-label" style="display:flex;align-items:center;gap:8px;"><span>✅</span> الامتثال الشرعي</div><div class="info-value" style="color:var(--green);">معتمد ✓</div></div>
+        <div class="info-row"><div class="info-label" style="display:flex;align-items:center;gap:8px;"><span>💰</span> قيمة الأصل</div><div class="info-value">10,000,000 ر.س</div></div>
+        <div class="info-row"><div class="info-label" style="display:flex;align-items:center;gap:8px;"><span>📜</span> نشرة الإصدار</div><div class="info-value" style="color:var(--muted);">في انتظار موافقة هيئة السوق المالية</div></div>
+        <div class="info-row"><div class="info-label" style="display:flex;align-items:center;gap:8px;"><span>📋</span> شهادة الفتوى</div><div class="info-value" style="color:var(--muted);">في انتظار هيئة الرقابة الشرعية</div></div>
+      </div>
+
+      <div class="section-header"><div class="section-title">معلومات المنصة</div></div>
+      <div class="info-card">
+        <div class="info-row"><div class="info-label">الشبكة</div><div class="info-value">Ethereum Sepolia Testnet (Chain ID: 11155111)</div></div>
+        <div class="info-row"><div class="info-label">معيار الرمز</div><div class="info-value">ERC-20 مع شروط الامتثال (KYC + حدود الاستثمار)</div></div>
+        <div class="info-row"><div class="info-label">الجهة التنظيمية</div><div class="info-value">هيئة السوق المالية — المملكة العربية السعودية</div></div>
+        <div class="info-row"><div class="info-label">الكود المصدري</div><div class="info-value"><a href="https://sepolia.etherscan.io/address/0x34E21ec5E04d801C468F76c83782FA5D6F0fb1D6#code" target="_blank" class="link-btn">موثق على Etherscan ↗</a></div></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="contracts.js?v=3"></script>
+<script>
+let provider, signer, account;
+let _data = {};
+
+const ASSETS_AR = [
+  { icon:'🏙️', name:'روشن الرياض — المرحلة الأولى', symbol:'xROSHN1', type:'real-estate', typeLabel:'عقارات', price:'10 ر.س', yield:'7.2%', status:'live', shariah:true },
+  { icon:'🏙️', name:'روشن جدة — المرحلة الثانية',    symbol:'xROSHN2', type:'real-estate', typeLabel:'عقارات', price:'12 ر.س', yield:'7.4%', status:'soon', shariah:true },
+  { icon:'⚡',  name:'مزرعة نيوم الشمسية أ',           symbol:'xNEOM1',  type:'infrastructure', typeLabel:'بنية تحتية', price:'25 ر.س', yield:'9.1%', status:'soon', shariah:true },
+  { icon:'🌊',  name:'محطة المياه — مرافق',            symbol:'xINFRA1', type:'infrastructure', typeLabel:'بنية تحتية', price:'10 ر.س', yield:'8.1%', status:'soon', shariah:true },
+  { icon:'📜',  name:'صكوك أرامكو السعودية 2027',      symbol:'xARAMCO1', type:'sukuk', typeLabel:'صكوك', price:'100 ر.س', yield:'5.8%', status:'soon', shariah:true },
+  { icon:'📜',  name:'صكوك شركة ACWA للطاقة',          symbol:'xSUKUK1', type:'sukuk', typeLabel:'صكوك', price:'10 ر.س', yield:'6.5%', status:'soon', shariah:true },
+  { icon:'🥇',  name:'صندوق الذهب المادي II',           symbol:'xGOLD2',  type:'commodity', typeLabel:'سلع', price:'15 ر.س', yield:'مرتبط بالسوق', status:'soon', shariah:true },
+];
+
+function buildExplore(filter) {
+  const list = ASSETS_AR.filter(a => filter === 'all' || a.type === filter);
+  document.getElementById('explore-items').innerHTML = list.map(a => `
+    <div class="market-item">
+      <div style="display:flex;align-items:center;gap:12px;">
+        ${a.shariah ? '<span class="tag tag-green">شرعي ✓</span>' : ''}
+        <div style="text-align:left;">
+          <div class="market-price">${a.price} / رمز</div>
+          <div class="market-yield">${a.yield} عائد</div>
+        </div>
+      </div>
+      <div class="market-item-right">
+        <div class="market-icon">${a.icon}</div>
+        <div>
+          <div class="market-name">${a.name}</div>
+          <div class="market-type">${a.typeLabel} · ${a.symbol}
+            <span style="color:${a.status==='live'?'var(--green)':'var(--muted)'}">
+              ${a.status==='live'?' ● مباشر':' ● قريباً'}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function filterAssets(f, el) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  buildExplore(f);
+}
+
+function buildDashMarket() {
+  document.getElementById('dash-market').innerHTML = ASSETS_AR.slice(0,3).map(a => `
+    <div class="market-item" onclick="showSection('explore')">
+      <div style="text-align:left;">
+        <div class="market-price">${a.price} / رمز</div>
+        <div class="market-yield">${a.yield} عائد · شرعي ✓</div>
+      </div>
+      <div class="market-item-right">
+        <div class="market-icon">${a.icon}</div>
+        <div>
+          <div class="market-name">${a.name}</div>
+          <div class="market-type">${a.typeLabel} · ${a.symbol}
+            <span style="color:${a.status==='live'?'var(--green)':'var(--muted)'}">
+              ${a.status==='live'?' ● مباشر':' ● قريباً'}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+const TITLES_AR = { dashboard:'نظرة عامة على المحفظة', assets:'أصولي', trade:'تداول', yield:'مركز العوائد', explore:'استكشاف الأصول', documents:'الوثائق' };
+const TIER_AR   = ['غير محدد','تجزئة','محترف','مؤسسي'];
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  const map = ['dashboard','assets','trade','yield','explore','documents'];
+  const idx = map.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('.nav-item')[idx].classList.add('active');
+  document.getElementById('topbar-title').textContent = TITLES_AR[id] || id;
+}
+
+async function connectWallet() {
+  if (!window.ethereum) { showToast('MetaMask غير موجود. قم بتثبيته ثم أعد التحميل.', 'error'); return; }
+  try {
+    const accounts = await window.ethereum.request({ method:'eth_requestAccounts' });
+    if (!accounts || !accounts.length) { showToast('لا توجد حسابات. افتح MetaMask وأعد المحاولة.', 'error'); return; }
+    account  = accounts[0];
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer   = provider.getSigner();
+    await afterConnect();
+  } catch(e) {
+    if (e.code === 4001)   showToast('تم الرفض — انقر "ربط المحفظة" مرة أخرى وافق في MetaMask.', 'error');
+    else if (e.code === -32002) showToast('MetaMask في انتظار — افتح الإضافة وافق على الطلب المعلق.', 'error');
+    else if (e.code === 4100)   showToast('MetaMask مغلق — أدخل كلمة المرور ثم حاول مجدداً.', 'error');
+    else showToast('خطأ في الاتصال: ' + (e.message || e), 'error');
+  }
+}
+
+async function afterConnect() {
+  const network = await provider.getNetwork();
+  if (network.chainId !== SWR.chainId) {
+    showOverlay('wrong-network'); setTopbarConnected(); setBadge('شبكة خاطئة', true); return;
+  }
+  showOverlay(null); setTopbarConnected(); setBadge('Sepolia', false);
+  await loadAll();
+}
+
+function setTopbarConnected() {
+  document.getElementById('wallet-addr').textContent = SWR.fmt.addr(account);
+  document.getElementById('wallet-chip').style.display = '';
+  document.getElementById('btn-connect').style.display = 'none';
+  document.getElementById('btn-disconnect').style.display = '';
+  document.getElementById('trade-from').value = account;
+}
+
+function disconnectWallet() {
+  provider = signer = account = null; _data = {};
+  showOverlay('connect-overlay');
+  document.getElementById('wallet-chip').style.display = 'none';
+  document.getElementById('btn-connect').style.display = '';
+  document.getElementById('btn-disconnect').style.display = 'none';
+  document.getElementById('network-badge').style.display = 'none';
+  document.getElementById('kyc-badge').className = 'kyc-badge none';
+  document.getElementById('kyc-label').textContent = 'غير متصل';
+  document.getElementById('trade-from').value = '';
+}
+
+function showOverlay(id) {
+  ['connect-overlay','wrong-network'].forEach(o => {
+    document.getElementById(o).style.display = (o === id) ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.section').forEach(s => { s.style.visibility = id ? 'hidden' : ''; });
+}
+function setBadge(text, wrong) {
+  const b = document.getElementById('network-badge');
+  b.textContent = text; b.className = 'network-badge' + (wrong ? ' wrong' : ''); b.style.display = '';
+}
+
+async function loadAll() {
+  if (!provider || !account) return;
+  const a = SWR.addresses;
+  async function safe(fn, fb) { try { return await fn(); } catch { return fb; } }
+  try {
+    if (!SWR.abis.AssetTokenFull) throw new Error('contracts.js قديم — اضغط Cmd+Shift+R لإعادة التحميل');
+    const kyc    = new ethers.Contract(a.KYCWhitelist,     SWR.abis.KYCWhitelist,    provider);
+    const swrTok = new ethers.Contract(a.SWRToken,         SWR.abis.ERC20,            provider);
+    const sarxC  = new ethers.Contract(a.SARX,             SWR.abis.ERC20,            provider);
+    const assetC = new ethers.Contract(a.AssetToken,       SWR.abis.AssetTokenFull,   provider);
+    const yieldC = new ethers.Contract(a.YieldDistributor, SWR.abis.YieldDistributor, provider);
+    const [isKyc,tierRaw,swrBal,sarxBal,assetBal,priceSAR,totalSupply,pending,epochCount] = await Promise.all([
+      safe(() => kyc.isWhitelisted(account), false),
+      safe(() => kyc.getTier(account), 0),
+      safe(() => swrTok.balanceOf(account), ethers.BigNumber.from(0)),
+      safe(() => sarxC.balanceOf(account), ethers.BigNumber.from(0)),
+      safe(() => assetC.balanceOf(account), ethers.BigNumber.from(0)),
+      safe(() => assetC.tokenPriceSAR(), ethers.BigNumber.from(0)),
+      safe(() => assetC.totalSupply(), ethers.BigNumber.from(1)),
+      safe(() => yieldC.pendingYield(account), ethers.BigNumber.from(0)),
+      safe(() => yieldC.epochCount(), ethers.BigNumber.from(0)),
+    ]);
+
+    const tokenCount   = Number(assetBal);
+    const priceDisplay = Number(priceSAR) / 1e6;
+    const portfolioSAR = tokenCount * priceDisplay;
+    const sarxNum      = Number(sarxBal) / 1e6;
+    const swrNum       = Number(ethers.utils.formatEther(swrBal));
+    const pendingNum   = Number(pending) / 1e6;
+    const epochNum     = Number(epochCount);
+    const sharePercent = Number(totalSupply) > 0 ? (tokenCount / Number(totalSupply) * 100).toFixed(4) : '0';
+    _data = { tokenCount, priceDisplay, portfolioSAR, sarxNum, swrNum, pendingNum, epochNum, sharePercent };
+
+    const tier = Number(tierRaw);
+    const badge = document.getElementById('kyc-badge');
+    const lbl   = document.getElementById('kyc-label');
+    badge.className = 'kyc-badge' + (!isKyc ? ' unverified' : '');
+    lbl.textContent = isKyc ? 'KYC · ' + TIER_AR[tier] : 'KYC غير موثق';
+
+    const fmtSAR = (v, d=2) => v.toLocaleString('en-SA',{maximumFractionDigits:d}) + ' ر.س';
+
+    // Dashboard
+    document.getElementById('port-value').textContent  = fmtSAR(portfolioSAR);
+    document.getElementById('port-yield').textContent  = fmtSAR(pendingNum);
+    document.getElementById('port-tokens').textContent = tokenCount.toLocaleString('en-SA');
+    document.getElementById('port-price').textContent  = priceDisplay + ' ر.س';
+    document.getElementById('card-yield').textContent  = fmtSAR(pendingNum);
+    document.getElementById('card-yield-sub').textContent = pendingNum > 0 ? 'جاهز للاستلام →' : 'لا يوجد عائد متاح بعد';
+    document.getElementById('card-swr').textContent    = swrNum.toLocaleString('en-SA',{maximumFractionDigits:0}) + ' SWR';
+    document.getElementById('card-sarx').textContent   = fmtSAR(sarxNum);
+
+    document.getElementById('dash-holdings').innerHTML = tokenCount === 0
+      ? '<tr><td colspan="5" class="empty-row">لا توجد رموز xROSHN1</td></tr>'
+      : `<tr>
+          <td><div class="token-chip"><div class="token-dot"></div>xROSHN1</div><div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">روشن الرياض — المرحلة الأولى</div></td>
+          <td>${tokenCount.toLocaleString('en-SA')}</td>
+          <td>${fmtSAR(portfolioSAR)}</td>
+          <td class="yield-pct">${priceDisplay} ر.س</td>
+          <td><button class="action-btn" onclick="showSection('assets')">تفاصيل</button></td>
+        </tr>`;
+
+    document.getElementById('dash-yield-list').innerHTML = pendingNum > 0
+      ? `<div class="yield-item"><div class="yield-item-left"><div class="yield-item-name">xROSHN1 — عائد معلق</div><div class="yield-item-date">YieldDistributor · Sepolia · ${epochNum} دورة</div></div><div class="yield-item-amt">+${fmtSAR(pendingNum)}</div></div>`
+      : `<div class="yield-item"><div class="yield-item-left"><div class="yield-item-name">لا يوجد عائد معلق</div><div class="yield-item-date">يتم الإيداع من قِبل مدير الأصول</div></div><div class="yield-item-amt" style="color:var(--muted)">—</div></div>`;
+
+    const bc = document.getElementById('btn-claim');
+    bc.disabled = pendingNum <= 0;
+    bc.textContent = pendingNum > 0 ? `استلام ${fmtSAR(pendingNum)} →` : 'لا يوجد عائد للاستلام';
+
+    // My Assets
+    document.getElementById('assets-portfolio').textContent = fmtSAR(portfolioSAR);
+    document.getElementById('assets-sarx').textContent      = fmtSAR(sarxNum);
+    document.getElementById('assets-swr').textContent       = swrNum.toLocaleString('en-SA',{maximumFractionDigits:0}) + ' SWR';
+
+    document.getElementById('assets-table').innerHTML = tokenCount === 0
+      ? '<tr><td colspan="7" class="empty-row">لا توجد رموز أصول</td></tr>'
+      : `<tr>
+          <td><div class="token-chip"><div class="token-dot"></div>xROSHN1</div><div style="font-size:0.65rem;color:var(--muted)">روشن الرياض — المرحلة الأولى</div></td>
+          <td>${tokenCount.toLocaleString('en-SA')}</td>
+          <td>${fmtSAR(portfolioSAR)}</td>
+          <td>${priceDisplay} ر.س</td>
+          <td>${sharePercent}%</td>
+          <td><a href="https://sepolia.etherscan.io/address/${SWR.addresses.AssetToken}" target="_blank" class="link-btn">Etherscan ↗</a></td>
+          <td><button class="action-btn" onclick="addToken('xROSHN1')">+ MetaMask</button></td>
+        </tr>`;
+
+    document.getElementById('wallet-table').innerHTML = `
+      <tr>
+        <td><div class="token-chip"><div class="token-dot" style="background:var(--gold2)"></div>SARX</div><div style="font-size:0.65rem;color:var(--muted)">عملة مستقرة بالريال</div></td>
+        <td style="font-size:0.72rem;color:var(--muted);font-family:monospace;direction:ltr">${SWR.addresses.SARX.slice(0,10)}…</td>
+        <td>${fmtSAR(sarxNum)}</td><td>6</td>
+        <td><button class="action-btn" onclick="addToken('SARX')">+ MetaMask</button></td>
+      </tr>
+      <tr>
+        <td><div class="token-chip"><div class="token-dot" style="background:var(--green)"></div>SWR</div><div style="font-size:0.65rem;color:var(--muted)">رمز حوكمة المنصة</div></td>
+        <td style="font-size:0.72rem;color:var(--muted);font-family:monospace;direction:ltr">${SWR.addresses.SWRToken.slice(0,10)}…</td>
+        <td>${swrNum.toLocaleString('en-SA',{maximumFractionDigits:0})} SWR</td><td>18</td>
+        <td><button class="action-btn" onclick="addToken('SWR')">+ MetaMask</button></td>
+      </tr>`;
+
+    // Trade
+    document.getElementById('trade-balance').value = tokenCount.toLocaleString('en-SA') + ' xROSHN1';
+
+    // Yield
+    document.getElementById('yield-pending').textContent = fmtSAR(pendingNum);
+    document.getElementById('yield-epochs').textContent  = epochNum;
+    document.getElementById('yield-asset').textContent   = 'SARX';
+    const by = document.getElementById('btn-claim-yield');
+    by.disabled = pendingNum <= 0;
+    by.textContent = pendingNum > 0 ? `استلام ${fmtSAR(pendingNum)} →` : 'لا يوجد عائد للاستلام';
+
+    await loadEpochs(yieldC, tokenCount, Number(totalSupply), epochNum);
+  } catch(e) {
+    console.error(e);
+    showToast('فشل: ' + e.message, 'error');
+  }
+}
+
+async function loadEpochs(yieldC, myTokens, totalSupply, count) {
+  const tbody = document.getElementById('yield-epochs-table');
+  if (count === 0) { tbody.innerHTML = '<tr><td colspan="6" class="empty-row">لا توجد دورات عوائد بعد</td></tr>'; return; }
+  const rows = [];
+  for (let i = 0; i < count; i++) {
+    try {
+      const ep = await yieldC.epochs(i);
+      const totalYield = Number(ep[0]) / 1e6;
+      const epSupply   = Number(ep[1]);
+      const myShare    = epSupply > 0 ? (myTokens / epSupply * 100).toFixed(4) : '0';
+      const myAmount   = epSupply > 0 ? (myTokens / epSupply * Number(ep[0])) / 1e6 : 0;
+      const date       = new Date(Number(ep[2]) * 1000).toLocaleDateString('ar-SA');
+      rows.push(`<tr>
+        <td style="color:var(--muted)">${i + 1}</td>
+        <td>${ep[3] || '—'}</td>
+        <td>${totalYield.toLocaleString('en-SA',{maximumFractionDigits:2})} ر.س</td>
+        <td>${myShare}%</td>
+        <td class="yield-pct">${myAmount.toLocaleString('en-SA',{maximumFractionDigits:2})} ر.س</td>
+        <td style="color:var(--muted)">${date}</td>
+      </tr>`);
+    } catch {}
+  }
+  tbody.innerHTML = rows.join('') || '<tr><td colspan="6" class="empty-row">تعذّر تحميل الدورات</td></tr>';
+}
+
+let _recipientKyc = null;
+async function checkRecipientKYC() {
+  const addr = document.getElementById('trade-to').value.trim();
+  const ok = document.getElementById('trade-kyc-status'), bad = document.getElementById('trade-kyc-fail');
+  ok.style.display = bad.style.display = 'none'; _recipientKyc = null;
+  if (!provider || !ethers.utils.isAddress(addr)) return;
+  try {
+    const kyc = new ethers.Contract(SWR.addresses.KYCWhitelist, SWR.abis.KYCWhitelist, provider);
+    const v = await kyc.isWhitelisted(addr); _recipientKyc = v;
+    ok.style.display = v ? 'flex' : 'none'; bad.style.display = v ? 'none' : 'flex';
+  } catch {}
+}
+
+function updateTradePreview() {
+  const amount = parseFloat(document.getElementById('trade-amount').value) || 0;
+  const val = amount * (_data.priceDisplay || 0);
+  document.getElementById('trade-preview').textContent = val > 0 ? val.toLocaleString('en-SA',{maximumFractionDigits:2}) + ' ر.س' : '—';
+}
+
+async function executeTransfer() {
+  const to = document.getElementById('trade-to').value.trim();
+  const amount = parseInt(document.getElementById('trade-amount').value);
+  if (!signer) { showToast('قم بربط المحفظة أولاً.', 'error'); return; }
+  if (!ethers.utils.isAddress(to)) { showToast('عنوان المستلم غير صالح.', 'error'); return; }
+  if (!amount || amount <= 0) { showToast('أدخل كمية صحيحة.', 'error'); return; }
+  const btn = document.getElementById('btn-transfer');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span>جارٍ الإرسال…';
+  try {
+    const contract = new ethers.Contract(SWR.addresses.AssetToken, SWR.abis.AssetTokenFull, signer);
+    const tx = await contract.transfer(to, amount);
+    showToast('تم إرسال المعاملة. في انتظار التأكيد…');
+    await tx.wait();
+    showToast(`تم نقل ${amount.toLocaleString()} xROSHN1 ✓`, 'success');
+    document.getElementById('trade-amount').value = '';
+    await loadAll();
+  } catch(e) {
+    showToast('فشل النقل: ' + (e.reason || e.message), 'error');
+  } finally { btn.disabled = false; btn.textContent = 'نقل الرموز →'; }
+}
+
+async function claimYield() {
+  if (!signer) return;
+  ['btn-claim','btn-claim-yield'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) { b.disabled = true; b.innerHTML = '<span class="spin"></span>جارٍ الاستلام…'; }
+  });
+  try {
+    const contract = new ethers.Contract(SWR.addresses.YieldDistributor, SWR.abis.YieldDistributor, signer);
+    const tx = await contract.claim();
+    showToast('تم إرسال المعاملة. في انتظار التأكيد…');
+    await tx.wait();
+    showToast('تم استلام العائد بنجاح ✓', 'success');
+    await loadAll();
+  } catch(e) {
+    showToast('فشل الاستلام: ' + (e.reason || e.message), 'error');
+    ['btn-claim','btn-claim-yield'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) { b.disabled = false; b.textContent = 'إعادة المحاولة →'; }
+    });
+  }
+}
+
+async function addToken(symbol) {
+  const tokens = {
+    SARX:    { address:SWR.addresses.SARX,      symbol:'SARX',    decimals:6,  name:'SAR Stablecoin' },
+    SWR:     { address:SWR.addresses.SWRToken,   symbol:'SWR',     decimals:18, name:'SWR Token' },
+    xROSHN1: { address:SWR.addresses.AssetToken, symbol:'xROSHN1', decimals:6,  name:'SWR Asset: ROSHN Riyadh Block 1' },
+  };
+  const t = tokens[symbol]; if (!t) return;
+  try { await window.ethereum.request({ method:'wallet_watchAsset', params:{ type:'ERC20', options:t } }); }
+  catch(e) { showToast('تعذّر إضافة الرمز: ' + e.message, 'error'); }
+}
+
+async function switchToSepolia() {
+  try {
+    await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{ chainId:'0xaa36a7' }] });
+    provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner();
+    await afterConnect();
+  } catch(e) {
+    if (e.code === 4902) await window.ethereum.request({ method:'wallet_addEthereumChain', params:[{ chainId:'0xaa36a7', chainName:'Sepolia', rpcUrls:['https://rpc.sepolia.org'], nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18}, blockExplorerUrls:['https://sepolia.etherscan.io'] }] });
+    else showToast('تعذّر تغيير الشبكة: ' + e.message, 'error');
+  }
+}
+
+let toastTimer;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show' + (type ? ' '+type : '');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.className = ''; }, 4500);
+}
+
+buildExplore('all');
+buildDashMarket();
+
+window.addEventListener('load', async () => {
+  if (window.ethereum) {
+    const accounts = await window.ethereum.request({ method:'eth_accounts' });
+    if (accounts.length) {
+      account = accounts[0]; provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner();
+      await afterConnect();
+    }
+    window.ethereum.on('accountsChanged', accs => {
+      if (!accs.length) { disconnectWallet(); }
+      else { account = accs[0]; provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner(); afterConnect(); }
+    });
+    window.ethereum.on('chainChanged', () => {
+      provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner(); afterConnect();
+    });
+  }
+});
+</script>
+</body>
+</html>

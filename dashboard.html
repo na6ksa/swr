@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWR — Investor Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:  #00a651; --green3: #00c261;
+    --gold:   #c9a84c; --gold2:  #e8c46a;
+    --dark:   #020c05; --dark2:  #041208;
+    --dark3:  #071a0c; --dark4:  #0a2412;
+    --slate:  #94a3b8; --muted:  #334155;
+    --red:    #ef4444; --orange: #f97316;
+    --blue:   #818cf8;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--dark); font-family:'Inter',system-ui,sans-serif; color:#fff; line-height:1.6; overflow-x:hidden; }
+  a { color:inherit; text-decoration:none; }
+
+  .grad-g    { background:linear-gradient(135deg,var(--green),var(--green3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .grad-gold { background:linear-gradient(135deg,var(--gold),var(--gold2));  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+  .shell { display:flex; min-height:100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width:240px; flex-shrink:0; background:var(--dark2); border-right:1px solid var(--dark3); display:flex; flex-direction:column; padding:24px 0; position:sticky; top:0; height:100vh; }
+  .sidebar-logo { padding:0 20px 28px; border-bottom:1px solid var(--dark3); margin-bottom:20px; }
+  .sidebar-nav  { display:flex; flex-direction:column; gap:2px; padding:0 12px; flex:1; }
+  .nav-item { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px; font-size:0.82rem; color:var(--slate); cursor:pointer; transition:background 0.2s, color 0.2s; user-select:none; }
+  .nav-item:hover { background:var(--dark3); color:#fff; }
+  .nav-item.active { background:rgba(0,166,81,0.1); color:var(--green); font-weight:600; }
+  .nav-icon { font-size:1rem; width:20px; text-align:center; }
+  .sidebar-bottom { padding:16px 20px; border-top:1px solid var(--dark3); }
+  .kyc-badge { display:flex; align-items:center; gap:8px; background:rgba(0,166,81,0.08); border:1px solid rgba(0,166,81,0.2); border-radius:8px; padding:10px 12px; font-size:0.72rem; color:var(--green); font-weight:600; }
+  .kyc-badge.unverified { background:rgba(249,115,22,0.08); border-color:rgba(249,115,22,0.2); color:var(--orange); }
+  .kyc-badge.none { background:rgba(148,163,184,0.08); border-color:rgba(148,163,184,0.2); color:var(--slate); }
+  .kyc-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+  /* ── TOPBAR ── */
+  .main { flex:1; display:flex; flex-direction:column; min-width:0; }
+  .topbar { height:64px; border-bottom:1px solid var(--dark3); display:flex; align-items:center; justify-content:space-between; padding:0 32px; position:sticky; top:0; background:rgba(2,12,5,0.95); backdrop-filter:blur(12px); z-index:10; }
+  .topbar-title { font-size:1rem; font-weight:700; }
+  .topbar-right { display:flex; align-items:center; gap:10px; }
+  .wallet-chip { display:flex; align-items:center; gap:8px; background:var(--dark2); border:1px solid var(--dark3); border-radius:8px; padding:8px 14px; font-size:0.75rem; font-weight:600; }
+  .wallet-dot  { width:6px; height:6px; border-radius:50%; background:var(--green); }
+  .network-badge { font-size:0.65rem; font-weight:700; padding:4px 10px; border-radius:20px; background:rgba(0,166,81,0.1); border:1px solid rgba(0,166,81,0.25); color:var(--green); }
+  .network-badge.wrong { background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.3); color:var(--red); }
+  .lang-btn { display:flex; align-items:center; gap:4px; background:var(--dark2); border:1px solid var(--dark3); border-radius:8px; padding:6px 12px; font-size:0.72rem; font-weight:700; color:var(--slate); transition:color 0.2s; }
+  .lang-btn:hover { color:#fff; }
+  .btn-sm { padding:8px 18px; border-radius:8px; font-size:0.78rem; font-weight:700; background:linear-gradient(135deg,var(--green),var(--green3)); color:#000; cursor:pointer; border:none; transition:opacity 0.2s; white-space:nowrap; }
+  .btn-sm:hover { opacity:0.88; }
+  .btn-sm:disabled { opacity:0.4; cursor:not-allowed; }
+  .btn-outline { padding:8px 18px; border-radius:8px; font-size:0.78rem; font-weight:700; background:transparent; border:1px solid var(--dark3); color:var(--slate); cursor:pointer; transition:all 0.2s; }
+  .btn-outline:hover { border-color:var(--slate); color:#fff; }
+
+  /* ── OVERLAYS ── */
+  #connect-overlay { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:20px; padding:40px; text-align:center; }
+  #connect-overlay h2 { font-size:1.6rem; font-weight:900; }
+  #connect-overlay p  { font-size:0.88rem; color:var(--slate); max-width:380px; line-height:1.7; }
+  .btn-connect { padding:14px 36px; border-radius:12px; font-size:0.95rem; font-weight:800; background:linear-gradient(135deg,var(--green),var(--green3)); color:#000; cursor:pointer; border:none; }
+  .metamask-icon { font-size:3rem; }
+  #wrong-network { display:none; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:16px; text-align:center; padding:40px; }
+  #wrong-network h2 { font-size:1.3rem; font-weight:800; color:var(--red); }
+  #wrong-network p  { font-size:0.85rem; color:var(--slate); max-width:360px; }
+  .btn-switch { padding:12px 28px; border-radius:10px; font-size:0.88rem; font-weight:700; background:var(--red); color:#fff; cursor:pointer; border:none; }
+
+  /* ── SECTION WRAPPER ── */
+  .section { display:none; padding:32px; flex:1; }
+  .section.active { display:block; }
+  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .section-title  { font-size:0.9rem; font-weight:700; }
+  .section-link   { font-size:0.75rem; color:var(--green); cursor:pointer; }
+  .page-title { font-size:1.3rem; font-weight:900; margin-bottom:6px; }
+  .page-sub   { font-size:0.82rem; color:var(--slate); margin-bottom:28px; }
+
+  /* ── PORTFOLIO HEADER ── */
+  .portfolio-header { background:var(--dark2); border:1px solid var(--dark3); border-radius:20px; padding:32px 36px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:24px; }
+  .portfolio-value { font-size:2.8rem; font-weight:900; line-height:1; }
+  .portfolio-label { font-size:0.65rem; font-weight:600; letter-spacing:0.15em; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+  .portfolio-stats { display:flex; gap:40px; }
+  .p-stat .v { font-size:1.4rem; font-weight:900; }
+  .p-stat .l { font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-top:4px; }
+
+  /* ── GRIDS ── */
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .metric-card { background:var(--dark2); border:1px solid var(--dark3); border-radius:14px; padding:22px 24px; }
+  .metric-card .num { font-size:1.8rem; font-weight:900; margin-bottom:4px; }
+  .metric-card .lbl { font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; }
+  .metric-card .sub { font-size:0.72rem; color:var(--slate); margin-top:4px; }
+
+  /* ── TABLES ── */
+  .table-wrap { background:var(--dark2); border:1px solid var(--dark3); border-radius:14px; overflow:hidden; margin-bottom:24px; }
+  table { width:100%; border-collapse:collapse; }
+  thead th { padding:12px 20px; font-size:0.65rem; font-weight:700; letter-spacing:0.1em; color:var(--muted); text-align:left; text-transform:uppercase; border-bottom:1px solid var(--dark3); }
+  tbody td { padding:14px 20px; font-size:0.82rem; color:var(--slate); border-bottom:1px solid rgba(7,26,12,0.8); vertical-align:middle; }
+  tbody td:first-child { color:#fff; font-weight:600; }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:hover { background:rgba(0,166,81,0.03); }
+  .empty-row { text-align:center !important; color:var(--muted) !important; font-size:0.8rem !important; padding:32px !important; }
+  .token-chip { display:inline-flex; align-items:center; gap:6px; }
+  .token-dot  { width:6px; height:6px; border-radius:50%; background:var(--green); flex-shrink:0; }
+  .yield-pct  { color:var(--green); font-weight:700; }
+  .action-btn { padding:5px 14px; border-radius:6px; font-size:0.7rem; font-weight:700; background:rgba(0,166,81,0.08); border:1px solid rgba(0,166,81,0.2); color:var(--green); cursor:pointer; transition:background 0.2s; }
+  .action-btn:hover { background:rgba(0,166,81,0.18); }
+  .link-btn { font-size:0.72rem; color:var(--green); cursor:pointer; white-space:nowrap; }
+  .link-btn:hover { text-decoration:underline; }
+
+  /* ── YIELD CARD ── */
+  .yield-card { background:var(--dark2); border:1px solid var(--dark3); border-radius:14px; padding:24px; }
+  .yield-list { display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+  .yield-item { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--dark3); border-radius:8px; }
+  .yield-item-left { display:flex; flex-direction:column; gap:3px; }
+  .yield-item-name { font-size:0.8rem; font-weight:600; }
+  .yield-item-date { font-size:0.65rem; color:var(--muted); }
+  .yield-item-amt  { font-size:0.88rem; font-weight:700; color:var(--green); white-space:nowrap; }
+
+  /* ── MARKET ── */
+  .market-card { background:var(--dark2); border:1px solid var(--dark3); border-radius:14px; padding:24px; margin-bottom:16px; }
+  .market-list { display:flex; flex-direction:column; gap:8px; margin-top:16px; }
+  .market-item { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-radius:10px; border:1px solid var(--dark3); cursor:pointer; transition:border-color 0.2s, background 0.2s; }
+  .market-item:hover { border-color:rgba(0,166,81,0.3); background:rgba(0,166,81,0.03); }
+  .market-item-left { display:flex; align-items:center; gap:12px; }
+  .market-icon  { width:38px; height:38px; border-radius:10px; background:rgba(0,166,81,0.08); border:1px solid rgba(0,166,81,0.15); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+  .market-name  { font-size:0.85rem; font-weight:600; }
+  .market-type  { font-size:0.65rem; color:var(--muted); margin-top:2px; }
+  .market-price { font-size:0.88rem; font-weight:700; text-align:right; }
+  .market-yield { font-size:0.65rem; color:var(--green); margin-top:2px; text-align:right; }
+  .tag { display:inline-flex; font-size:0.62rem; font-weight:700; padding:3px 8px; border-radius:20px; }
+  .tag-green { background:rgba(0,166,81,0.1); border:1px solid rgba(0,166,81,0.25); color:var(--green); }
+  .tag-muted  { background:rgba(148,163,184,0.08); border:1px solid rgba(148,163,184,0.15); color:var(--slate); }
+  .tag-gold   { background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.25); color:var(--gold2); }
+  .tag-blue   { background:rgba(129,140,248,0.1); border:1px solid rgba(129,140,248,0.25); color:var(--blue); }
+
+  /* ── FILTER TABS ── */
+  .filter-tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .filter-tab { padding:6px 14px; border-radius:20px; font-size:0.72rem; font-weight:600; border:1px solid var(--dark3); color:var(--slate); cursor:pointer; transition:all 0.2s; }
+  .filter-tab:hover { border-color:var(--slate); color:#fff; }
+  .filter-tab.active { background:rgba(0,166,81,0.1); border-color:rgba(0,166,81,0.3); color:var(--green); }
+
+  /* ── TRADE FORM ── */
+  .form-card { background:var(--dark2); border:1px solid var(--dark3); border-radius:16px; padding:28px; margin-bottom:20px; }
+  .form-card h3 { font-size:0.9rem; font-weight:700; margin-bottom:4px; }
+  .form-card p  { font-size:0.78rem; color:var(--slate); margin-bottom:24px; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  .form-group.full { grid-column:span 2; }
+  label { font-size:0.68rem; font-weight:700; color:var(--slate); text-transform:uppercase; letter-spacing:0.08em; }
+  input, select { background:var(--dark); border:1px solid var(--dark3); border-radius:8px; padding:11px 14px; color:#fff; font-size:0.85rem; font-family:inherit; outline:none; transition:border-color 0.2s; width:100%; }
+  input:focus, select:focus { border-color:var(--green); }
+  input::placeholder { color:var(--muted); }
+  input:disabled { opacity:0.5; cursor:not-allowed; }
+  select option { background:var(--dark2); }
+  .form-preview { background:var(--dark3); border-radius:10px; padding:14px 16px; font-size:0.82rem; color:var(--slate); margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; }
+  .form-preview span:last-child { color:#fff; font-weight:700; }
+  .alert { border-radius:10px; padding:12px 16px; font-size:0.78rem; margin-bottom:16px; display:flex; gap:10px; align-items:flex-start; line-height:1.6; }
+  .alert-warn  { background:rgba(249,115,22,0.08); border:1px solid rgba(249,115,22,0.2); color:var(--orange); }
+  .alert-info  { background:rgba(0,166,81,0.06); border:1px solid rgba(0,166,81,0.18); color:var(--green); }
+  .alert-error { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); color:var(--red); }
+
+  /* ── INFO ROWS (Documents) ── */
+  .info-card { background:var(--dark2); border:1px solid var(--dark3); border-radius:14px; overflow:hidden; margin-bottom:16px; }
+  .info-row { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid rgba(7,26,12,0.8); }
+  .info-row:last-child { border-bottom:none; }
+  .info-label { font-size:0.78rem; color:var(--slate); }
+  .info-value { font-size:0.78rem; color:#fff; font-weight:600; font-family:monospace; display:flex; align-items:center; gap:8px; }
+
+  /* ── ASSET DETAIL CARD ── */
+  .asset-detail { background:var(--dark2); border:1px solid var(--dark3); border-radius:16px; padding:24px; }
+  .asset-detail-header { display:flex; align-items:center; gap:16px; margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid var(--dark3); }
+  .asset-icon-lg { width:52px; height:52px; border-radius:14px; background:rgba(0,166,81,0.08); border:1px solid rgba(0,166,81,0.2); display:flex; align-items:center; justify-content:center; font-size:1.6rem; }
+
+  /* ── TOAST ── */
+  #toast { position:fixed; bottom:28px; right:28px; padding:14px 20px; border-radius:10px; font-size:0.82rem; font-weight:600; color:#fff; background:var(--dark4); border:1px solid var(--dark3); opacity:0; transform:translateY(10px); transition:all 0.3s; z-index:999; max-width:340px; pointer-events:none; }
+  #toast.show { opacity:1; transform:translateY(0); }
+  #toast.success { background:rgba(0,166,81,0.15); border-color:rgba(0,166,81,0.4); }
+  #toast.error   { background:rgba(239,68,68,0.15); border-color:rgba(239,68,68,0.4); }
+
+  /* ── SPINNER ── */
+  .spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.2); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:middle; margin-right:6px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  @media(max-width:1100px){ .sidebar{width:200px;} .grid-3{grid-template-columns:1fr 1fr;} .portfolio-stats{gap:24px;} }
+  @media(max-width:840px){ .sidebar{display:none;} .grid-3{grid-template-columns:1fr;} .grid-2{grid-template-columns:1fr;} .section{padding:20px;} .form-row{grid-template-columns:1fr;} .form-group.full{grid-column:span 1;} }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="90" height="28" viewBox="0 0 160 50" fill="none">
+        <defs>
+          <linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00a651"/><stop offset="100%" stop-color="#00c261"/></linearGradient>
+          <linearGradient id="sd" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c9a84c"/><stop offset="100%" stop-color="#e8c46a"/></linearGradient>
+        </defs>
+        <circle cx="14" cy="10" r="6" fill="url(#sg)"/>
+        <circle cx="34" cy="30" r="6" fill="url(#sg)" opacity="0.6"/>
+        <circle cx="54" cy="10" r="6" fill="url(#sd)"/>
+        <line x1="14" y1="16" x2="34" y2="25" stroke="url(#sg)" stroke-width="1.5" opacity="0.5"/>
+        <line x1="34" y1="25" x2="54" y2="16" stroke="url(#sd)" stroke-width="1.5" opacity="0.5"/>
+        <text x="66" y="30" font-family="'Inter',sans-serif" font-size="22" font-weight="900" fill="#ffffff">SWR</text>
+      </svg>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span> Dashboard</div>
+      <div class="nav-item" onclick="showSection('assets')"><span class="nav-icon">🏙️</span> My Assets</div>
+      <div class="nav-item" onclick="showSection('trade')"><span class="nav-icon">🔄</span> Trade</div>
+      <div class="nav-item" onclick="showSection('yield')"><span class="nav-icon">💰</span> Yield</div>
+      <div class="nav-item" onclick="showSection('explore')"><span class="nav-icon">🔍</span> Explore</div>
+      <div class="nav-item" onclick="showSection('documents')"><span class="nav-icon">📋</span> Documents</div>
+      <a href="issuance.html" class="nav-item"><span class="nav-icon">🏗️</span> Issuance</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div id="kyc-badge" class="kyc-badge none">
+        <div class="kyc-dot"></div>
+        <span id="kyc-label">Not Connected</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Portfolio Overview</div>
+      <div class="topbar-right">
+        <a href="dashboard-ar.html" class="lang-btn"><span style="opacity:0.5">EN</span><span style="color:var(--dark3);margin:0 2px">|</span><span>AR</span></a>
+        <span id="network-badge" class="network-badge" style="display:none">Sepolia</span>
+        <div id="wallet-chip" class="wallet-chip" style="display:none">
+          <div class="wallet-dot"></div>
+          <span id="wallet-addr">—</span>
+        </div>
+        <button id="btn-connect" class="btn-sm" onclick="connectWallet()">Connect Wallet</button>
+        <button id="btn-disconnect" class="btn-outline" style="display:none;" onclick="disconnectWallet()">Disconnect</button>
+      </div>
+    </div>
+
+    <!-- CONNECT PROMPT -->
+    <div id="connect-overlay">
+      <div class="metamask-icon">🦊</div>
+      <h2>Connect your wallet</h2>
+      <p>Connect MetaMask to view your live portfolio, real asset holdings, and claimable yield on Sepolia testnet.</p>
+      <button class="btn-connect" onclick="connectWallet()">Connect MetaMask</button>
+    </div>
+
+    <!-- WRONG NETWORK -->
+    <div id="wrong-network">
+      <div style="font-size:2.5rem">⚠️</div>
+      <h2>Wrong Network</h2>
+      <p>SWR is deployed on Sepolia testnet. Please switch your wallet to Sepolia to continue.</p>
+      <button class="btn-switch" onclick="switchToSepolia()">Switch to Sepolia</button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         SECTION 1 — DASHBOARD (overview)
+    ════════════════════════════════════════════════════════ -->
+    <div id="section-dashboard" class="section active">
+
+      <div class="portfolio-header">
+        <div>
+          <div class="portfolio-label">Total Portfolio Value</div>
+          <div class="portfolio-value grad-g" id="port-value">SAR —</div>
+          <div style="font-size:0.78rem;color:var(--slate);margin-top:6px;">xROSHN1 · Live from Sepolia</div>
+        </div>
+        <div class="portfolio-stats">
+          <div class="p-stat">
+            <div class="v grad-gold" id="port-yield">—</div>
+            <div class="l">Claimable Yield</div>
+          </div>
+          <div class="p-stat">
+            <div class="v" style="color:#fff" id="port-tokens">—</div>
+            <div class="l">xROSHN1 Held</div>
+          </div>
+          <div class="p-stat">
+            <div class="v" style="color:var(--green)" id="port-price">SAR 10</div>
+            <div class="l">Price / Token</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="metric-card">
+          <div class="num grad-g" id="card-yield">—</div>
+          <div class="lbl">Claimable Yield</div>
+          <div class="sub" id="card-yield-sub">Connect wallet to load</div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:#fff" id="card-swr">—</div>
+          <div class="lbl">SWR Token Balance</div>
+          <div class="sub" style="display:flex;align-items:center;justify-content:space-between;">
+            <span>Governance &amp; fee discounts</span>
+            <span onclick="addToken('SWR')" style="cursor:pointer;color:var(--green);font-size:0.65rem;font-weight:700;">+ Add</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:var(--gold2)" id="card-sarx">—</div>
+          <div class="lbl">SARX Balance</div>
+          <div class="sub" style="display:flex;align-items:center;justify-content:space-between;">
+            <span>Available to invest</span>
+            <span onclick="addToken('SARX')" style="cursor:pointer;color:var(--green);font-size:0.65rem;font-weight:700;">+ Add</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:24px;">
+        <div>
+          <div class="section-header">
+            <div class="section-title">My Holdings</div>
+            <div class="section-link" onclick="loadAll()">Refresh ↺</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Asset</th><th>Tokens</th><th>Value (SAR)</th><th>Price</th><th></th></tr></thead>
+              <tbody id="dash-holdings"><tr><td colspan="5" class="empty-row">Connect wallet to view holdings</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <div class="section-header"><div class="section-title">Claimable Yield</div></div>
+          <div class="yield-card">
+            <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;">From YieldDistributor · Sepolia</div>
+            <div class="yield-list" id="dash-yield-list">
+              <div class="yield-item">
+                <div class="yield-item-left"><div class="yield-item-name">—</div><div class="yield-item-date">Connect wallet to view</div></div>
+                <div class="yield-item-amt">—</div>
+              </div>
+            </div>
+            <div style="padding:16px 0 4px;">
+              <button id="btn-claim" class="btn-sm" style="width:100%;" onclick="claimYield()" disabled>Claim Yield →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">Featured Assets</div>
+        <div class="section-link" onclick="showSection('explore')">View marketplace →</div>
+      </div>
+      <div class="market-card">
+        <div class="market-list" id="dash-market"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         SECTION 2 — MY ASSETS
+    ════════════════════════════════════════════════════════ -->
+    <div id="section-assets" class="section">
+      <div class="page-title">My Assets</div>
+      <div class="page-sub">All token holdings connected to your wallet on Sepolia.</div>
+
+      <div class="grid-3" style="margin-bottom:24px;">
+        <div class="metric-card">
+          <div class="num grad-g" id="assets-portfolio">SAR —</div>
+          <div class="lbl">Portfolio Value</div>
+          <div class="sub">xROSHN1 at current price</div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:var(--gold2)" id="assets-sarx">—</div>
+          <div class="lbl">SARX Balance</div>
+          <div class="sub">SAR-pegged stablecoin</div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:#fff" id="assets-swr">—</div>
+          <div class="lbl">SWR Token</div>
+          <div class="sub">Platform governance token</div>
+        </div>
+      </div>
+
+      <div class="section-header"><div class="section-title">Asset Token Holdings</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Token</th><th>Balance</th><th>Value (SAR)</th><th>Price</th><th>Your Share</th><th>Etherscan</th><th></th></tr></thead>
+          <tbody id="assets-table"><tr><td colspan="7" class="empty-row">Connect wallet to view assets</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="section-header"><div class="section-title">Wallet Tokens</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Token</th><th>Contract</th><th>Balance</th><th>Decimals</th><th></th></tr></thead>
+          <tbody id="wallet-table"><tr><td colspan="5" class="empty-row">Connect wallet to view</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         SECTION 3 — TRADE
+    ════════════════════════════════════════════════════════ -->
+    <div id="section-trade" class="section">
+      <div class="page-title">Trade</div>
+      <div class="page-sub">Transfer regulated asset tokens to KYC-verified wallets on Sepolia.</div>
+
+      <div class="grid-2">
+        <div>
+          <div class="form-card">
+            <h3>Transfer Asset Tokens</h3>
+            <p>Both sender and recipient must be KYC-verified on the SWR whitelist.</p>
+
+            <div class="alert alert-warn">⚠️ Regulated transfer — recipient wallet must be KYC-approved in the SWR KYCWhitelist contract or the transaction will revert.</div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>From</label>
+                <input type="text" id="trade-from" disabled placeholder="Connect wallet">
+              </div>
+              <div class="form-group">
+                <label>Token</label>
+                <select id="trade-token" onchange="updateTradePreview()">
+                  <option value="xROSHN1">xROSHN1 — ROSHN Riyadh Block 1</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group full">
+                <label>Recipient Address</label>
+                <input type="text" id="trade-to" placeholder="0x..." oninput="checkRecipientKYC(); updateTradePreview()">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Amount (tokens)</label>
+                <input type="number" id="trade-amount" placeholder="0" min="1" oninput="updateTradePreview()">
+              </div>
+              <div class="form-group">
+                <label>Your Balance</label>
+                <input type="text" id="trade-balance" disabled placeholder="—">
+              </div>
+            </div>
+
+            <div id="trade-kyc-status" style="display:none;" class="alert alert-info">✓ Recipient is KYC-verified</div>
+            <div id="trade-kyc-fail"   style="display:none;" class="alert alert-error">✗ Recipient is NOT KYC-verified — transfer will revert</div>
+
+            <div class="form-preview">
+              <span>Transfer value</span>
+              <span id="trade-preview">—</span>
+            </div>
+
+            <button class="btn-sm" style="width:100%;" onclick="executeTransfer()" id="btn-transfer">Transfer Tokens →</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="form-card">
+            <h3>Transfer Rules</h3>
+            <p>xROSHN1 is a regulated security token. Every transfer is checked on-chain.</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="yield-item">
+                <div class="yield-item-left">
+                  <div class="yield-item-name">KYC Verification</div>
+                  <div class="yield-item-date">Both sender and recipient must be approved by compliance</div>
+                </div>
+                <span class="tag tag-green">Required</span>
+              </div>
+              <div class="yield-item">
+                <div class="yield-item-left">
+                  <div class="yield-item-name">Investment Limits</div>
+                  <div class="yield-item-date">Retail: SAR 200K · Professional: SAR 2M · Institutional: unlimited</div>
+                </div>
+                <span class="tag tag-gold">Enforced</span>
+              </div>
+              <div class="yield-item">
+                <div class="yield-item-left">
+                  <div class="yield-item-name">Pause Mechanism</div>
+                  <div class="yield-item-date">Compliance officer can halt all transfers if required by regulator</div>
+                </div>
+                <span class="tag tag-blue">On-chain</span>
+              </div>
+              <div class="yield-item">
+                <div class="yield-item-left">
+                  <div class="yield-item-name">Forced Transfer</div>
+                  <div class="yield-item-date">Court orders can trigger forced transfer bypassing normal rules</div>
+                </div>
+                <span class="tag tag-muted">CMA Power</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         SECTION 4 — YIELD
+    ════════════════════════════════════════════════════════ -->
+    <div id="section-yield" class="section">
+      <div class="page-title">Yield Center</div>
+      <div class="page-sub">All yield distributions for your holdings — powered by the YieldDistributor contract.</div>
+
+      <div class="grid-3" style="margin-bottom:24px;">
+        <div class="metric-card">
+          <div class="num grad-g" id="yield-pending">—</div>
+          <div class="lbl">Claimable Now</div>
+          <div class="sub">Ready to claim to your wallet</div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:var(--gold2)" id="yield-epochs">—</div>
+          <div class="lbl">Total Epochs</div>
+          <div class="sub">Yield distribution rounds</div>
+        </div>
+        <div class="metric-card">
+          <div class="num" style="color:#fff" id="yield-asset">—</div>
+          <div class="lbl">Yield Asset</div>
+          <div class="sub">Distributed in SARX stablecoin</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:24px;">
+        <button id="btn-claim-yield" class="btn-sm" onclick="claimYield()" disabled style="padding:12px 32px;">Claim All Yield →</button>
+      </div>
+
+      <div class="section-header"><div class="section-title">Epoch History</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Description</th><th>Total Yield</th><th>Your Share</th><th>Your Amount</th><th>Date</th></tr></thead>
+          <tbody id="yield-epochs-table"><tr><td colspan="6" class="empty-row">Connect wallet to load epoch history</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="section-header"><div class="section-title">How Yield Works</div></div>
+      <div class="info-card">
+        <div class="info-row"><div class="info-label">Yield token</div><div class="info-value">SARX (SAR-pegged stablecoin, 6 decimals)</div></div>
+        <div class="info-row"><div class="info-label">Distribution method</div><div class="info-value">Pro-rata by xROSHN1 token holdings at time of each epoch</div></div>
+        <div class="info-row"><div class="info-label">Claim method</div><div class="info-value">Pull-based — you claim when ready, no expiry</div></div>
+        <div class="info-row"><div class="info-label">Contract</div><div class="info-value"><a href="https://sepolia.etherscan.io/address/0xD1495DBDB0b488c97279513593726e296D0555dD#code" target="_blank" class="link-btn">0xD1495…55dD ↗</a></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         SECTION 5 — EXPLORE
+    ════════════════════════════════════════════════════════ -->
+    <div id="section-explore" class="section">
+      <div class="page-title">Explore Assets</div>
+      <div class="page-sub">Shariah-compliant tokenised real-world assets available on the SWR platform.</div>
+
+      <div class="filter-tabs">
+        <div class="filter-tab active" onclick="filterAssets('all',this)">All</div>
+        <div class="filter-tab" onclick="filterAssets('real-estate',this)">Real Estate</div>
+        <div class="filter-tab" onclick="filterAssets('sukuk',this)">Sukuk</div>
+        <div class="filter-tab" onclick="filterAssets('infrastructure',this)">Infrastructure</div>
+        <div class="filter-tab" onclick="filterAssets('commodity',this)">Commodity</div>
+      </div>
+
+      <div id="explore-list" class="market-card"><div class="market-list" id="explore-items"></div></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         SECTION 6 — DOCUMENTS
+    ════════════════════════════════════════════════════════ -->
+    <div id="section-documents" class="section">
+      <div class="page-title">Documents & Contracts</div>
+      <div class="page-sub">On-chain contract registry and regulatory documents for the SWR platform.</div>
+
+      <div class="section-header"><div class="section-title">Deployed Contracts — Sepolia Testnet</div></div>
+      <div class="info-card">
+        <div class="info-row">
+          <div class="info-label">KYCWhitelist</div>
+          <div class="info-value">
+            0xBB44656a76Bc785c0B959B9d448dbF9d83b16293
+            <a href="https://sepolia.etherscan.io/address/0xBB44656a76Bc785c0B959B9d448dbF9d83b16293#code" target="_blank" class="link-btn">View ↗</a>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">SWR Token</div>
+          <div class="info-value">
+            0xd9c626CF5a04375524a7ad815Ab6EA0CCC3F4D71
+            <a href="https://sepolia.etherscan.io/address/0xd9c626CF5a04375524a7ad815Ab6EA0CCC3F4D71#code" target="_blank" class="link-btn">View ↗</a>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">SARX Stablecoin</div>
+          <div class="info-value">
+            0xEf006D589A53a292771A78696FE79dCd9088B7f8
+            <a href="https://sepolia.etherscan.io/address/0xEf006D589A53a292771A78696FE79dCd9088B7f8#code" target="_blank" class="link-btn">View ↗</a>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">xROSHN1 Asset Token</div>
+          <div class="info-value">
+            0x34E21ec5E04d801C468F76c83782FA5D6F0fb1D6
+            <a href="https://sepolia.etherscan.io/address/0x34E21ec5E04d801C468F76c83782FA5D6F0fb1D6#code" target="_blank" class="link-btn">View ↗</a>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">YieldDistributor</div>
+          <div class="info-value">
+            0xD1495DBDB0b488c97279513593726e296D0555dD
+            <a href="https://sepolia.etherscan.io/address/0xD1495DBDB0b488c97279513593726e296D0555dD#code" target="_blank" class="link-btn">View ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header"><div class="section-title">Asset Documents — xROSHN1</div></div>
+      <div class="info-card">
+        <div class="info-row">
+          <div class="info-label" style="display:flex;align-items:center;gap:8px;"><span>📄</span> Asset ID</div>
+          <div class="info-value">ROSHN-RUH-B1-2026</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label" style="display:flex;align-items:center;gap:8px;"><span>🏢</span> SPV (CR Number)</div>
+          <div class="info-value">1010123456</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label" style="display:flex;align-items:center;gap:8px;"><span>✅</span> Shariah Status</div>
+          <div class="info-value" style="color:var(--green);">Certified ✓</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label" style="display:flex;align-items:center;gap:8px;"><span>💰</span> Asset Value</div>
+          <div class="info-value">SAR 10,000,000</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label" style="display:flex;align-items:center;gap:8px;"><span>📜</span> Prospectus</div>
+          <div class="info-value" style="color:var(--muted);">Pending CMA Approval</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label" style="display:flex;align-items:center;gap:8px;"><span>📋</span> Fatwa Certificate</div>
+          <div class="info-value" style="color:var(--muted);">Pending Shariah Board</div>
+        </div>
+      </div>
+
+      <div class="section-header"><div class="section-title">Platform</div></div>
+      <div class="info-card">
+        <div class="info-row"><div class="info-label">Network</div><div class="info-value">Ethereum Sepolia Testnet (Chain ID: 11155111)</div></div>
+        <div class="info-row"><div class="info-label">Token Standard</div><div class="info-value">ERC-20 with compliance hooks (KYC + investment limits)</div></div>
+        <div class="info-row"><div class="info-label">Regulator</div><div class="info-value">Capital Market Authority (CMA) — Saudi Arabia</div></div>
+        <div class="info-row"><div class="info-label">Source Code</div><div class="info-value"><a href="https://sepolia.etherscan.io/address/0x34E21ec5E04d801C468F76c83782FA5D6F0fb1D6#code" target="_blank" class="link-btn">Verified on Etherscan ↗</a></div></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="contracts.js?v=3"></script>
+<script>
+let provider, signer, account;
+let _data = {}; // cached on-chain data
+
+// ── ASSET CATALOGUE ──────────────────────────────────────────
+const ASSETS = [
+  { icon:'🏙️', name:'ROSHN Riyadh Block 1', symbol:'xROSHN1', type:'real-estate', typeLabel:'Real Estate', price:'SAR 10', yield:'7.2%', status:'live', shariah:true },
+  { icon:'🏙️', name:'ROSHN Jeddah Phase 2',  symbol:'xROSHN2', type:'real-estate', typeLabel:'Real Estate', price:'SAR 12', yield:'7.4%', status:'soon', shariah:true },
+  { icon:'⚡',  name:'NEOM Solar Farm A',      symbol:'xNEOM1',  type:'infrastructure', typeLabel:'Infrastructure', price:'SAR 25', yield:'9.1%', status:'soon', shariah:true },
+  { icon:'🌊',  name:'Marafiq Water Plant',     symbol:'xINFRA1', type:'infrastructure', typeLabel:'Infrastructure', price:'SAR 10', yield:'8.1%', status:'soon', shariah:true },
+  { icon:'📜',  name:'Saudi Aramco Sukuk 2027', symbol:'xARAMCO1',type:'sukuk', typeLabel:'Sukuk', price:'SAR 100', yield:'5.8%', status:'soon', shariah:true },
+  { icon:'📜',  name:'ACWA Power Sukuk',         symbol:'xSUKUK1', type:'sukuk', typeLabel:'Sukuk', price:'SAR 10', yield:'6.5%', status:'soon', shariah:true },
+  { icon:'🥇',  name:'Physical Gold Fund II',    symbol:'xGOLD2',  type:'commodity', typeLabel:'Commodity', price:'SAR 15', yield:'Spot-linked', status:'soon', shariah:true },
+];
+
+function buildExplore(filter) {
+  const list = ASSETS.filter(a => filter === 'all' || a.type === filter);
+  document.getElementById('explore-items').innerHTML = list.map(a => `
+    <div class="market-item">
+      <div class="market-item-left">
+        <div class="market-icon">${a.icon}</div>
+        <div>
+          <div class="market-name">${a.name}</div>
+          <div class="market-type">${a.typeLabel} · ${a.symbol}
+            <span style="color:${a.status==='live'?'var(--green)':'var(--muted)'}">
+              ${a.status==='live'?' ● Live':' ● Coming Soon'}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        ${a.shariah ? '<span class="tag tag-green">Shariah ✓</span>' : ''}
+        <div style="text-align:right;">
+          <div class="market-price">${a.price} / token</div>
+          <div class="market-yield">${a.yield} yield</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function filterAssets(f, el) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  buildExplore(f);
+}
+
+function buildDashMarket() {
+  document.getElementById('dash-market').innerHTML = ASSETS.slice(0,3).map(a => `
+    <div class="market-item" onclick="showSection('explore')">
+      <div class="market-item-left">
+        <div class="market-icon">${a.icon}</div>
+        <div>
+          <div class="market-name">${a.name}</div>
+          <div class="market-type">${a.typeLabel} · ${a.symbol}
+            <span style="color:${a.status==='live'?'var(--green)':'var(--muted)'}">
+              ${a.status==='live'?' ● Live':' ● Coming Soon'}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div class="market-price" ${a.symbol==='xROSHN1'?'id="explore-price"':''}>${a.price} / token</div>
+        <div class="market-yield">${a.yield} yield · Shariah ✓</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── NAV SWITCHING ─────────────────────────────────────────────
+const TITLES = { dashboard:'Portfolio Overview', assets:'My Assets', trade:'Trade', yield:'Yield Center', explore:'Explore Assets', documents:'Documents' };
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  const items = document.querySelectorAll('.nav-item');
+  const map = ['dashboard','assets','trade','yield','explore','documents'];
+  const idx = map.indexOf(id);
+  if (idx >= 0) items[idx].classList.add('active');
+  document.getElementById('topbar-title').textContent = TITLES[id] || id;
+}
+
+// ── WALLET ────────────────────────────────────────────────────
+async function connectWallet() {
+  if (!window.ethereum) {
+    showToast('MetaMask not found. Install it from metamask.io then reload.', 'error');
+    return;
+  }
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    if (!accounts || accounts.length === 0) {
+      showToast('No accounts returned. Unlock MetaMask and try again.', 'error');
+      return;
+    }
+    account  = accounts[0];
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer   = provider.getSigner();
+    await afterConnect();
+  } catch (e) {
+    if (e.code === 4001) {
+      showToast('Rejected — click "Connect Wallet" again and approve in MetaMask.', 'error');
+    } else if (e.code === -32002) {
+      showToast('MetaMask is waiting — open the MetaMask extension and approve the pending request.', 'error');
+    } else if (e.code === 4100) {
+      showToast('MetaMask is locked. Click the MetaMask icon, enter your password, then try again.', 'error');
+    } else {
+      showToast('Connect error: ' + (e.message || e), 'error');
+    }
+  }
+}
+
+async function afterConnect() {
+  const network = await provider.getNetwork();
+  if (network.chainId !== SWR.chainId) {
+    showOverlay('wrong-network');
+    setTopbarConnected();
+    setBadge('Wrong network', true);
+    return;
+  }
+  showOverlay(null);
+  setTopbarConnected();
+  setBadge('Sepolia', false);
+  await loadAll();
+}
+
+function setTopbarConnected() {
+  document.getElementById('wallet-addr').textContent = SWR.fmt.addr(account);
+  document.getElementById('wallet-chip').style.display = '';
+  document.getElementById('btn-connect').style.display = 'none';
+  document.getElementById('btn-disconnect').style.display = '';
+  document.getElementById('trade-from').value = account;
+}
+
+function disconnectWallet() {
+  provider = signer = account = null; _data = {};
+  showOverlay('connect-overlay');
+  document.getElementById('wallet-chip').style.display = 'none';
+  document.getElementById('btn-connect').style.display = '';
+  document.getElementById('btn-disconnect').style.display = 'none';
+  document.getElementById('network-badge').style.display = 'none';
+  document.getElementById('kyc-badge').className = 'kyc-badge none';
+  document.getElementById('kyc-label').textContent = 'Not Connected';
+  document.getElementById('trade-from').value = '';
+}
+
+function showOverlay(id) {
+  ['connect-overlay','wrong-network'].forEach(o => {
+    document.getElementById(o).style.display = (o === id) ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.section').forEach(s => {
+    s.style.visibility = id ? 'hidden' : '';
+  });
+}
+function setBadge(text, wrong) {
+  const b = document.getElementById('network-badge');
+  b.textContent = text;
+  b.className = 'network-badge' + (wrong ? ' wrong' : '');
+  b.style.display = '';
+}
+
+// ── LOAD ALL DATA ─────────────────────────────────────────────
+async function loadAll() {
+  if (!provider || !account) return;
+  const a = SWR.addresses;
+
+  async function safe(fn, fallback) { try { return await fn(); } catch { return fallback; } }
+
+  try {
+    if (!SWR.abis.AssetTokenFull) throw new Error('contracts.js is cached — press Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows) to hard-reload');
+
+    const kyc    = new ethers.Contract(a.KYCWhitelist,     SWR.abis.KYCWhitelist,    provider);
+    const swrTok = new ethers.Contract(a.SWRToken,         SWR.abis.ERC20,            provider);
+    const sarxC  = new ethers.Contract(a.SARX,             SWR.abis.ERC20,            provider);
+    const assetC = new ethers.Contract(a.AssetToken,       SWR.abis.AssetTokenFull,   provider);
+    const yieldC = new ethers.Contract(a.YieldDistributor, SWR.abis.YieldDistributor, provider);
+    const [isKyc, tierRaw, swrBal, sarxBal, assetBal, priceSAR, totalSupply, pending, epochCount] = await Promise.all([
+      safe(() => kyc.isWhitelisted(account), false),
+      safe(() => kyc.getTier(account), 0),
+      safe(() => swrTok.balanceOf(account), ethers.BigNumber.from(0)),
+      safe(() => sarxC.balanceOf(account), ethers.BigNumber.from(0)),
+      safe(() => assetC.balanceOf(account), ethers.BigNumber.from(0)),
+      safe(() => assetC.tokenPriceSAR(), ethers.BigNumber.from(0)),
+      safe(() => assetC.totalSupply(), ethers.BigNumber.from(1)),
+      safe(() => yieldC.pendingYield(account), ethers.BigNumber.from(0)),
+      safe(() => yieldC.epochCount(), ethers.BigNumber.from(0)),
+    ]);
+
+    const tokenCount   = Number(assetBal);
+    const priceDisplay = Number(priceSAR) / 1e6;
+    const portfolioSAR = tokenCount * priceDisplay;
+    const sarxNum      = Number(sarxBal) / 1e6;
+    const swrNum       = Number(ethers.utils.formatEther(swrBal));
+    const pendingNum   = Number(pending) / 1e6;
+    const epochNum     = Number(epochCount);
+    const sharePercent = Number(totalSupply) > 0 ? (tokenCount / Number(totalSupply) * 100).toFixed(4) : '0';
+
+    _data = { tokenCount, priceDisplay, portfolioSAR, sarxNum, swrNum, pendingNum, epochNum, sharePercent, epochCount: epochNum };
+
+    // KYC badge
+    const tier = Number(tierRaw);
+    const tierLabel = SWR.tierLabel[tier];
+    const badge = document.getElementById('kyc-badge');
+    const lbl   = document.getElementById('kyc-label');
+    badge.className = 'kyc-badge' + (!isKyc ? ' unverified' : '');
+    lbl.textContent = isKyc ? 'KYC · ' + tierLabel : 'KYC Not Verified';
+
+    // ── DASHBOARD section ──
+    document.getElementById('port-value').textContent  = 'SAR ' + portfolioSAR.toLocaleString('en-SA', {maximumFractionDigits:2});
+    document.getElementById('port-yield').textContent  = 'SAR ' + pendingNum.toLocaleString('en-SA', {maximumFractionDigits:2});
+    document.getElementById('port-tokens').textContent = tokenCount.toLocaleString('en-SA');
+    document.getElementById('port-price').textContent  = 'SAR ' + priceDisplay;
+    document.getElementById('card-yield').textContent  = 'SAR ' + pendingNum.toLocaleString('en-SA', {maximumFractionDigits:2});
+    document.getElementById('card-yield-sub').textContent = pendingNum > 0 ? 'Ready to claim →' : 'No yield available yet';
+    document.getElementById('card-swr').textContent    = swrNum.toLocaleString('en-SA', {maximumFractionDigits:0}) + ' SWR';
+    document.getElementById('card-sarx').textContent   = 'SAR ' + sarxNum.toLocaleString('en-SA', {maximumFractionDigits:2});
+
+    const dashHoldings = document.getElementById('dash-holdings');
+    dashHoldings.innerHTML = tokenCount === 0
+      ? '<tr><td colspan="5" class="empty-row">No xROSHN1 holdings</td></tr>'
+      : `<tr>
+          <td><div class="token-chip"><div class="token-dot"></div>xROSHN1</div><div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">ROSHN Riyadh Block 1</div></td>
+          <td>${tokenCount.toLocaleString('en-SA')}</td>
+          <td>SAR ${portfolioSAR.toLocaleString('en-SA',{maximumFractionDigits:2})}</td>
+          <td class="yield-pct">SAR ${priceDisplay}</td>
+          <td><button class="action-btn" onclick="showSection('assets')">Details</button></td>
+        </tr>`;
+
+    document.getElementById('dash-yield-list').innerHTML = pendingNum > 0
+      ? `<div class="yield-item"><div class="yield-item-left"><div class="yield-item-name">xROSHN1 — Pending Yield</div><div class="yield-item-date">YieldDistributor · Sepolia · ${epochNum} epoch${epochNum!==1?'s':''}</div></div><div class="yield-item-amt">+SAR ${pendingNum.toLocaleString('en-SA',{maximumFractionDigits:2})}</div></div>`
+      : `<div class="yield-item"><div class="yield-item-left"><div class="yield-item-name">No pending yield</div><div class="yield-item-date">Deposited by the asset manager</div></div><div class="yield-item-amt" style="color:var(--muted)">—</div></div>`;
+
+    const btnClaim = document.getElementById('btn-claim');
+    btnClaim.disabled = pendingNum <= 0;
+    btnClaim.textContent = pendingNum > 0 ? `Claim SAR ${pendingNum.toLocaleString('en-SA',{maximumFractionDigits:2})} →` : 'No Yield to Claim';
+
+    // ── MY ASSETS section ──
+    document.getElementById('assets-portfolio').textContent = 'SAR ' + portfolioSAR.toLocaleString('en-SA',{maximumFractionDigits:2});
+    document.getElementById('assets-sarx').textContent     = 'SAR ' + sarxNum.toLocaleString('en-SA',{maximumFractionDigits:2});
+    document.getElementById('assets-swr').textContent      = swrNum.toLocaleString('en-SA',{maximumFractionDigits:0}) + ' SWR';
+
+    document.getElementById('assets-table').innerHTML = tokenCount === 0
+      ? '<tr><td colspan="7" class="empty-row">No asset tokens held</td></tr>'
+      : `<tr>
+          <td><div class="token-chip"><div class="token-dot"></div>xROSHN1</div><div style="font-size:0.65rem;color:var(--muted)">ROSHN Riyadh Block 1</div></td>
+          <td>${tokenCount.toLocaleString('en-SA')}</td>
+          <td>SAR ${portfolioSAR.toLocaleString('en-SA',{maximumFractionDigits:2})}</td>
+          <td>SAR ${priceDisplay}</td>
+          <td>${sharePercent}%</td>
+          <td><a href="https://sepolia.etherscan.io/address/${SWR.addresses.AssetToken}" target="_blank" class="link-btn">Etherscan ↗</a></td>
+          <td><button class="action-btn" onclick="addToken('xROSHN1')">+ MetaMask</button></td>
+        </tr>`;
+
+    document.getElementById('wallet-table').innerHTML = `
+      <tr>
+        <td><div class="token-chip"><div class="token-dot" style="background:var(--gold2)"></div>SARX</div><div style="font-size:0.65rem;color:var(--muted)">SAR Stablecoin</div></td>
+        <td style="font-size:0.72rem;color:var(--muted);font-family:monospace">${SWR.addresses.SARX.slice(0,10)}…</td>
+        <td>SAR ${sarxNum.toLocaleString('en-SA',{maximumFractionDigits:2})}</td>
+        <td>6</td>
+        <td><button class="action-btn" onclick="addToken('SARX')">+ MetaMask</button></td>
+      </tr>
+      <tr>
+        <td><div class="token-chip"><div class="token-dot" style="background:var(--green)"></div>SWR</div><div style="font-size:0.65rem;color:var(--muted)">SWR Platform Token</div></td>
+        <td style="font-size:0.72rem;color:var(--muted);font-family:monospace">${SWR.addresses.SWRToken.slice(0,10)}…</td>
+        <td>${swrNum.toLocaleString('en-SA',{maximumFractionDigits:0})} SWR</td>
+        <td>18</td>
+        <td><button class="action-btn" onclick="addToken('SWR')">+ MetaMask</button></td>
+      </tr>`;
+
+    // ── TRADE section ──
+    document.getElementById('trade-balance').value = tokenCount.toLocaleString('en-SA') + ' xROSHN1';
+
+    // ── YIELD section ──
+    document.getElementById('yield-pending').textContent = 'SAR ' + pendingNum.toLocaleString('en-SA',{maximumFractionDigits:2});
+    document.getElementById('yield-epochs').textContent  = epochNum;
+    document.getElementById('yield-asset').textContent   = 'SARX';
+    const btnClaimY = document.getElementById('btn-claim-yield');
+    btnClaimY.disabled = pendingNum <= 0;
+    btnClaimY.textContent = pendingNum > 0 ? `Claim SAR ${pendingNum.toLocaleString('en-SA',{maximumFractionDigits:2})} →` : 'No Yield to Claim';
+
+    // Load epoch history
+    await loadEpochs(yieldC, tokenCount, Number(totalSupply), epochNum);
+
+  } catch(e) {
+    console.error(e);
+    showToast('Failed at: ' + e.message, 'error');
+  }
+}
+
+async function loadEpochs(yieldC, myTokens, totalSupply, count) {
+  const tbody = document.getElementById('yield-epochs-table');
+  if (count === 0) { tbody.innerHTML = '<tr><td colspan="6" class="empty-row">No yield epochs yet</td></tr>'; return; }
+
+  const rows = [];
+  for (let i = 0; i < count; i++) {
+    try {
+      const ep = await yieldC.epochs(i);
+      const totalYield  = Number(ep[0]) / 1e6;
+      const epSupply    = Number(ep[1]);
+      const myShare     = epSupply > 0 ? (myTokens / epSupply * 100).toFixed(4) : '0';
+      const myAmount    = epSupply > 0 ? (myTokens / epSupply * Number(ep[0])) / 1e6 : 0;
+      const date        = new Date(Number(ep[2]) * 1000).toLocaleDateString('en-SA');
+      rows.push(`<tr>
+        <td style="color:var(--muted)">${i + 1}</td>
+        <td>${ep[3] || '—'}</td>
+        <td>SAR ${totalYield.toLocaleString('en-SA',{maximumFractionDigits:2})}</td>
+        <td>${myShare}%</td>
+        <td class="yield-pct">SAR ${myAmount.toLocaleString('en-SA',{maximumFractionDigits:2})}</td>
+        <td style="color:var(--muted)">${date}</td>
+      </tr>`);
+    } catch {}
+  }
+  tbody.innerHTML = rows.join('') || '<tr><td colspan="6" class="empty-row">Could not load epochs</td></tr>';
+}
+
+// ── TRADE ─────────────────────────────────────────────────────
+let _recipientKyc = null;
+async function checkRecipientKYC() {
+  const addr = document.getElementById('trade-to').value.trim();
+  const ok  = document.getElementById('trade-kyc-status');
+  const bad = document.getElementById('trade-kyc-fail');
+  ok.style.display = bad.style.display = 'none';
+  _recipientKyc = null;
+  if (!provider || !ethers.utils.isAddress(addr)) return;
+  try {
+    const kyc = new ethers.Contract(SWR.addresses.KYCWhitelist, SWR.abis.KYCWhitelist, provider);
+    const verified = await kyc.isWhitelisted(addr);
+    _recipientKyc = verified;
+    ok.style.display  = verified ? 'flex' : 'none';
+    bad.style.display = verified ? 'none' : 'flex';
+  } catch {}
+}
+
+function updateTradePreview() {
+  const amount = parseFloat(document.getElementById('trade-amount').value) || 0;
+  const price  = _data.priceDisplay || 0;
+  const val    = amount * price;
+  document.getElementById('trade-preview').textContent = val > 0 ? 'SAR ' + val.toLocaleString('en-SA', {maximumFractionDigits:2}) : '—';
+}
+
+async function executeTransfer() {
+  const to     = document.getElementById('trade-to').value.trim();
+  const amount = parseInt(document.getElementById('trade-amount').value);
+  if (!signer) { showToast('Connect wallet first.', 'error'); return; }
+  if (!ethers.utils.isAddress(to)) { showToast('Invalid recipient address.', 'error'); return; }
+  if (!amount || amount <= 0) { showToast('Enter a valid amount.', 'error'); return; }
+  const btn = document.getElementById('btn-transfer');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Sending…';
+  try {
+    const contract = new ethers.Contract(SWR.addresses.AssetToken, SWR.abis.AssetTokenFull, signer);
+    const tx = await contract.transfer(to, amount);
+    showToast('Transaction sent. Waiting for confirmation…');
+    await tx.wait();
+    showToast(`Transferred ${amount.toLocaleString()} xROSHN1 ✓`, 'success');
+    document.getElementById('trade-amount').value = '';
+    await loadAll();
+  } catch(e) {
+    showToast('Transfer failed: ' + (e.reason || e.message), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Transfer Tokens →';
+  }
+}
+
+// ── CLAIM YIELD ───────────────────────────────────────────────
+async function claimYield() {
+  if (!signer) return;
+  ['btn-claim','btn-claim-yield'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) { b.disabled = true; b.innerHTML = '<span class="spin"></span>Claiming…'; }
+  });
+  try {
+    const contract = new ethers.Contract(SWR.addresses.YieldDistributor, SWR.abis.YieldDistributor, signer);
+    const tx = await contract.claim();
+    showToast('Transaction sent. Waiting for confirmation…');
+    await tx.wait();
+    showToast('Yield claimed successfully! ✓', 'success');
+    await loadAll();
+  } catch(e) {
+    showToast('Claim failed: ' + (e.reason || e.message), 'error');
+    ['btn-claim','btn-claim-yield'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) { b.disabled = false; b.textContent = 'Retry Claim →'; }
+    });
+  }
+}
+
+// ── ADD TOKEN TO METAMASK ─────────────────────────────────────
+async function addToken(symbol) {
+  const tokens = {
+    SARX:    { address: SWR.addresses.SARX,      symbol:'SARX',    decimals:6,  name:'SAR Stablecoin' },
+    SWR:     { address: SWR.addresses.SWRToken,   symbol:'SWR',     decimals:18, name:'SWR Token' },
+    xROSHN1: { address: SWR.addresses.AssetToken, symbol:'xROSHN1', decimals:6,  name:'SWR Asset: ROSHN Riyadh Block 1' },
+  };
+  const t = tokens[symbol]; if (!t) return;
+  try { await window.ethereum.request({ method:'wallet_watchAsset', params:{ type:'ERC20', options:t } }); }
+  catch(e) { showToast('Could not add token: ' + e.message, 'error'); }
+}
+
+// ── NETWORK SWITCH ────────────────────────────────────────────
+async function switchToSepolia() {
+  try {
+    await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{ chainId:'0xaa36a7' }] });
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer   = provider.getSigner();
+    await afterConnect();
+  } catch(e) {
+    if (e.code === 4902) {
+      await window.ethereum.request({ method:'wallet_addEthereumChain', params:[{ chainId:'0xaa36a7', chainName:'Sepolia', rpcUrls:['https://rpc.sepolia.org'], nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18}, blockExplorerUrls:['https://sepolia.etherscan.io'] }] });
+    } else { showToast('Could not switch: ' + e.message, 'error'); }
+  }
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type ? ' '+type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 4500);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+buildExplore('all');
+buildDashMarket();
+
+window.addEventListener('load', async () => {
+  if (window.ethereum) {
+    const accounts = await window.ethereum.request({ method:'eth_accounts' });
+    if (accounts.length) {
+      account = accounts[0]; provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner();
+      await afterConnect();
+    }
+    window.ethereum.on('accountsChanged', accs => {
+      if (!accs.length) { disconnectWallet(); }
+      else { account = accs[0]; provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner(); afterConnect(); }
+    });
+    window.ethereum.on('chainChanged', () => {
+      provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner(); afterConnect();
+    });
+  }
+});
+</script>
+</body>
+</html>
