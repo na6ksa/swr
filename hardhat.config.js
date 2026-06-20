@@ -17,13 +17,19 @@ module.exports = {
       url: "http://127.0.0.1:8545",
     },
 
-    // Sepolia testnet (set SEPOLIA_RPC_URL + DEPLOYER_PRIVATE_KEY in .env)
+    // Sepolia testnet
     sepolia: {
       url: process.env.SEPOLIA_RPC_URL || "",
-      accounts: process.env.DEPLOYER_PRIVATE_KEY
-        ? [process.env.DEPLOYER_PRIVATE_KEY]
-        : [],
+      accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
       chainId: 11155111,
+    },
+
+    // Ethereum Mainnet — use only after full audit + CMA approval
+    mainnet: {
+      url: process.env.MAINNET_RPC_URL || "",
+      accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
+      chainId: 1,
+      gasPrice: "auto",
     },
   },
 

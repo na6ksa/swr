@@ -1,0 +1,44 @@
+{
+  "_comment": "SWR Platform — Mainnet Deployment Configuration",
+  "_instructions": "Fill in all addresses before running deploy-mainnet.js. NEVER commit this file with real private keys.",
+
+  "network": "mainnet",
+  "chainId": 1,
+
+  "timelock": {
+    "minDelaySeconds": 172800,
+    "_note": "48 hours — gives investors/CMA time to react to admin actions"
+  },
+
+  "multisig": {
+    "admin":       "0x_GNOSIS_SAFE_ADDRESS",
+    "_adminNote":  "3-of-5 Gnosis Safe. Holds DEFAULT_ADMIN_ROLE via Timelock.",
+
+    "compliance":  "0x_COMPLIANCE_OFFICER_ADDRESS",
+    "_compNote":   "CMA-approved compliance officer. Holds COMPLIANCE_ROLE directly (no timelock — must act fast for regulatory orders).",
+
+    "issuer":      "0x_ASSET_ISSUER_ADDRESS",
+    "_issuerNote": "Asset issuer (ROSHN SPV wallet). Holds ISSUER_ROLE.",
+
+    "manager":     "0x_YIELD_MANAGER_ADDRESS",
+    "_managerNote":"Asset manager. Holds MANAGER_ROLE in YieldDistributor."
+  },
+
+  "sarx": {
+    "address":  "0x_REAL_SARX_CONTRACT_ADDRESS",
+    "_note":    "Production SAR stablecoin. Must be audited and CMA-approved. NOT MockERC20."
+  },
+
+  "asset": {
+    "name":             "SWR Asset: ROSHN Riyadh Block 1",
+    "symbol":           "xROSHN1",
+    "assetId":          "ROSHN-RUH-B1-2026",
+    "assetType":        "REAL_ESTATE",
+    "spvCR":            "1010123456",
+    "assetValueSAR":    "10000000000000",
+    "_assetValueNote":  "SAR 10,000,000 in 6-decimal units (10M × 10^6)",
+    "shariahCertified": true,
+    "totalSupply":      "1000000",
+    "_supplyNote":      "1,000,000 tokens = SAR 10 each"
+  }
+}
