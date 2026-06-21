@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الورقة البيضاء — SWR الأصول الواقعية السعودية</title>
+<meta name="description" content="الورقة البيضاء التقنية لمنصة SWR — توكنة الأصول الواقعية السعودية على شبكة Ethereum. متوافقة شرعياً. خاضعة لرقابة هيئة السوق المالية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:#00a651; --green3:#00c261; --gold:#c9a84c; --gold2:#e8c46a;
+    --dark:#020c05; --dark2:#041208; --dark3:#071a0c; --dark4:#0a2412;
+    --slate:#94a3b8; --muted:#334155; --red:#ef4444;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--dark);font-family:'Cairo',system-ui,sans-serif;color:#e2e8f0;line-height:1.85;overflow-x:hidden;letter-spacing:0;}
+  a{color:var(--green);text-decoration:none;}
+  a:hover{text-decoration:underline;text-underline-offset:3px;}
+
+  .shell{display:block;min-height:100vh;}
+
+  /* ── SIDEBAR (right in RTL) ── */
+  .toc{width:260px;position:fixed;top:0;right:0;height:100vh;overflow-y:auto;background:var(--dark2);border-left:1px solid var(--dark3);padding:0;display:flex;flex-direction:column;}
+  .toc-header{padding:24px 20px;border-bottom:1px solid var(--dark3);}
+  .toc-logo{display:flex;align-items:center;flex-direction:row-reverse;gap:8px;margin-bottom:6px;}
+  .toc-title{font-size:0.78rem;font-weight:700;color:#fff;text-align:right;}
+  .toc-ver{font-size:0.65rem;color:var(--muted);text-align:right;}
+  .toc-nav{padding:16px 0;flex:1;}
+  .toc-group{font-size:0.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px 20px 4px;text-align:right;letter-spacing:0;}
+  .toc-link{display:block;font-size:0.75rem;color:var(--slate);padding:6px 20px;transition:color 0.15s,background 0.15s;border-right:2px solid transparent;text-align:right;letter-spacing:0;}
+  .toc-link:hover{color:#fff;background:var(--dark3);text-decoration:none;}
+  .toc-link.active{color:var(--green);border-right-color:var(--green);background:rgba(0,166,81,0.06);}
+  .toc-footer{padding:16px 20px;border-top:1px solid var(--dark3);text-align:right;}
+  .toc-footer a{font-size:0.68rem;color:var(--muted);display:block;margin-bottom:4px;letter-spacing:0;}
+  .toc-footer a:hover{color:var(--slate);}
+
+  /* ── CONTENT ── */
+  .content{margin-right:260px;max-width:900px;padding:64px 80px;min-height:100vh;}
+
+  /* ── COVER ── */
+  .cover{min-height:60vh;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:64px;margin-bottom:80px;border-bottom:1px solid var(--dark3);position:relative;}
+  .cover-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 80% 50%,rgba(0,166,81,0.04),transparent);pointer-events:none;}
+  .cover-tag{font-size:0.65rem;font-weight:700;color:var(--green);margin-bottom:20px;letter-spacing:0;}
+  .cover h1{font-size:3.2rem;font-weight:900;line-height:1.15;margin-bottom:16px;color:#fff;}
+  .cover-sub{font-size:1rem;color:var(--slate);font-weight:300;max-width:600px;line-height:2;margin-bottom:40px;}
+  .cover-meta{display:flex;gap:40px;flex-wrap:wrap;flex-direction:row-reverse;}
+  .cover-meta-item{display:flex;flex-direction:column;gap:3px;text-align:right;}
+  .cover-meta-label{font-size:0.6rem;font-weight:700;color:var(--muted);letter-spacing:0;}
+  .cover-meta-value{font-size:0.85rem;color:var(--slate);direction:ltr;text-align:right;}
+  .cover-disclaimer{margin-top:32px;padding:14px 18px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:0.78rem;color:#fca5a5;line-height:1.9;}
+
+  /* ── TYPOGRAPHY ── */
+  .wp-section{margin-bottom:80px;scroll-margin-top:32px;}
+  .wp-section h2{font-size:1.6rem;font-weight:900;color:#fff;margin-bottom:8px;padding-bottom:16px;border-bottom:1px solid var(--dark3);}
+  .section-num{font-size:0.72rem;font-weight:700;color:var(--green);margin-bottom:6px;letter-spacing:0;}
+  .wp-section h3{font-size:1.1rem;font-weight:700;color:#fff;margin:40px 0 14px;}
+  .wp-section p{font-size:0.95rem;color:#cbd5e1;line-height:2;margin-bottom:18px;}
+  .wp-section ul,.wp-section ol{padding-right:20px;padding-left:0;margin-bottom:18px;}
+  .wp-section li{font-size:0.95rem;color:#cbd5e1;line-height:2;margin-bottom:6px;}
+  .wp-section li::marker{color:var(--green);}
+  strong{color:#e2e8f0;font-weight:700;}
+
+  /* ── CALLOUTS ── */
+  .callout{border-radius:10px;padding:18px 22px;margin:28px 0;font-size:0.92rem;line-height:2;}
+  .callout-green{background:rgba(0,166,81,0.06);border:1px solid rgba(0,166,81,0.2);border-right:3px solid var(--green);}
+  .callout-gold{background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-right:3px solid var(--gold);}
+  .callout-slate{background:rgba(148,163,184,0.05);border:1px solid rgba(148,163,184,0.15);border-right:3px solid var(--muted);}
+  .callout p{margin-bottom:0;color:inherit;}
+  .callout-green p{color:#86efac;}
+  .callout-gold p{color:#fde68a;}
+  .callout-slate p{color:var(--slate);}
+
+  /* ── TABLES ── */
+  .table-wrap{overflow-x:auto;margin:24px 0;}
+  table{width:100%;border-collapse:collapse;font-size:0.88rem;direction:rtl;}
+  thead th{padding:10px 16px;font-size:0.65rem;font-weight:700;color:var(--muted);text-align:right;border-bottom:1px solid var(--dark3);letter-spacing:0;}
+  tbody td{padding:12px 16px;color:#cbd5e1;border-bottom:1px solid rgba(7,26,12,0.8);}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:rgba(0,166,81,0.02);}
+  tbody td:first-child{color:#e2e8f0;font-weight:500;}
+
+  /* ── CODE ── */
+  pre{background:var(--dark2);border:1px solid var(--dark3);border-radius:10px;padding:20px 24px;overflow-x:auto;margin:24px 0;font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.7;color:#86efac;direction:ltr;text-align:left;}
+  code{font-family:'JetBrains Mono',monospace;font-size:0.82em;background:var(--dark2);border:1px solid var(--dark3);padding:2px 6px;border-radius:4px;color:#86efac;direction:ltr;}
+
+  /* ── STAT CARDS ── */
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0;}
+  .stat-card{background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:20px 22px;text-align:right;}
+  .stat-card .num{font-size:1.6rem;font-weight:900;margin-bottom:4px;direction:ltr;display:block;text-align:right;}
+  .stat-card .lbl{font-size:0.7rem;font-weight:700;color:var(--muted);letter-spacing:0;}
+  .grad-g{background:linear-gradient(135deg,var(--green),var(--green3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .grad-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+  /* ── FLOW ── */
+  .flow{background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:28px;margin:24px 0;overflow-x:auto;}
+  .flow-steps{display:flex;align-items:center;gap:0;flex-wrap:nowrap;min-width:max-content;direction:ltr;}
+  .flow-step{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;}
+  .flow-num{width:36px;height:36px;border-radius:50%;background:rgba(0,166,81,0.1);border:1px solid rgba(0,166,81,0.3);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800;color:var(--green);}
+  .flow-label{font-size:0.68rem;color:var(--slate);text-align:center;line-height:1.5;max-width:90px;}
+  .flow-arrow{font-size:1rem;color:var(--muted);padding:0 8px;margin-bottom:16px;}
+
+  /* ── PILLS ── */
+  .pill{display:inline-flex;font-size:0.62rem;font-weight:700;padding:3px 10px;border-radius:20px;margin:2px;}
+  .pill-g{background:rgba(0,166,81,0.1);border:1px solid rgba(0,166,81,0.25);color:var(--green);}
+  .pill-gold{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);color:var(--gold2);}
+  .pill-red{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#fca5a5;}
+  .pill-slate{background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.2);color:var(--slate);}
+
+  /* ── CONTRACT BOX ── */
+  .contract-box{background:var(--dark2);border:1px solid rgba(0,166,81,0.2);border-radius:10px;padding:16px 20px;margin:12px 0;display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;gap:16px;flex-wrap:wrap;}
+  .cb-name{font-size:0.88rem;font-weight:700;color:#fff;}
+  .cb-addr{font-size:0.7rem;font-family:'JetBrains Mono',monospace;color:var(--muted);direction:ltr;}
+  .cb-link{font-size:0.65rem;color:var(--green);white-space:nowrap;direction:ltr;}
+
+  /* ── ROADMAP ── */
+  .roadmap{display:flex;flex-direction:column;gap:0;margin:24px 0;}
+  .road-item{display:grid;grid-template-columns:1fr 120px;gap:0;}
+  .road-period{padding:20px 0 20px 20px;font-size:0.75rem;font-weight:700;color:var(--green);border-left:2px solid var(--dark3);text-align:left;position:relative;direction:ltr;}
+  .road-period::after{content:'';position:absolute;left:-5px;top:24px;width:8px;height:8px;border-radius:50%;background:var(--green);border:2px solid var(--dark);}
+  .road-body{padding:16px 24px 24px 0;}
+  .road-title{font-size:0.92rem;font-weight:700;color:#fff;margin-bottom:8px;}
+  .road-items{display:flex;flex-wrap:wrap;gap:6px;}
+
+  /* ── ALLOCATION ── */
+  .alloc-row{display:grid;grid-template-columns:60px 1fr 180px;gap:12px;align-items:center;margin-bottom:12px;}
+  .alloc-label{font-size:0.8rem;color:#cbd5e1;text-align:right;}
+  .alloc-bar-bg{background:var(--dark3);border-radius:4px;height:8px;overflow:hidden;}
+  .alloc-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green3),var(--green));}
+  .alloc-pct{font-size:0.8rem;font-weight:700;color:var(--green);text-align:left;direction:ltr;}
+
+  /* ── RISK ── */
+  .risk-row{display:grid;grid-template-columns:1fr 60px 130px;gap:16px;padding:14px 0;border-bottom:1px solid var(--dark3);align-items:start;direction:rtl;}
+  .risk-row:last-child{border-bottom:none;}
+  .risk-label{font-size:0.85rem;font-weight:600;color:#e2e8f0;}
+  .sev-high{color:#fca5a5;font-size:0.72rem;font-weight:700;}
+  .sev-med{color:#fde68a;font-size:0.72rem;font-weight:700;}
+  .sev-low{color:#86efac;font-size:0.72rem;font-weight:700;}
+  .risk-desc{font-size:0.85rem;color:var(--slate);line-height:1.8;}
+
+  @media(max-width:900px){
+    .toc{display:none;}
+    .content{margin-right:0;padding:40px 24px;}
+    .stat-row{grid-template-columns:1fr 1fr;}
+    .cover h1{font-size:2.2rem;}
+    .alloc-row{grid-template-columns:50px 1fr 120px;}
+    .road-item{grid-template-columns:1fr 90px;}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ── جدول المحتويات ── -->
+<aside class="toc">
+  <div class="toc-header">
+    <div class="toc-logo">
+      <div>
+        <div class="toc-title">الورقة البيضاء — SWR</div>
+        <div class="toc-ver">الإصدار 1.0 · يونيو 2026</div>
+      </div>
+      <svg width="20" height="20" viewBox="0 0 60 60" fill="none">
+        <circle cx="10" cy="10" r="7" fill="#00a651"/>
+        <circle cx="30" cy="35" r="7" fill="#00a651" opacity="0.6"/>
+        <circle cx="50" cy="10" r="7" fill="#c9a84c"/>
+        <line x1="10" y1="17" x2="30" y2="28" stroke="#00a651" stroke-width="2" opacity="0.5"/>
+        <line x1="30" y1="28" x2="50" y2="17" stroke="#c9a84c" stroke-width="2" opacity="0.5"/>
+      </svg>
+    </div>
+  </div>
+  <nav class="toc-nav">
+    <div class="toc-group">نظرة عامة</div>
+    <a href="#abstract" class="toc-link">ملخص</a>
+    <a href="#executive-summary" class="toc-link">الملخص التنفيذي</a>
+    <div class="toc-group">الأساس</div>
+    <a href="#problem" class="toc-link">١. بيان المشكلة</a>
+    <a href="#solution" class="toc-link">٢. نظرة عامة على الحل</a>
+    <a href="#market" class="toc-link">٣. فرصة السوق</a>
+    <div class="toc-group">التقنية</div>
+    <a href="#architecture" class="toc-link">٤. البنية التقنية</a>
+    <a href="#contracts" class="toc-link">٥. العقود الذكية</a>
+    <a href="#tokens" class="toc-link">٦. هيكل الرموز</a>
+    <a href="#security" class="toc-link">٧. الأمان</a>
+    <div class="toc-group">المنتج</div>
+    <a href="#assets" class="toc-link">٨. فئات الأصول</a>
+    <a href="#process" class="toc-link">٩. عملية التوكنة</a>
+    <a href="#platform" class="toc-link">١٠. منتجات المنصة</a>
+    <div class="toc-group">الامتثال</div>
+    <a href="#regulatory" class="toc-link">١١. الامتثال التنظيمي</a>
+    <a href="#shariah" class="toc-link">١٢. الامتثال الشرعي</a>
+    <div class="toc-group">الاقتصاد</div>
+    <a href="#tokenomics" class="toc-link">١٣. اقتصاديات الرمز</a>
+    <a href="#revenue" class="toc-link">١٤. نموذج الإيرادات</a>
+    <a href="#roadmap" class="toc-link">١٥. خارطة الطريق</a>
+    <a href="#risks" class="toc-link">١٦. عوامل الخطر</a>
+    <div class="toc-group">قانوني</div>
+    <a href="#disclaimer" class="toc-link">إخلاء المسؤولية</a>
+  </nav>
+  <div class="toc-footer">
+    <a href="index-ar.html">← العودة إلى الموقع</a>
+    <a href="dashboard-ar.html">جرّب النسخة التجريبية →</a>
+    <a href="whitepaper.html">English Version ↗</a>
+    <a href="https://github.com/na6ksa/swr" target="_blank">GitHub ↗</a>
+  </div>
+</aside>
+
+<!-- ── المحتوى الرئيسي ── -->
+<main class="content">
+
+<!-- الغلاف -->
+<div class="cover">
+  <div class="cover-bg"></div>
+  <div class="cover-tag">الورقة البيضاء التقنية · الإصدار 1.0</div>
+  <h1>الأصول الواقعية السعودية<br><span style="background:linear-gradient(135deg,#00a651,#e8c46a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">على البلوكشين</span></h1>
+  <div class="cover-sub">SWR منصة منظمة تُوكّن الأصول الواقعية السعودية — العقارات والصكوك والبنية التحتية والسلع — مما يُتيح للمستثمرين المعتمدين الوصول إليها بدءاً من 100 ريال، مع توزيع عوائد على السلسلة وتداول مستمر على مدار الساعة.</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><span class="cover-meta-label">الإصدار</span><span class="cover-meta-value">1.0 — يونيو 2026</span></div>
+    <div class="cover-meta-item"><span class="cover-meta-label">الشبكة</span><span class="cover-meta-value">Ethereum Sepolia (تجريبي) ← Mainnet 2027</span></div>
+    <div class="cover-meta-item"><span class="cover-meta-label">العقود</span><span class="cover-meta-value">5 عقود مُنشرة · موثقة على Etherscan</span></div>
+    <div class="cover-meta-item"><span class="cover-meta-label">التواصل</span><span class="cover-meta-value">founders@swr.sa</span></div>
+  </div>
+  <div class="cover-disclaimer">⚠️ <strong>نسخة تجريبية فقط.</strong> جميع العقود منشورة حالياً على شبكة Ethereum Sepolia التجريبية للعرض والإثبات. لم يُوكَّن أي أصل حقيقي ولا تتضمن العملية أموالاً حقيقية. تصف هذه الورقة النظام المقصود على الشبكة الرئيسية. لا يُعدّ أي محتوى هنا نصيحة استثمارية أو طرحاً عاماً للأوراق المالية.</div>
+</div>
+
+
+<!-- الملخص -->
+<section class="wp-section" id="abstract">
+  <div class="section-num">ملخص</div>
+  <h2>ملخص</h2>
+  <p>SWR منصة توكنة خاضعة للتنظيم ومتوافقة مع أحكام الشريعة الإسلامية، مُصمَّمة خصيصاً لسوق الأصول الواقعية في المملكة العربية السعودية. باستخدام العقود الذكية على شبكة Ethereum، تُحوِّل SWR الأصول السعودية غير السائلة — العقارات والصكوك والبنية التحتية والسلع — إلى رموز أوراق مالية ERC-20 منظمة (<strong>$xASSET</strong>) يمكن لأي مستثمر معتمد بـ KYC شراؤها وتداولها واستخدامها لكسب العوائد، بدءاً من 100 ريال سعودي.</p>
+  <p>تُطبِّق المنصة الامتثال على كل معاملة عبر سجل KYC على السلسلة (<strong>KYCWhitelist.sol</strong>)، وتوزع العوائد تلقائياً بعملة SARX المستقرة المرتبطة بالريال من خلال موزع بتعقيد O(1) (<strong>YieldDistributor.sol</strong>)، ومؤمَّنة بقفل زمني مدته 48 ساعة وخزنة Gnosis Safe متعددة التوقيعات على الشبكة الرئيسية.</p>
+  <p>تُفرز رؤية 2030 خط أنابيب بقيمة 1.8 تريليون ريال من الأصول القابلة للتوكنة. SWR مُصمَّمة خصيصاً لخدمة هذا السوق — تعمل تحت إشراف هيئة السوق المالية مع شهادة هيئة رقابة شرعية متخصصة لكل أصل مُدرج.</p>
+</section>
+
+
+<!-- الملخص التنفيذي -->
+<section class="wp-section" id="executive-summary">
+  <div class="section-num">الملخص التنفيذي</div>
+  <h2>الملخص التنفيذي</h2>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="num grad-g">+2.5 تريليون ر.س</div><div class="lbl">سوق العقارات السعودي</div></div>
+    <div class="stat-card"><div class="num grad-gold">100 ر.س</div><div class="lbl">الحد الأدنى للاستثمار</div></div>
+    <div class="stat-card"><div class="num grad-g">+35 مليون</div><div class="lbl">مستثمر سعودي محتمل</div></div>
+  </div>
+
+  <p>تمتلك المملكة العربية السعودية واحداً من أكبر تركيزات الثروة الواقعية القابلة للتوكنة في العالم. يتجاوز سوق العقارات السعودي 2.5 تريليون ريال. وتُعدّ المملكة أكبر مُصدِر للصكوك في دول مجلس التعاون الخليجي. وقد أطلقت رؤية 2030 مشاريع بنية تحتية بقيمة 1.8 تريليون ريال. غير أن الغالبية العظمى من السعوديين لا يستطيعون الوصول إلى هذه الأصول — فالحدود الدنيا مرتفعة جداً، والسيولة معدومة، والعبء التشغيلي باهظ.</p>
+
+  <p>تحل SWR هذه المعضلة بتحويل الأصول إلى رموز على السلسلة. كل رمز <strong>$xASSET</strong> يمثل ملكية قانونية جزئية في شركة ذات أغراض خاصة (SPV) سعودية تمتلك الأصل الأساسي. يُدمج امتثال KYC وحدود الاستثمار والتوافق الشرعي في منطق نقل الرمز — لا إضافة خارجية. تُوزَّع العوائد تلقائياً بعملة SARX عند إيداع مديري الأصول لإيرادات الإيجار أو كوبونات الصكوك.</p>
+
+  <div class="callout callout-green">
+    <p><strong>المميز الأساسي:</strong> SWR ليست صندوقاً استثمارياً ولا أداة اصطناعية. كل رمز يمثل ملكية قانونية مباشرة في كيان سعودي. يمتلك المستثمرون الأصل، لا مطالبة على منصة.</p>
+  </div>
+
+  <p>المنصة حية على شبكة Sepolia التجريبية بـ 5 عقود منشورة وموثقة، ولوحة تحكم مستثمر كاملة بالعربية والإنجليزية، وبوابة إصدار، وتوزيع عوائد مُختبَر من البداية للنهاية. تبدأ المشاركة التنظيمية مع هيئة السوق المالية في الربع الثالث 2026 تمهيداً لإطلاق الشبكة الرئيسية في الربع الثاني 2027.</p>
+</section>
+
+
+<!-- بيان المشكلة -->
+<section class="wp-section" id="problem">
+  <div class="section-num">القسم الأول</div>
+  <h2>بيان المشكلة</h2>
+
+  <h3>١.١ الإقصاء الهيكلي</h3>
+  <p>أكثر الأصول السعودية قيمةً محاطة بحواجز تجعلها بعيدة عن متناول المستثمر العادي. يستلزم شراء عقار سكني في الرياض حداً أدنى يتراوح بين 500 ألف و2 مليون ريال. أما العقارات التجارية الاستثمارية فتبدأ من 5 ملايين ريال. وتُصدَر الصكوك في شرائح بقيمة 250 ألف ريال. النتيجة: يُحرم أكثر من 95% من المواطنين السعوديين من فئات الأصول الأعلى عائداً.</p>
+
+  <h3>١.٢ فراغ السيولة</h3>
+  <p>تستغرق المعاملات العقارية السعودية دورات تسوية من 30 إلى 90 يوماً مع تكاليف معاملات كبيرة (2–5% في رسوم الوسيط والتسجيل والنقل). لا يوجد سوق ثانوي. بمجرد نشر رأس المال، يظل محجوزاً حتى يُعثر على مشترٍ راغب — وهو ما قد يستغرق أشهراً أو سنوات. وتعاني حيازات الصكوك الخاصة من الإشكالية ذاتها.</p>
+
+  <h3>١.٣ احتكاك العوائد</h3>
+  <p>تُوزَّع إيرادات الإيجار وكوبونات الصكوك يدوياً — يتحصل الملاك على الإيجار، ويعالج الوسطاء المدفوعات، ويستلم المستثمرون الأموال بعد أسابيع من الحدث المصدر. يولّد هذا عدم اليقين في التدفق النقدي ومخاطر الطرف المقابل وعبئاً تشغيلياً كبيراً يُقلِّص العوائد.</p>
+
+  <h3>١.٤ الحواجز الجغرافية</h3>
+  <p>يواجه رأس المال المؤسسي الدولي الراغب في الأصول السعودية متطلبات KYC/AML باهظة ومخاطر تحويل العملات وغموضاً قانونياً حول الملكية الأجنبية للعقارات السعودية. يحدّ هذا من قاعدة رأس المال لأصول رؤية 2030 إلى جزء صغير مما يمكن أن يدعمه الطلب العالمي.</p>
+
+  <div class="callout callout-gold">
+    <p><strong>جوهر المشكلة:</strong> المملكة العربية السعودية لديها الأصول. ولديها المستثمرون. ولديها الشهية. ما ينقصها هو البنية التحتية التي تربط بينهم بكفاءة وشفافية وبسعر في متناول الجميع.</p>
+  </div>
+</section>
+
+
+<!-- نظرة عامة على الحل -->
+<section class="wp-section" id="solution">
+  <div class="section-num">القسم الثاني</div>
+  <h2>نظرة عامة على الحل</h2>
+
+  <h3>٢.١ مكدس SWR</h3>
+  <p>تستبدل SWR خمسة وسطاء تقليديين — المُقيِّمون، والأمناء، ووكلاء النقل، ومديرو العوائد، وضباط الامتثال — بعقود ذكية. النتيجة: نظام يعمل على مدار الساعة، ويُسوِّي في ثوانٍ، ويُطبِّق الامتثال تلقائياً، ويوزع العوائد فور إيداعها.</p>
+
+  <div class="flow">
+    <div class="flow-steps">
+      <div class="flow-step"><div class="flow-num">1</div><div class="flow-label">تقديم صاحب الأصل</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">2</div><div class="flow-label">تأسيس SPV سعودي</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">3</div><div class="flow-label">اعتماد هيئة الرقابة الشرعية</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">4</div><div class="flow-label">موافقة هيئة السوق المالية</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">5</div><div class="flow-label">إصدار الرموز على السلسلة</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">6</div><div class="flow-label">شراء المستثمرين من 100 ر.س</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">7</div><div class="flow-label">إيداع العوائد بـ SARX</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-num">8</div><div class="flow-label">استلام المستثمرين متى شاؤوا</div></div>
+    </div>
+  </div>
+
+  <h3>٢.٢ خمسة مبادئ أساسية</h3>
+  <ul>
+    <li><strong>القانون أولاً.</strong> كل رمز مدعوم بملكية قانونية في شركة SPV سعودية مسجلة. تُسجِّل السلسلة الملكية؛ القانون السعودي يُنفِّذها.</li>
+    <li><strong>الامتثال بشكل افتراضي.</strong> تُطبَّق متطلبات KYC وحدود الاستثمار والحالة الشرعية في منطق نقل الرمز — لا بواسطة حارس يمكن التحايل عليه.</li>
+    <li><strong>عوائد بلا ثقة.</strong> يودع مديرو الأصول SARX في عقد YieldDistributor. الرياضيات ثابتة وعلنية — لا يمكن لأي إنسان إعادة توجيه مدفوعات العوائد.</li>
+    <li><strong>الشريعة في الأساس.</strong> العوائد من إيرادات ملكية الأصول (الإيجار، تقاسم الأرباح، هامش السلع) — لا من الفوائد. كل أصل معتمد قبل الإدراج.</li>
+    <li><strong>قابل للتدقيق من أي شخص.</strong> جميع الأكواد مفتوحة المصدر، وجميع العقود موثقة على Etherscan، وجميع المعاملات مرئية علنياً على السلسلة.</li>
+  </ul>
+</section>
+
+
+<!-- فرصة السوق -->
+<section class="wp-section" id="market">
+  <div class="section-num">القسم الثالث</div>
+  <h2>فرصة السوق</h2>
+
+  <h3>٣.١ إجمالي السوق المستهدف</h3>
+  <div class="stat-row">
+    <div class="stat-card"><div class="num grad-g">2.5 تريليون ر.س</div><div class="lbl">العقارات السعودية</div></div>
+    <div class="stat-card"><div class="num grad-gold">800 مليار دولار</div><div class="lbl">سوق الصكوك العالمي</div></div>
+    <div class="stat-card"><div class="num grad-g">1.8 تريليون ر.س</div><div class="lbl">مشاريع رؤية 2030</div></div>
+  </div>
+
+  <p>يُقدَّر سوق توكنة الأصول الواقعية العالمي بـ 10 تريليونات دولار بحلول 2030 (BCG، 2023). تحتل المملكة العربية السعودية موقعاً متميزاً: فلديها الأصول، والنية التنظيمية (إطار الأوراق المالية الرقمية للهيئة، 2023)، وقاعدة المستثمرين (35 مليون مواطن بمعدلات ادخار مرتفعة)، وتفويض حكومي (رؤية 2030) يستهدف صراحةً تحديث الأسواق المالية.</p>
+
+  <h3>٣.٢ رؤية 2030 كمحرك للتوكنة</h3>
+  <p>تُولِّد رؤية 2030 أكبر خط أنابيب أصول قابل للتوكنة في العالم:</p>
+  <ul>
+    <li><strong>نيوم</strong> — مدينة ذكية بـ 500 مليار دولار مع أصول سكنية وتجارية وبنية تحتية في THE LINE وسندالة وأكساجون</li>
+    <li><strong>روشن</strong> — مطور الإسكان الوطني الذي يستهدف 400 ألف منزل بحلول 2030، كل منها فرصة ملكية جزئية</li>
+    <li><strong>هيدروجين نيوم الأخضر</strong> — مشروع بنية تحتية بـ 8.4 مليار دولار مع اتفاقيات شراء مدتها 25 عاماً</li>
+    <li><strong>صكوك أرامكو السعودية</strong> — أكبر مُصدِر صكوك شركات في العالم، متاح تاريخياً للمؤسسات فقط</li>
+    <li><strong>ACWA Power</strong> — مشاريع طاقة متجددة بقيمة 50 مليار ريال في جميع أنحاء المملكة</li>
+  </ul>
+
+  <h3>٣.٣ السوق المخدوم القابل للتحقق</h3>
+  <p>يركز SWR قريب المدى على سوق المستثمر المحلي السعودي — نحو 35 مليون سعودي، بمعدل ادخار وطني يبلغ نحو 6% من الناتج المحلي الإجمالي (+180 مليار ريال سنوياً). حتى التقاط 0.1% من تدفق الادخار السنوي في السنوات الثلاث الأولى يمثل 540 مليون ريال في الأصول المُدارة. هدفنا الداخلي 3 مليارات ريال في الأصول المُدارة بحلول 2028.</p>
+</section>
+
+
+<!-- البنية التقنية -->
+<section class="wp-section" id="architecture">
+  <div class="section-num">القسم الرابع</div>
+  <h2>البنية التقنية</h2>
+
+  <h3>٤.١ طبقة البلوكشين</h3>
+  <p>منصة SWR الإصدار الأول منشورة على Ethereum — أكثر شبكات البلوكشين القابلة للبرمجة اختباراً في الميدان، مع أعمق تبنٍّ مؤسسي، وأقوى نظام بيئي للمطورين، وأكثر أدوات العقود الذكية تدقيقاً المتاحة. يوفر إثبات الحصة لدى Ethereum نهائية خلال دورتين (~12 ثانية) واستهلاك طاقة مكافئ لمدينة صغيرة.</p>
+
+  <p>للشبكة الرئيسية، يُقيِّم SWR النشر على شبكات Layer 2 من Ethereum (Arbitrum أو Base) لخفض تكاليف المعاملات من ~2-5 دولار للمعاملة إلى ~0.01-0.05 دولار، مما يجعل الحدود الدنيا البالغة 100 ريال مجدية اقتصادياً.</p>
+
+  <h3>٤.٢ البنية ثلاثية الطبقات</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>الطبقة</th><th>المكوّن</th><th>الوظيفة</th></tr></thead>
+      <tbody>
+        <tr><td>الامتثال</td><td>KYCWhitelist.sol</td><td>سجل الهوية على السلسلة، تطبيق المستويات، حدود الاستثمار</td></tr>
+        <tr><td>الأصول</td><td>AssetToken.sol</td><td>رمز ERC-20 للأوراق المالية مع خطافات امتثال النقل</td></tr>
+        <tr><td>الأصول</td><td>YieldDistributor.sol</td><td>توزيع عوائد SARX النسبي بتعقيد O(1) لكل أصل</td></tr>
+        <tr><td>المنصة</td><td>SWRToken.sol</td><td>رمز الاستخدام — الحوكمة، الرسوم، التخزين</td></tr>
+        <tr><td>الحوكمة</td><td>SWRTimelock.sol</td><td>تأخير 48 ساعة على جميع الإجراءات الإدارية</td></tr>
+        <tr><td>الواجهة</td><td>dashboard.html</td><td>محفظة المستثمر، المطالبة بالعوائد، مستكشف الأصول</td></tr>
+        <tr><td>الواجهة</td><td>issuance.html</td><td>بوابة صاحب الأصل لإصدار الرموز</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>٤.٣ بنية البيانات</h3>
+  <p>يتبع SWR نموذج بيانات هجيناً بين السلسلة وخارجها. تخزن السلسلة ما يجب أن يكون غير قابل للتغيير وقابل للتحقق: أرصدة الرموز وتاريخ النقل ومبالغ دورات العوائد وتجزئات موافقة KYC وحدود الاستثمار. تخزن البنية التحتية خارج السلسلة (IPFS مشفر + S3) ما هو حساس أو كبير جداً للتخزين على السلسلة: وثائق KYC وتقييمات الأصول ووثائق تأسيس SPV وشهادات الهيئة الشرعية. يُخزَّن على السلسلة فقط <em>تجزئة</em> هذه الوثائق، مما يتيح للجميع التحقق من صحتها دون الكشف عن بيانات المستثمر الخاصة.</p>
+</section>
+
+
+<!-- العقود الذكية -->
+<section class="wp-section" id="contracts">
+  <div class="section-num">القسم الخامس</div>
+  <h2>العقود الذكية</h2>
+
+  <h3>٥.١ العقود المنشورة (شبكة Sepolia التجريبية)</h3>
+
+  <div class="contract-box">
+    <a href="https://sepolia.etherscan.io/address/0xBB44656a76Bc785c0B959B9d448dbF9d83b16293#code" target="_blank" class="cb-link">مصدر موثق ↗</a>
+    <div><div class="cb-name">KYCWhitelist.sol</div><div class="cb-addr">0xBB44656a76Bc785c0B959B9d448dbF9d83b16293</div></div>
+  </div>
+  <div class="contract-box">
+    <a href="https://sepolia.etherscan.io/address/0x34E21ec5E04d801C468F76c83782FA5D6F0fb1D6#code" target="_blank" class="cb-link">مصدر موثق ↗</a>
+    <div><div class="cb-name">AssetToken.sol (xROSHN1)</div><div class="cb-addr">0x34E21ec5E04d801C468F76c83782FA5D6F0fb1D6</div></div>
+  </div>
+  <div class="contract-box">
+    <a href="https://sepolia.etherscan.io/address/0xD1495DBDB0b488c97279513593726e296D0555dD#code" target="_blank" class="cb-link">مصدر موثق ↗</a>
+    <div><div class="cb-name">YieldDistributor.sol</div><div class="cb-addr">0xD1495DBDB0b488c97279513593726e296D0555dD</div></div>
+  </div>
+  <div class="contract-box">
+    <a href="https://sepolia.etherscan.io/address/0xd9c626CF5a04375524a7ad815Ab6EA0CCC3F4D71#code" target="_blank" class="cb-link">مصدر موثق ↗</a>
+    <div><div class="cb-name">SWRToken.sol</div><div class="cb-addr">0xd9c626CF5a04375524a7ad815Ab6EA0CCC3F4D71</div></div>
+  </div>
+  <div class="contract-box">
+    <a href="https://sepolia.etherscan.io/address/0xEf006D589A53a292771A78696FE79dCd9088B7f8#code" target="_blank" class="cb-link">مصدر موثق ↗</a>
+    <div><div class="cb-name">SARX (MockERC20 — تجريبي فقط)</div><div class="cb-addr">0xEf006D589A53a292771A78696FE79dCd9088B7f8</div></div>
+  </div>
+
+  <h3>٥.٢ KYCWhitelist</h3>
+  <p>عقد KYCWhitelist هو طبقة الهوية في المنصة. يخزن خريطة عناوين المستثمرين المعتمدين وسجلاتهم الامتثالية، ويكشف عن <code>isWhitelisted(address)</code> الذي يستدعيه AssetToken في كل عملية نقل. يحمل ضابط امتثال معتمد من هيئة السوق المالية <code>COMPLIANCE_ROLE</code> وهو الكيان الوحيد المُخوَّل باعتماد المستثمرين أو سحب اعتمادهم.</p>
+<pre>struct Investor {
+    bool         approved;
+    InvestorTier tier;       // تجزئة | محترف | مؤسسي
+    uint256      approvedAt;
+    uint256      expiresAt;  // انتهاء صلاحية KYC بعد 365 يوماً
+    bytes32      kycHash;    // SHA-256 لحزمة وثائق KYC
+    string       jurisdiction;
+    bool         shariahConsent;
+}</pre>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>المستوى</th><th>الحد الأقصى للاستثمار لكل أصل</th><th>شروط الأهلية</th></tr></thead>
+      <tbody>
+        <tr><td>تجزئة (Retail)</td><td>200,000 ر.س</td><td>أي مقيم سعودي معتمد بـ KYC</td></tr>
+        <tr><td>محترف (Professional)</td><td>2,000,000 ر.س</td><td>صافي ثروة 5م ر.س أو استثمار 1م ر.س سنوياً</td></tr>
+        <tr><td>مؤسسي (Institutional)</td><td>غير محدود</td><td>كيانات مرخصة من هيئة السوق المالية</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>٥.٣ AssetToken</h3>
+  <p>AssetToken رمز ERC-20 مدمج منطق الامتثال في خطاف <code>_update</code> الذي يُستدعى في كل عملية نقل وسك وحرق. يُطبِّق منطق الامتثال ثلاثة ثوابت:</p>
+  <ol>
+    <li>يجب أن يكون كل من المُرسِل والمُستلم معتمدَيْن بـ KYC (حاملو ISSUER_ROLE معفيون بوصفهم أطرافاً موثقة)</li>
+    <li>يجب ألا يتجاوز الرصيد الجديد للمُستلم × سعر الرمز حد استثمار مستواه (محسوباً عبر <code>Math.mulDiv</code> لمنع التحايل بفقدان الدقة)</li>
+    <li>تُحجب عمليات النقل عند إيقاف العقد من قِبل ضابط الامتثال</li>
+  </ol>
+
+  <h3>٥.٤ YieldDistributor</h3>
+  <p>يستخدم YieldDistributor نمط التراكم التدريجي للرمز بتعقيد O(1) (مستوحى من Synthetix StakingRewards) بدلاً من التكرار عبر الدورات عند المطالبة. هذا يضمن أن تكاليف الغاز للمطالبة ثابتة بصرف النظر عن عدد دورات العوائد التي حدثت.</p>
+<pre>// عند إيداع مدير الأصول عوائد SARX:
+accYieldPerToken += (المبلغ × PRECISION) / إجمالي العرض
+
+// عند تفعيل notifyTransfer (قبل تغيير الأرصدة):
+settledYield[الحامل] += الرصيد × (accYieldPerToken - userAccYieldPerToken[الحامل]) / PRECISION
+userAccYieldPerToken[الحامل] = accYieldPerToken
+
+// عند مطالبة المستثمر:
+claimable = settledYield[الحامل]  // O(1) — بلا حلقات</pre>
+</section>
+
+
+<!-- هيكل الرموز -->
+<section class="wp-section" id="tokens">
+  <div class="section-num">القسم السادس</div>
+  <h2>هيكل الرموز</h2>
+
+  <h3>٦.١ $SWR — رمز الاستخدام</h3>
+  <p><strong>$SWR</strong> هو رمز الاستخدام لشبكة SWR. <em>ليس</em> رمز أوراق مالية ولا يمثل ملكية في أي أصل أو في شركة SWR. وظيفته مواءمة الحوافز بين المشاركين في النظام البيئي.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>المعامل</th><th>القيمة</th></tr></thead>
+      <tbody>
+        <tr><td>إجمالي العرض</td><td>200,000,000 SWR (ثابت، لا سك إضافي)</td></tr>
+        <tr><td>المعيار</td><td>ERC-20 مع ERC20Burnable</td></tr>
+        <tr><td>الخانات العشرية</td><td>18</td></tr>
+        <tr><td>خصم الرسوم</td><td>50% عند دفع رسوم المنصة بـ SWR</td></tr>
+        <tr><td>الحد الأدنى للتحقق</td><td>10,000 SWR لتشغيل عقدة محقق</td></tr>
+        <tr><td>إعادة الشراء والحرق</td><td>30% من إيرادات البروتوكول الفصلية</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>٦.٢ $xASSET — رموز الأوراق المالية</h3>
+  <p>رموز <strong>$xASSET</strong> (مثل <strong>$xROSHN1</strong>، <strong>$xGOLD</strong>، <strong>$xNEOM1</strong>) أوراق مالية رقمية منظمة. كل رمز يمثل ملكية جزئية نسبية في شركة SPV سعودية تمتلك قانونياً الأصل الأساسي. هذه الرموز خاضعة لرقابة هيئة السوق المالية، ومحمية ببوابة KYC، ومعتمدة شرعياً لكل أصل على حدة.</p>
+
+  <h3>٦.٣ $SARX — العملة المستقرة بالريال</h3>
+  <p><strong>$SARX</strong> عملة مستقرة مرتبطة بالريال السعودي تُستخدم لجميع التسويات وتوزيع العوائد والتداول الثانوي على منصة SWR. على الشبكة التجريبية، SARX عبارة عن MockERC20 لأغراض العرض. على الشبكة الرئيسية، ستُصدرها جهة مرخصة من البنك المركزي (SAMA) مع ضمانات ريال سعودي بالكامل في بنك ودائع سعودي مرخص.</p>
+
+  <div class="callout callout-slate">
+    <p><strong>ملاحظة حول SARX:</strong> المنصة مصممة لتكون محايدة تجاه SARX. يمكن استبدال أي عملة مستقرة مرتبطة بالريال معتمدة من SAMA كرمز توزيع عوائد عن طريق تحديث معامل نشر YieldDistributor. SARX لا تُصدرها SWR وهي تسجيل تنظيمي مستقل.</p>
+  </div>
+</section>
+
+
+<!-- الأمان -->
+<section class="wp-section" id="security">
+  <div class="section-num">القسم السابع</div>
+  <h2>الأمان</h2>
+
+  <h3>٧.١ التدقيق الأمني الداخلي</h3>
+  <p>أجرى SWR تدقيقاً أمنياً داخلياً شاملاً قبل النشر على الشبكة التجريبية. جميع الثغرات المحددة تم معالجتها. أبرز النتائج والإصلاحات:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>الخطورة</th><th>النتيجة</th><th>الإصلاح</th></tr></thead>
+      <tbody>
+        <tr><td><span class="pill pill-red">حرج</span></td><td>ثغرة حساب العوائد بالرصيد الحالي (Balance-at-time)</td><td>تراكم O(1) + notifyTransfer() قبل تغيير الأرصدة</td></tr>
+        <tr><td><span class="pill pill-red">حرج</span></td><td>تحويل ERC20 غير آمن (قيمة إرجاع غير مُتحقَّق منها)</td><td>SafeERC20 safeTransfer/safeTransferFrom في كل مكان</td></tr>
+        <tr><td><span class="pill pill-gold">عالي</span></td><td>تجاوز حد الاستثمار عبر اقتطاع الأعداد الصحيحة</td><td>Math.mulDiv() يمنع tokenPrice=0</td></tr>
+        <tr><td><span class="pill pill-gold">عالي</span></td><td>حلقة غير محدودة في pendingYield (هجوم حد الغاز)</td><td>مُزالة — المطالبة الآن O(1) بنمط التراكم</td></tr>
+        <tr><td><span class="pill pill-slate">متوسط</span></td><td>المُصدِر يمتلك COMPLIANCE_ROLE (تركز صلاحيات)</td><td>معامل complianceOfficer_ منفصل في المُنشئ</td></tr>
+        <tr><td><span class="pill pill-slate">متوسط</span></td><td>لا فحص للعنوان الصفري في setYieldDistributor</td><td>إضافة require(distributor != address(0))</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>٧.٢ نموذج أمان الشبكة الرئيسية</h3>
+  <ul>
+    <li><strong>تدقيق خارجي:</strong> تدقيقان مستقلان على الأقل من شركات معتمدة لدى هيئة السوق المالية قبل الإطلاق</li>
+    <li><strong>مكافأة الأخطاء:</strong> برنامج مكافأة بـ 3 ملايين ريال على Immunefi منذ النشر</li>
+    <li><strong>متعدد التوقيعات:</strong> Gnosis Safe 3-of-5 يحمل جميع أدوار المشرف على الشبكة الرئيسية</li>
+    <li><strong>القفل الزمني:</strong> جميع الإجراءات الإدارية تمر عبر SWRTimelock بتأخير 48 ساعة</li>
+    <li><strong>سقف TVL مرحلي:</strong> 10 مليون ريال في المرحلة الأولى ← 100 مليون ← غير محدود</li>
+    <li><strong>المراقبة:</strong> تنبيهات Tenderly + OpenZeppelin Defender لاكتشاف الشذوذ على السلسلة</li>
+  </ul>
+</section>
+
+
+<!-- فئات الأصول -->
+<section class="wp-section" id="assets">
+  <div class="section-num">القسم الثامن</div>
+  <h2>فئات الأصول</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>الفئة</th><th>المرحلة</th><th>العائد المستهدف</th><th>نوع العائد</th><th>الأساس الشرعي</th></tr></thead>
+      <tbody>
+        <tr><td>🏙️ العقارات</td><td>المرحلة 1 · 2026</td><td>6–9% سنوياً</td><td>دخل الإيجار (ربع سنوي)</td><td>إجارة</td></tr>
+        <tr><td>📜 الصكوك</td><td>المرحلة 1 · 2026</td><td>5–7% سنوياً</td><td>الكوبون (نصف سنوي)</td><td>مرابحة / وكالة</td></tr>
+        <tr><td>⚡ البنية التحتية</td><td>المرحلة 2 · 2027</td><td>7–10% سنوياً</td><td>إيرادات الشراء (شهري)</td><td>مشاركة</td></tr>
+        <tr><td>🥇 السلع</td><td>المرحلة 2 · 2027</td><td>مرتبط بالسوق</td><td>ارتفاع رأس المال</td><td>مرابحة</td></tr>
+        <tr><td>🤝 الملكية الخاصة</td><td>المرحلة 3 · 2028</td><td>عائد حقوق ملكية</td><td>أرباح / عوائد الخروج</td><td>مشاركة</td></tr>
+        <tr><td>🌱 ائتمانات الكربون</td><td>المرحلة 3 · 2028</td><td>سعر السوق</td><td>عوائد بيع الائتمان</td><td>قيد المراجعة</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>٨.١ العقارات (المرحلة 1 — حية على الشبكة التجريبية)</h3>
+  <p>أول أصل حي على SWR هو <strong>xROSHN1</strong> — تمثيل موكَّن لروشن الرياض — المقطع الأول. الأصل مُهيكل كالتالي: تمتلك SPV سعودية سند الملكية؛ 1,000,000 رمز تمثل 100% من حقوق الملكية في SPV بسعر 10 ريال للرمز (10 ملايين ريال إجمالاً). يُجمَع دخل الإيجار فصلياً ويُودَع في عقد YieldDistributor بعملة SARX، ويُوزَّع تلقائياً على حاملي الرموز بما يتناسب مع حيازاتهم وقت كل إيداع.</p>
+</section>
+
+
+<!-- عملية التوكنة -->
+<section class="wp-section" id="process">
+  <div class="section-num">القسم التاسع</div>
+  <h2>عملية التوكنة</h2>
+
+  <ol>
+    <li><strong>التقديم:</strong> يُقدِّم صاحب الأصل تفاصيل الأصل والبيانات المالية ووثائق الملكية عبر بوابة الإصدار</li>
+    <li><strong>العناية الواجبة:</strong> تتحقق الفريق القانوني والتقني في SWR من مشروعية الأصل وهيكل SPV ومتطلبات الامتثال</li>
+    <li><strong>تأسيس SPV:</strong> تأسيس شركة ذات مسؤولية محدودة سعودية أو ما يعادلها بوصفها SPV. نقل سند الملكية إلى SPV. تسجيل رقم السجل التجاري</li>
+    <li><strong>المراجعة الشرعية:</strong> تراجع هيئة الرقابة الشرعية المكونة من 3 أعضاء هيكل SPV ونوع الأصل وآلية العائد. إصدار شهادة الفتوى</li>
+    <li><strong>موافقة هيئة السوق المالية:</strong> تقديم نشرة الإصدار إلى هيئة السوق المالية. الحصول على الموافقة. تأكيد شروط الإصدار</li>
+    <li><strong>نشر العقود الذكية:</strong> نشر AssetToken مع رقم السجل التجاري للـ SPV وقيمة الأصل وعنوان KYCWhitelist. ربط YieldDistributor. توثيق العقود على Etherscan</li>
+    <li><strong>إصدار الرموز:</strong> سك الإجمالي للمحفظة المُصدِرة. التوزيع على المستثمرين عبر عملية الاكتتاب</li>
+    <li><strong>دورة حياة العائد:</strong> يجمع مدير الأصول الإيرادات، يودع SARX في YieldDistributor، يطالب المستثمرون متى شاؤوا</li>
+  </ol>
+</section>
+
+
+<!-- منتجات المنصة -->
+<section class="wp-section" id="platform">
+  <div class="section-num">القسم العاشر</div>
+  <h2>منتجات المنصة</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>المنتج</th><th>المستخدمون</th><th>الحالة</th><th>الوصف</th></tr></thead>
+      <tbody>
+        <tr><td>لوحة تحكم المستثمر</td><td>المستثمرون</td><td><span class="pill pill-g">حي — تجريبي</span></td><td>نظرة عامة على المحفظة، الحيازات، المطالبة بالعوائد، مستكشف الأصول. بالعربية والإنجليزية.</td></tr>
+        <tr><td>بوابة الإصدار</td><td>أصحاب الأصول</td><td><span class="pill pill-g">حي — تجريبي</span></td><td>سير عمل توكنة الأصول خطوة بخطوة، رفع الوثائق، قائمة الامتثال الشرعي</td></tr>
+        <tr><td>السوق الثانوي</td><td>المستثمرون</td><td><span class="pill pill-slate">خارطة طريق 2027</span></td><td>تداول رمز بين الأقران خاضع للـ KYC مع تسوية T+0</td></tr>
+        <tr><td>محفظة Freehold المحمولة</td><td>جميع المستخدمين</td><td><span class="pill pill-slate">خارطة طريق 2027</span></td><td>محفظة iOS + Android غير حافظة مع تكامل نفاذ (هوية وطنية)</td></tr>
+        <tr><td>بوابة المنظم</td><td>هيئة السوق المالية / SAMA</td><td><span class="pill pill-slate">خارطة طريق 2027</span></td><td>لوحة تحكم للهيئة للمراقبة الفورية للمستثمرين والمعاملات</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- الامتثال التنظيمي -->
+<section class="wp-section" id="regulatory">
+  <div class="section-num">القسم الحادي عشر</div>
+  <h2>الامتثال التنظيمي</h2>
+
+  <h3>١١.١ خارطة طريق التنظيم</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>الجهة التنظيمية</th><th>الرخصة / الإطار</th><th>الهدف</th></tr></thead>
+      <tbody>
+        <tr><td>هيئة السوق المالية</td><td>صندوق رمل التقنية المالية</td><td>الربع الثالث 2026</td></tr>
+        <tr><td>هيئة السوق المالية</td><td>إصدار الأوراق المالية الرقمية</td><td>الربع الأول 2027</td></tr>
+        <tr><td>هيئة السوق المالية</td><td>رخصة مؤسسة السوق المالية</td><td>الربع الثالث 2027</td></tr>
+        <tr><td>البنك المركزي (SAMA)</td><td>صندوق رمل خدمات الدفع</td><td>الربع الرابع 2026</td></tr>
+        <tr><td>البنك المركزي (SAMA)</td><td>إطار العملة المستقرة SARX</td><td>الربع الثاني 2027</td></tr>
+        <tr><td>هيئة الزكاة والضريبة</td><td>تصنيف ضريبة الأصول الرقمية</td><td>الربع الثاني 2026</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>١١.٢ بنية KYC / AML</h3>
+  <ul>
+    <li><strong>التحقق من الهوية:</strong> تكامل نفاذ (منصة الهوية الوطنية السعودية) للمواطنين السعوديين؛ المستثمرون الدوليون عبر مزودي KYC معتمدين</li>
+    <li><strong>فحص غسيل الأموال:</strong> فحص عقوبات OFAC والأمم المتحدة وBNK المركزي (SAMA) في الوقت الفعلي عند الإعداد وعلى فترات منتظمة</li>
+    <li><strong>السجل على السلسلة:</strong> تُخزَّن تجزئة موافقة KYC على KYCWhitelist. تُخزَّن الوثائق مشفرة خارج السلسلة (IPFS + S3). تتيح التجزئة للجميع التحقق من صحة الوثائق</li>
+    <li><strong>الانتهاء:</strong> انتهاء صلاحية KYC بعد 365 يوماً مُطبَّق على السلسلة. isWhitelisted() تعيد false بعد الانتهاء — المستثمر لا يمكنه استلام رموز حتى تجديد KYC</li>
+    <li><strong>وصول المنظم:</strong> REGULATOR_ROLE يمنح المدققين في هيئة السوق المالية وصولاً للقراءة فقط لسجلات المستثمرين الكاملة عبر regulatorView()</li>
+  </ul>
+</section>
+
+
+<!-- الامتثال الشرعي -->
+<section class="wp-section" id="shariah">
+  <div class="section-num">القسم الثاني عشر</div>
+  <h2>الامتثال الشرعي</h2>
+
+  <h3>١٢.١ هيئة الرقابة الشرعية</h3>
+  <p>تعمل SWR تحت إشراف هيئة رقابة شرعية مكونة من 3 أعضاء من العلماء المؤهلين في التمويل الإسلامي. تُراجع الهيئة كل هيكل أصل قبل الإدراج وتُصدر شهادة فتوى تُنشر علنياً. يشمل التدقيق الشرعي الشامل السنوي المنصة بأكملها.</p>
+
+  <h3>١٢.٢ المبادئ الشرعية الأساسية</h3>
+  <ul>
+    <li><strong>مدعوم بأصول:</strong> كل رمز يمثل ملكية حقيقية — لا أدوات اصطناعية، لا مطالبات مالية مجردة</li>
+    <li><strong>خالٍ من الربا:</strong> العائد من إيرادات ملكية الأصول (الإيجار، تقاسم الأرباح، هامش السلع) — لا من الفوائد على الديون أبداً</li>
+    <li><strong>الفحص الحلال:</strong> تُفحص الأصول الأساسية مقارنةً بالصناعات المحرمة (الكحول والقمار والمصرفية التقليدية والأسلحة ولحم الخنزير)</li>
+    <li><strong>خالٍ من الغرر:</strong> شروط الرمز وآليات العائد وهيكل SPV مُفصَح عنها بالكامل — لا غموض مفرط</li>
+    <li><strong>معايير AAOIFI:</strong> هياكل الصكوك تتبع معايير الشريعة للمحاسبة والمراجعة 14 (المرابحة) و17 (صكوك الاستثمار)</li>
+  </ul>
+
+  <div class="callout callout-green">
+    <p><strong>لماذا هذا مهم:</strong> سوق الصكوك العالمي البالغ 800 مليار دولار يكاد يكون حكراً على المستثمرين المؤسسيين. البنية الشرعية-الأولى في SWR تفتح هذا السوق لـ 35 مليون+ مستثمر سعودي يُولّون الدخل الحلال أولوية — شريحة لا تستطيع منصات الأصول الواقعية التقليدية خدمتها هيكلياً.</p>
+  </div>
+</section>
+
+
+<!-- اقتصاديات الرمز -->
+<section class="wp-section" id="tokenomics">
+  <div class="section-num">القسم الثالث عشر</div>
+  <h2>اقتصاديات الرمز</h2>
+
+  <h3>١٣.١ توزيع رمز $SWR</h3>
+  <p>إجمالي العرض: <strong>200,000,000 SWR</strong> — ثابت عند النشر، لا سك إضافي ممكن.</p>
+
+  <div style="margin:28px 0;">
+    <div class="alloc-row"><span class="alloc-pct">35%</span><div class="alloc-bar-bg"><div class="alloc-bar" style="width:35%"></div></div><span class="alloc-label">المجتمع والنظام البيئي</span></div>
+    <div class="alloc-row"><span class="alloc-pct" style="color:var(--gold2)">20%</span><div class="alloc-bar-bg"><div class="alloc-bar" style="width:20%;background:linear-gradient(90deg,#e8c46a,#c9a84c)"></div></div><span class="alloc-label">الفريق والمستشارون</span></div>
+    <div class="alloc-row"><span class="alloc-pct" style="color:#a5b4fc">18%</span><div class="alloc-bar-bg"><div class="alloc-bar" style="width:18%;background:linear-gradient(90deg,#a5b4fc,#818cf8)"></div></div><span class="alloc-label">المستثمرون — SAFT</span></div>
+    <div class="alloc-row"><span class="alloc-pct" style="color:#6ee7b7">15%</span><div class="alloc-bar-bg"><div class="alloc-bar" style="width:15%;background:linear-gradient(90deg,#6ee7b7,#34d399)"></div></div><span class="alloc-label">خزينة البروتوكول</span></div>
+    <div class="alloc-row"><span class="alloc-pct" style="color:#fb923c">7%</span><div class="alloc-bar-bg"><div class="alloc-bar" style="width:7%;background:linear-gradient(90deg,#fb923c,#f97316)"></div></div><span class="alloc-label">مكافآت التخزين</span></div>
+    <div class="alloc-row"><span class="alloc-pct" style="color:#f0abfc">5%</span><div class="alloc-bar-bg"><div class="alloc-bar" style="width:5%;background:linear-gradient(90deg,#f0abfc,#e879f9)"></div></div><span class="alloc-label">البيع العام</span></div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>التوزيع</th><th>الرموز</th><th>الاستحقاق</th></tr></thead>
+      <tbody>
+        <tr><td>المجتمع والنظام البيئي</td><td>70,000,000 SWR</td><td>4 سنوات خطية، بلا مهلة. صرف بإشراف الحوكمة</td></tr>
+        <tr><td>الفريق والمستشارون</td><td>40,000,000 SWR</td><td>4 سنوات خطية، مهلة سنة واحدة</td></tr>
+        <tr><td>المستثمرون (SAFT)</td><td>36,000,000 SWR</td><td>سنتان خطياً، مهلة 6 أشهر</td></tr>
+        <tr><td>خزينة البروتوكول</td><td>30,000,000 SWR</td><td>تحكم بالحوكمة. تُستخدم لإعادة الشراء والحرق</td></tr>
+        <tr><td>مكافآت التخزين</td><td>14,000,000 SWR</td><td>إطلاق على مدى 10 سنوات وفق جدول الانبعاث</td></tr>
+        <tr><td>البيع العام</td><td>10,000,000 SWR</td><td>بلا قفل</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- نموذج الإيرادات -->
+<section class="wp-section" id="revenue">
+  <div class="section-num">القسم الرابع عشر</div>
+  <h2>نموذج الإيرادات</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>مصدر الإيراد</th><th>المعدل</th><th>الدافع</th><th>ملاحظات</th></tr></thead>
+      <tbody>
+        <tr><td>رسوم الإصدار</td><td>2.0% من قيمة الأصل</td><td>صاحب الأصل</td><td>لمرة واحدة عند الإطلاق. خصم 50% عند الدفع بـ SWR</td></tr>
+        <tr><td>رسوم الإدارة السنوية</td><td>0.75% من الأصول المُدارة</td><td>صاحب الأصل</td><td>تُحصَّل فصلياً من توزيعات العوائد</td></tr>
+        <tr><td>رسوم التداول</td><td>0.3% لكل صفقة</td><td>المشتري</td><td>على معاملات السوق الثانوي</td></tr>
+        <tr><td>شهادة الامتثال الشرعي</td><td>15,000 ر.س لكل أصل</td><td>صاحب الأصل</td><td>تُحوَّل إلى هيئة الرقابة الشرعية</td></tr>
+        <tr><td>رخصة النموذج الأبيض</td><td>تفاوضي</td><td>البنوك الشريكة</td><td>يمكن للبنوك السعودية ترخيص بنية SWR التحتية</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>١٤.١ اقتصاديات الوحدة (هدف السنة 3)</h3>
+  <div class="stat-row">
+    <div class="stat-card"><div class="num grad-g">3 مليار ر.س</div><div class="lbl">هدف الأصول المُدارة</div></div>
+    <div class="stat-card"><div class="num grad-gold">22.5 مليون ر.س</div><div class="lbl">إيرادات رسوم الإدارة السنوية</div></div>
+    <div class="stat-card"><div class="num grad-g">+300 ألف</div><div class="lbl">هدف المستثمرين</div></div>
+  </div>
+</section>
+
+
+<!-- خارطة الطريق -->
+<section class="wp-section" id="roadmap">
+  <div class="section-num">القسم الخامس عشر</div>
+  <h2>خارطة الطريق</h2>
+
+  <div class="roadmap">
+    <div class="road-item">
+      <div class="road-body">
+        <div class="road-title">التأسيس</div>
+        <div class="road-items">
+          <span class="pill pill-g">الشبكة التجريبية حية ✓</span>
+          <span class="pill pill-g">5 عقود موثقة ✓</span>
+          <span class="pill pill-g">التدقيق الأمني ✓</span>
+          <span class="pill pill-g">لوحة التحكم العربية ✓</span>
+          <span class="pill pill-slate">طلب صندوق رمل هيئة السوق المالية</span>
+          <span class="pill pill-slate">تأسيس الكيان القانوني</span>
+          <span class="pill pill-slate">جولة البذرة</span>
+        </div>
+      </div>
+      <div class="road-period">الربع 1–2<br>2026</div>
+    </div>
+    <div class="road-item">
+      <div class="road-body">
+        <div class="road-title">النسخة التجريبية</div>
+        <div class="road-items">
+          <span class="pill pill-slate">موافقة صندوق الرمل</span>
+          <span class="pill pill-slate">إتمام التدقيق الخارجي</span>
+          <span class="pill pill-slate">أول SPV (روشن)</span>
+          <span class="pill pill-slate">نسخة تجريبية خاصة — 500 مستثمر</span>
+          <span class="pill pill-slate">شريك SARX</span>
+          <span class="pill pill-slate">السلسلة أ</span>
+        </div>
+      </div>
+      <div class="road-period">الربع 3–4<br>2026</div>
+    </div>
+    <div class="road-item">
+      <div class="road-body">
+        <div class="road-title">إطلاق الشبكة الرئيسية</div>
+        <div class="road-items">
+          <span class="pill pill-slate">النشر على Ethereum Mainnet</span>
+          <span class="pill pill-slate">5 أصول حية</span>
+          <span class="pill pill-slate">فتح KYC للعموم</span>
+          <span class="pill pill-slate">تكامل SARX</span>
+          <span class="pill pill-slate">نسخة تجريبية من المحفظة المحمولة</span>
+        </div>
+      </div>
+      <div class="road-period">الربع 1–2<br>2027</div>
+    </div>
+    <div class="road-item">
+      <div class="road-body">
+        <div class="road-title">التوسع</div>
+        <div class="road-items">
+          <span class="pill pill-slate">+60 أصل</span>
+          <span class="pill pill-slate">3 مليار ر.س في الأصول المُدارة</span>
+          <span class="pill pill-slate">السوق الثانوي حي</span>
+          <span class="pill pill-slate">3 شركاء بنوك</span>
+          <span class="pill pill-slate">أصول البنية التحتية</span>
+        </div>
+      </div>
+      <div class="road-period">2028</div>
+    </div>
+    <div class="road-item">
+      <div class="road-body">
+        <div class="road-title">التوافق مع رؤية 2030</div>
+        <div class="road-items">
+          <span class="pill pill-slate">+300 أصل</span>
+          <span class="pill pill-slate">15 مليار ر.س في الأصول المُدارة</span>
+          <span class="pill pill-slate">توكنة أصول نيوم</span>
+          <span class="pill pill-slate">التوسع في دول الخليج</span>
+          <span class="pill pill-slate">+300 ألف مستثمر</span>
+        </div>
+      </div>
+      <div class="road-period">2029–<br>2030</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- عوامل الخطر -->
+<section class="wp-section" id="risks">
+  <div class="section-num">القسم السادس عشر</div>
+  <h2>عوامل الخطر</h2>
+
+  <div style="margin-top:24px;">
+    <div class="risk-row">
+      <div class="risk-desc">قد لا تمنح هيئة السوق المالية الموافقة، أو تفرض شروطاً تقيّد نموذج الأعمال بشكل كبير. التخفيف: التواصل المبكر مع مختبر التقنية المالية؛ مستشارون قانونيون متخصصون في هيئة السوق المالية؛ تصميم منصة مرن قابل للتكيف مع تغذية راجعة تنظيمية.</div>
+      <div class="sev-high">عالي</div>
+      <div class="risk-label">المخاطر التنظيمية</div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-desc">رغم التدقيقات، قد تحتوي العقود الذكية على ثغرات غير مكتشفة. التخفيف: تدقيقات مستقلة متعددة؛ برنامج مكافأة أخطاء؛ سقف TVL مرحلي؛ وظيفة إيقاف الطوارئ؛ قابلية الترقية عبر الحوكمة المُقفَّلة زمنياً.</div>
+      <div class="sev-med">متوسط</div>
+      <div class="risk-label">مخاطر العقود الذكية</div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-desc">قد يكون للسوق الثانوي سيولة غير كافية. التخفيف: اتفاقيات صانع سوق؛ فترات احتجاز دنيا مُعلنة؛ مجمعات سيولة ممولة من خزينة البروتوكول.</div>
+      <div class="sev-med">متوسط</div>
+      <div class="risk-label">مخاطر السيولة</div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-desc">قد ينكسر ربط SARX أو يُصبح مُصدِرها معسراً. التخفيف: مُصدِر SARX يجب أن يكون مرخصاً من SAMA؛ المنصة محايدة تجاه العملة المستقرة ويمكنها التبديل.</div>
+      <div class="sev-med">متوسط</div>
+      <div class="risk-label">مخاطر SARX</div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-desc">انخفاض قيمة العقار أو الصكوك الأساسية أو تعثرها. التخفيف: جميع الأصول مملوكة فعلياً في SPVs سعودية؛ المستثمرون يتحملون مخاطر مستوى الأصل (مُفصَح عنها)؛ لا رافعة مالية في البروتوكول.</div>
+      <div class="sev-low">منخفض</div>
+      <div class="risk-label">مخاطر الأصول</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- إخلاء المسؤولية -->
+<section class="wp-section" id="disclaimer">
+  <div class="section-num">قانوني</div>
+  <h2>إخلاء المسؤولية</h2>
+
+  <div class="callout callout-slate">
+    <p style="margin-bottom:12px;"><strong>ليست نصيحة استثمارية.</strong> هذه الورقة البيضاء لأغراض إعلامية فحسب. لا تُشكِّل نصيحة استثمارية ولا نشرة إصدار ولا عرضاً لبيع الأوراق المالية ولا التماساً لأي استثمار. لا ينبغي الاعتماد على أي محتوى هنا أساساً لأي قرار استثماري.</p>
+    <p style="margin-bottom:12px;"><strong>نسخة تجريبية فقط.</strong> المنصة الموصوفة في هذه الورقة تعمل حالياً على شبكة Ethereum Sepolia التجريبية. لم يُوكَّن أي أصل حقيقي. لا تتضمن العملية أموالاً حقيقية. النظام التجريبي هو إثبات مفهوم وعرض تقنية فقط.</p>
+    <p style="margin-bottom:12px;"><strong>الوضع التنظيمي.</strong> لم تتلقَّ SWR بعد موافقة هيئة السوق المالية أو أي رخصة تنظيمية أخرى للعمل كمؤسسة سوق مالية أو لطرح الأوراق المالية. جميع الجداول التنظيمية المذكورة أهداف، لا ضمانات. البيئة التنظيمية للأصول الرقمية في المملكة العربية السعودية في تطور مستمر.</p>
+    <p style="margin-bottom:12px;"><strong>بيانات تطلعية.</strong> تحتوي هذه الورقة على بيانات تطلعية تتعلق بفرص السوق ووظائف المنصة والجداول التنظيمية والتوقعات المالية. تنطوي هذه البيانات على مخاطر وشكوك. قد تختلف النتائج الفعلية اختلافاً جوهرياً.</p>
+    <p><strong>شهادة الامتثال الشرعي.</strong> يسري وضع الامتثال الشرعي الموصوف في هذه الورقة على تصميم النظام المقصود على الشبكة الرئيسية. لم تُصدر أي شهادات فتوى للنسخة التجريبية. ستُحصل الشهادة الشرعية الرسمية من هيئة رقابة شرعية مؤهلة قبل الإطلاق على الشبكة الرئيسية وإصدار أي رموز أصول حقيقية.</p>
+  </div>
+
+  <p style="margin-top:32px;font-size:0.85rem;color:var(--muted);">منصة SWR · الرياض، المملكة العربية السعودية · <a href="mailto:founders@swr.sa">founders@swr.sa</a> · <a href="https://github.com/na6ksa/swr" target="_blank">github.com/na6ksa/swr</a></p>
+  <p style="font-size:0.8rem;color:var(--muted);margin-top:8px;">الورقة البيضاء — الإصدار 1.0 · يونيو 2026 · جميع الحقوق محفوظة</p>
+</section>
+
+</main>
+</div>
+
+<script>
+const links = document.querySelectorAll('.toc-link');
+const sections = document.querySelectorAll('.wp-section, .cover');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
