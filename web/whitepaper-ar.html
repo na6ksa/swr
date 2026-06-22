@@ -9,13 +9,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --green:#00a651; --green3:#00c261; --gold:#c9a84c; --gold2:#e8c46a;
-    --dark:#020c05; --dark2:#041208; --dark3:#071a0c; --dark4:#0a2412;
-    --slate:#94a3b8; --muted:#334155; --red:#ef4444;
+    --green:#1a472a; --green3:#2d7a35; --gold:#b8860b; --gold2:#c9980a;
+    --dark:#faf7f2; --dark2:#fffdf8; --dark3:#e8e0d0; --dark4:#f2ede4;
+    --slate:#8b7355; --muted:#c4b49a; --red:#c0392b;
   }
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
-  body{background:var(--dark);font-family:'Cairo',system-ui,sans-serif;color:#e2e8f0;line-height:1.85;overflow-x:hidden;letter-spacing:0;}
+  body{background:var(--dark);font-family:'Cairo',system-ui,sans-serif;color:#1a1a1a;line-height:1.85;overflow-x:hidden;letter-spacing:0;}
   a{color:var(--green);text-decoration:none;}
   a:hover{text-decoration:underline;text-underline-offset:3px;}
 
@@ -25,13 +25,13 @@
   .toc{width:260px;position:fixed;top:0;right:0;height:100vh;overflow-y:auto;background:var(--dark2);border-left:1px solid var(--dark3);padding:0;display:flex;flex-direction:column;}
   .toc-header{padding:24px 20px;border-bottom:1px solid var(--dark3);}
   .toc-logo{display:flex;align-items:center;flex-direction:row-reverse;gap:8px;margin-bottom:6px;}
-  .toc-title{font-size:0.78rem;font-weight:700;color:#fff;text-align:right;}
+  .toc-title{font-size:0.78rem;font-weight:700;color:#1a1a1a;text-align:right;}
   .toc-ver{font-size:0.65rem;color:var(--muted);text-align:right;}
   .toc-nav{padding:16px 0;flex:1;}
   .toc-group{font-size:0.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px 20px 4px;text-align:right;letter-spacing:0;}
   .toc-link{display:block;font-size:0.75rem;color:var(--slate);padding:6px 20px;transition:color 0.15s,background 0.15s;border-right:2px solid transparent;text-align:right;letter-spacing:0;}
-  .toc-link:hover{color:#fff;background:var(--dark3);text-decoration:none;}
-  .toc-link.active{color:var(--green);border-right-color:var(--green);background:rgba(0,166,81,0.06);}
+  .toc-link:hover{color:#1a1a1a;background:var(--dark3);text-decoration:none;}
+  .toc-link.active{color:var(--green);border-right-color:var(--green);background:rgba(26,71,42,0.06);}
   .toc-footer{padding:16px 20px;border-top:1px solid var(--dark3);text-align:right;}
   .toc-footer a{font-size:0.68rem;color:var(--muted);display:block;margin-bottom:4px;letter-spacing:0;}
   .toc-footer a:hover{color:var(--slate);}
@@ -53,41 +53,41 @@
 
   /* ── TYPOGRAPHY ── */
   .wp-section{margin-bottom:80px;scroll-margin-top:32px;}
-  .wp-section h2{font-size:1.6rem;font-weight:900;color:#fff;margin-bottom:8px;padding-bottom:16px;border-bottom:1px solid var(--dark3);}
+  .wp-section h2{font-size:1.6rem;font-weight:900;color:#1a1a1a;margin-bottom:8px;padding-bottom:16px;border-bottom:1px solid var(--dark3);}
   .section-num{font-size:0.72rem;font-weight:700;color:var(--green);margin-bottom:6px;letter-spacing:0;}
-  .wp-section h3{font-size:1.1rem;font-weight:700;color:#fff;margin:40px 0 14px;}
-  .wp-section p{font-size:0.95rem;color:#cbd5e1;line-height:2;margin-bottom:18px;}
+  .wp-section h3{font-size:1.1rem;font-weight:700;color:#1a1a1a;margin:40px 0 14px;}
+  .wp-section p{font-size:0.95rem;color:#5a4a30;line-height:2;margin-bottom:18px;}
   .wp-section ul,.wp-section ol{padding-right:20px;padding-left:0;margin-bottom:18px;}
-  .wp-section li{font-size:0.95rem;color:#cbd5e1;line-height:2;margin-bottom:6px;}
+  .wp-section li{font-size:0.95rem;color:#5a4a30;line-height:2;margin-bottom:6px;}
   .wp-section li::marker{color:var(--green);}
-  strong{color:#e2e8f0;font-weight:700;}
+  strong{color:#1a1a1a;font-weight:700;}
 
   /* ── CALLOUTS ── */
   .callout{border-radius:10px;padding:18px 22px;margin:28px 0;font-size:0.92rem;line-height:2;}
-  .callout-green{background:rgba(0,166,81,0.06);border:1px solid rgba(0,166,81,0.2);border-right:3px solid var(--green);}
-  .callout-gold{background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-right:3px solid var(--gold);}
-  .callout-slate{background:rgba(148,163,184,0.05);border:1px solid rgba(148,163,184,0.15);border-right:3px solid var(--muted);}
+  .callout-green{background:rgba(26,71,42,0.06);border:1px solid rgba(26,71,42,0.2);border-right:3px solid var(--green);}
+  .callout-gold{background:rgba(184,134,11,0.06);border:1px solid rgba(184,134,11,0.2);border-right:3px solid var(--gold);}
+  .callout-slate{background:rgba(139,115,85,0.05);border:1px solid rgba(139,115,85,0.15);border-right:3px solid var(--muted);}
   .callout p{margin-bottom:0;color:inherit;}
-  .callout-green p{color:#86efac;}
-  .callout-gold p{color:#fde68a;}
+  .callout-green p{color:#1a472a;}
+  .callout-gold p{color:#b8860b;}
   .callout-slate p{color:var(--slate);}
 
   /* ── TABLES ── */
   .table-wrap{overflow-x:auto;margin:24px 0;}
   table{width:100%;border-collapse:collapse;font-size:0.88rem;direction:rtl;}
-  thead th{padding:10px 16px;font-size:0.65rem;font-weight:700;color:var(--muted);text-align:right;border-bottom:1px solid var(--dark3);letter-spacing:0;}
-  tbody td{padding:12px 16px;color:#cbd5e1;border-bottom:1px solid rgba(7,26,12,0.8);}
+  thead th{padding:10px 16px;font-size:0.65rem;font-weight:700;color:var(--muted);text-align:right;border-bottom:1px solid var(--dark3);background:var(--dark4);letter-spacing:0;}
+  tbody td{padding:12px 16px;color:#8b7355;border-bottom:1px solid var(--dark3);}
   tbody tr:last-child td{border-bottom:none;}
-  tbody tr:hover{background:rgba(0,166,81,0.02);}
-  tbody td:first-child{color:#e2e8f0;font-weight:500;}
+  tbody tr:hover{background:rgba(26,71,42,0.02);}
+  tbody td:first-child{color:#1a1a1a;font-weight:600;}
 
   /* ── CODE ── */
-  pre{background:var(--dark2);border:1px solid var(--dark3);border-radius:10px;padding:20px 24px;overflow-x:auto;margin:24px 0;font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.7;color:#86efac;direction:ltr;text-align:left;}
-  code{font-family:'JetBrains Mono',monospace;font-size:0.82em;background:var(--dark2);border:1px solid var(--dark3);padding:2px 6px;border-radius:4px;color:#86efac;direction:ltr;}
+  pre{background:var(--dark4);border:1px solid var(--dark3);border-radius:10px;padding:20px 24px;overflow-x:auto;margin:24px 0;font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.7;color:#1a472a;direction:ltr;text-align:left;}
+  code{font-family:'JetBrains Mono',monospace;font-size:0.82em;background:var(--dark4);border:1px solid var(--dark3);padding:2px 6px;border-radius:4px;color:#1a472a;direction:ltr;}
 
   /* ── STAT CARDS ── */
   .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0;}
-  .stat-card{background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:20px 22px;text-align:right;}
+  .stat-card{background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:20px 22px;text-align:right;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
   .stat-card .num{font-size:1.6rem;font-weight:900;margin-bottom:4px;direction:ltr;display:block;text-align:right;}
   .stat-card .lbl{font-size:0.7rem;font-weight:700;color:var(--muted);letter-spacing:0;}
   .grad-g{background:linear-gradient(135deg,var(--green),var(--green3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
@@ -110,7 +110,7 @@
 
   /* ── CONTRACT BOX ── */
   .contract-box{background:var(--dark2);border:1px solid rgba(0,166,81,0.2);border-radius:10px;padding:16px 20px;margin:12px 0;display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;gap:16px;flex-wrap:wrap;}
-  .cb-name{font-size:0.88rem;font-weight:700;color:#fff;}
+  .cb-name{font-size:0.88rem;font-weight:700;color:#1a1a1a;}
   .cb-addr{font-size:0.7rem;font-family:'JetBrains Mono',monospace;color:var(--muted);direction:ltr;}
   .cb-link{font-size:0.65rem;color:var(--green);white-space:nowrap;direction:ltr;}
 
@@ -118,14 +118,14 @@
   .roadmap{display:flex;flex-direction:column;gap:0;margin:24px 0;}
   .road-item{display:grid;grid-template-columns:1fr 120px;gap:0;}
   .road-period{padding:20px 0 20px 20px;font-size:0.75rem;font-weight:700;color:var(--green);border-left:2px solid var(--dark3);text-align:left;position:relative;direction:ltr;}
-  .road-period::after{content:'';position:absolute;left:-5px;top:24px;width:8px;height:8px;border-radius:50%;background:var(--green);border:2px solid var(--dark);}
+  .road-period::after{content:'';position:absolute;left:-5px;top:24px;width:8px;height:8px;border-radius:50%;background:var(--green);border:2px solid var(--dark2);}
   .road-body{padding:16px 24px 24px 0;}
-  .road-title{font-size:0.92rem;font-weight:700;color:#fff;margin-bottom:8px;}
+  .road-title{font-size:0.92rem;font-weight:700;color:#1a1a1a;margin-bottom:8px;}
   .road-items{display:flex;flex-wrap:wrap;gap:6px;}
 
   /* ── ALLOCATION ── */
   .alloc-row{display:grid;grid-template-columns:60px 1fr 180px;gap:12px;align-items:center;margin-bottom:12px;}
-  .alloc-label{font-size:0.8rem;color:#cbd5e1;text-align:right;}
+  .alloc-label{font-size:0.8rem;color:#5a4a30;text-align:right;}
   .alloc-bar-bg{background:var(--dark3);border-radius:4px;height:8px;overflow:hidden;}
   .alloc-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green3),var(--green));}
   .alloc-pct{font-size:0.8rem;font-weight:700;color:var(--green);text-align:left;direction:ltr;}
@@ -133,10 +133,10 @@
   /* ── RISK ── */
   .risk-row{display:grid;grid-template-columns:1fr 60px 130px;gap:16px;padding:14px 0;border-bottom:1px solid var(--dark3);align-items:start;direction:rtl;}
   .risk-row:last-child{border-bottom:none;}
-  .risk-label{font-size:0.85rem;font-weight:600;color:#e2e8f0;}
-  .sev-high{color:#fca5a5;font-size:0.72rem;font-weight:700;}
-  .sev-med{color:#fde68a;font-size:0.72rem;font-weight:700;}
-  .sev-low{color:#86efac;font-size:0.72rem;font-weight:700;}
+  .risk-label{font-size:0.85rem;font-weight:600;color:#1a1a1a;}
+  .sev-high{color:#c0392b;font-size:0.72rem;font-weight:700;}
+  .sev-med{color:#b8860b;font-size:0.72rem;font-weight:700;}
+  .sev-low{color:#1a472a;font-size:0.72rem;font-weight:700;}
   .risk-desc{font-size:0.85rem;color:var(--slate);line-height:1.8;}
 
   @media(max-width:900px){
@@ -667,6 +667,46 @@ claimable = settledYield[الحامل]  // O(1) — بلا حلقات</pre>
 </section>
 
 
+  <h3>١٣.٢ جولة SAFT الأولى — مفتوحة الآن</h3>
+  <p>خصصت SWR <strong>10,000,000 رمز SWR (5% من إجمالي العرض)</strong> من شريحة المستثمرين لجولة SAFT خاصة تستهدف 3–5 مستثمرين معتمدين قبل البيع العام.</p>
+  <div class="callout callout-green">
+    <p><strong>ميزة المستثمر المبكر:</strong> يشتري مستثمرو SAFT بسعر 0.125 ر.س/SWR — خصم 50% عن سعر البيع العام البالغ 0.25 ر.س/SWR. الرموز تستحق خلال 18 شهراً بعد إطلاق الشبكة الرئيسية (مهلة 6 أشهر + 12 شهراً خطياً).</p>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>المعامل</th><th>القيمة</th></tr></thead>
+    <tbody>
+      <tr><td>التخصيص</td><td>10,000,000 SWR (من شريحة 18% للمستثمرين)</td></tr>
+      <tr><td>سعر SAFT</td><td>0.125 ر.س للـ SWR (~$0.033)</td></tr>
+      <tr><td>سعر البيع العام</td><td>0.25 ر.س للـ SWR (~$0.067) — علاوة 100%</td></tr>
+      <tr><td>هدف التمويل</td><td>1,250,000 ر.س (~$333,000)</td></tr>
+      <tr><td>الحد الأدنى للاستثمار</td><td>93,750 ر.س ($25,000)</td></tr>
+      <tr><td>الحد الأقصى للاستثمار</td><td>375,000 ر.س ($100,000)</td></tr>
+      <tr><td>المستثمرون</td><td>3–5 مستثمرين معتمدين فقط</td></tr>
+      <tr><td>مهلة الاستحقاق</td><td>6 أشهر بعد إطلاق الشبكة الرئيسية</td></tr>
+      <tr><td>جدول الاستحقاق</td><td>12 شهراً خطياً بعد المهلة (18 شهراً إجمالاً)</td></tr>
+      <tr><td>بوابة المستثمر</td><td><a href="saft.html" class="cb-link">saft.html — عرض الشروط والاستحقاق →</a></td></tr>
+      <tr><td>الحالة</td><td><span class="pill pill-g">● مفتوحة الآن</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>١٣.٣ البيع العام</h3>
+  <p>عقب جولة SAFT، ستُطرح <strong>10,000,000 رمز SWR (5% من إجمالي العرض)</strong> للبيع العام عبر منصة إطلاق عملات مشفرة بسعر <strong>0.25 ر.س للـ SWR</strong>، مستهدفةً جمع <strong>2,500,000 ر.س (~$667,000)</strong>.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>المعامل</th><th>القيمة</th></tr></thead>
+    <tbody>
+      <tr><td>الكمية</td><td>10,000,000 SWR (5%)</td></tr>
+      <tr><td>السعر</td><td>0.25 ر.س للـ SWR (~$0.067 · 0.0000222 ETH)</td></tr>
+      <tr><td>الحد الأقصى للتمويل</td><td>2,500,000 ر.س (~$667,000 · ~222 ETH)</td></tr>
+      <tr><td>الحد الأدنى للشراء</td><td>0.01 ETH</td></tr>
+      <tr><td>الحد الأقصى للمحفظة</td><td>2 ETH (~90,000 SWR)</td></tr>
+      <tr><td>الاستحقاق</td><td>لا يوجد — الرموز تُسلَّم فوراً</td></tr>
+      <tr><td>المنصة المستهدفة</td><td>Fjord Foundry / DAO Maker</td></tr>
+      <tr><td>الموعد المتوقع</td><td>الربع الأول 2027</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+
 <!-- نموذج الإيرادات -->
 <section class="wp-section" id="revenue">
   <div class="section-num">القسم الرابع عشر</div>
@@ -702,37 +742,50 @@ claimable = settledYield[الحامل]  // O(1) — بلا حلقات</pre>
   <div class="roadmap">
     <div class="road-item">
       <div class="road-body">
-        <div class="road-title">التأسيس</div>
+        <div class="road-title">التأسيس — مكتمل</div>
         <div class="road-items">
           <span class="pill pill-g">الشبكة التجريبية حية ✓</span>
           <span class="pill pill-g">5 عقود موثقة ✓</span>
           <span class="pill pill-g">التدقيق الأمني ✓</span>
           <span class="pill pill-g">لوحة التحكم العربية ✓</span>
-          <span class="pill pill-slate">طلب صندوق رمل هيئة السوق المالية</span>
-          <span class="pill pill-slate">تأسيس الكيان القانوني</span>
-          <span class="pill pill-slate">جولة البذرة</span>
+          <span class="pill pill-g">الورقة البيضاء ✓</span>
+          <span class="pill pill-g">GitHub عام ✓</span>
         </div>
       </div>
-      <div class="road-period">الربع 1–2<br>2026</div>
+      <div class="road-period" style="color:var(--green);">الربع 1–2<br>2026<br><span style="font-size:0.6rem;font-weight:600;color:rgba(26,71,42,0.7)">✅ مكتمل</span></div>
+    </div>
+    <div class="road-item">
+      <div class="road-body">
+        <div class="road-title">جولة SAFT الخاصة</div>
+        <div class="road-items">
+          <span class="pill pill-gold">SAFT مفتوحة</span>
+          <span class="pill pill-gold">10M SWR · 0.125 ر.س</span>
+          <span class="pill pill-gold">3–5 مستثمرين</span>
+          <span class="pill pill-gold">هدف: 1.25M ر.س</span>
+          <span class="pill pill-slate">تأسيس الكيان القانوني</span>
+          <span class="pill pill-slate">طلب صندوق رمل هيئة السوق المالية</span>
+        </div>
+      </div>
+      <div class="road-period" style="color:#b8860b;">الربع 3<br>2026<br><span style="font-size:0.6rem;font-weight:600;color:rgba(184,134,11,0.8)">● الآن</span></div>
     </div>
     <div class="road-item">
       <div class="road-body">
         <div class="road-title">النسخة التجريبية</div>
         <div class="road-items">
-          <span class="pill pill-slate">موافقة صندوق الرمل</span>
+          <span class="pill pill-slate">مراجعة صندوق الرمل</span>
           <span class="pill pill-slate">إتمام التدقيق الخارجي</span>
           <span class="pill pill-slate">أول SPV (روشن)</span>
           <span class="pill pill-slate">نسخة تجريبية خاصة — 500 مستثمر</span>
           <span class="pill pill-slate">شريك SARX</span>
-          <span class="pill pill-slate">السلسلة أ</span>
         </div>
       </div>
-      <div class="road-period">الربع 3–4<br>2026</div>
+      <div class="road-period">الربع 4<br>2026</div>
     </div>
     <div class="road-item">
       <div class="road-body">
-        <div class="road-title">إطلاق الشبكة الرئيسية</div>
+        <div class="road-title">البيع العام + إطلاق الشبكة الرئيسية</div>
         <div class="road-items">
+          <span class="pill pill-slate">البيع العام — 0.25 ر.س/SWR</span>
           <span class="pill pill-slate">النشر على Ethereum Mainnet</span>
           <span class="pill pill-slate">5 أصول حية</span>
           <span class="pill pill-slate">فتح KYC للعموم</span>
@@ -750,7 +803,6 @@ claimable = settledYield[الحامل]  // O(1) — بلا حلقات</pre>
           <span class="pill pill-slate">3 مليار ر.س في الأصول المُدارة</span>
           <span class="pill pill-slate">السوق الثانوي حي</span>
           <span class="pill pill-slate">3 شركاء بنوك</span>
-          <span class="pill pill-slate">أصول البنية التحتية</span>
         </div>
       </div>
       <div class="road-period">2028</div>
