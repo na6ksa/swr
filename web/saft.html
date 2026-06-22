@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWR — SAFT Investor Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--green:#1a472a;--green3:#2d7a35;--gold:#b8860b;--gold2:#c9980a;--dark:#faf7f2;--dark2:#fffdf8;--dark3:#e8e0d0;--dark4:#f2ede4;--slate:#8b7355;--muted:#c4b49a;--red:#c0392b;}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--dark);font-family:'Inter',sans-serif;color:#1a1a1a;line-height:1.6;}
+  .grad-g{background:linear-gradient(135deg,var(--green),var(--green3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+  /* SHELL */
+  .shell{display:flex;min-height:100vh;}
+  .sidebar{width:260px;flex-shrink:0;background:var(--dark2);border-right:1px solid var(--dark3);padding:28px 0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+  .s-logo{padding:0 22px 24px;border-bottom:1px solid var(--dark3);margin-bottom:20px;}
+  .s-logo-title{font-size:1.3rem;font-weight:900;color:var(--green);}
+  .s-logo-sub{font-size:0.6rem;font-weight:700;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase;margin-top:2px;}
+  .s-section{padding:0 14px;margin-bottom:8px;}
+  .s-label{font-size:0.55rem;font-weight:700;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;padding:8px 8px 4px;}
+  .s-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:0.78rem;color:var(--slate);cursor:pointer;transition:all 0.15s;}
+  .s-item:hover{background:var(--dark3);color:#1a1a1a;}
+  .s-item.active{background:rgba(26,71,42,0.1);color:var(--green);font-weight:600;}
+  .s-bottom{margin-top:auto;padding:16px 22px;border-top:1px solid var(--dark3);font-size:0.7rem;color:var(--muted);}
+
+  .main{flex:1;display:flex;flex-direction:column;}
+  .topbar{height:60px;border-bottom:1px solid var(--dark3);display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(250,247,242,0.96);backdrop-filter:blur(12px);position:sticky;top:0;z-index:10;}
+  .topbar-title{font-size:0.9rem;font-weight:700;}
+  .topbar-right{display:flex;align-items:center;gap:10px;}
+  .wallet-chip{display:flex;align-items:center;gap:6px;background:var(--dark2);border:1px solid var(--dark3);border-radius:8px;padding:6px 12px;font-size:0.68rem;font-weight:600;}
+  .wdot{width:5px;height:5px;border-radius:50%;background:var(--green);}
+  .btn-sm{padding:8px 18px;border-radius:8px;font-size:0.75rem;font-weight:700;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;border:none;cursor:pointer;}
+  .btn-sm:disabled{opacity:0.4;cursor:not-allowed;}
+
+  /* OVERLAYS */
+  #connect-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:18px;padding:40px;text-align:center;}
+  #connect-overlay h2{font-size:1.4rem;font-weight:900;}
+  #connect-overlay p{font-size:0.85rem;color:var(--slate);max-width:360px;line-height:1.75;}
+  .btn-connect{padding:13px 32px;border-radius:10px;font-size:0.88rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;border:none;cursor:pointer;}
+
+  #not-investor{display:none;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px;padding:40px;text-align:center;}
+  #not-investor h2{font-size:1.2rem;font-weight:800;color:var(--red);}
+  #not-investor p{font-size:0.85rem;color:var(--slate);max-width:360px;}
+
+  /* CONTENT */
+  .content{padding:32px;flex:1;}
+  .section{display:none;}
+  .section.active{display:block;}
+  .page-title{font-size:1.2rem;font-weight:900;margin-bottom:4px;}
+  .page-sub{font-size:0.82rem;color:var(--slate);margin-bottom:28px;}
+
+  /* CARDS */
+  .card{background:var(--dark2);border:1px solid var(--dark3);border-radius:14px;padding:24px;margin-bottom:16px;}
+  .card-title{font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
+  .card-num{font-size:2rem;font-weight:900;margin-bottom:4px;}
+  .card-sub{font-size:0.72rem;color:var(--slate);}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+
+  /* VESTING BAR */
+  .vesting-card{background:linear-gradient(135deg,#1a472a,#2d7a35);border-radius:16px;padding:28px;color:#fff;margin-bottom:20px;}
+  .vc-label{font-size:0.6rem;font-weight:700;letter-spacing:0.15em;color:rgba(255,255,255,0.65);text-transform:uppercase;margin-bottom:6px;}
+  .vc-num{font-size:2.4rem;font-weight:900;margin-bottom:4px;}
+  .vc-sub{font-size:0.75rem;color:rgba(255,255,255,0.65);margin-bottom:24px;}
+  .progress-bg{background:rgba(255,255,255,0.15);border-radius:6px;height:10px;margin-bottom:8px;}
+  .progress-bar{height:100%;border-radius:6px;background:#fff;transition:width 0.5s;}
+  .progress-labels{display:flex;justify-content:space-between;font-size:0.6rem;color:rgba(255,255,255,0.6);}
+  .vc-claim{width:100%;padding:12px;border-radius:10px;font-size:0.85rem;font-weight:700;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;cursor:pointer;margin-top:18px;transition:background 0.2s;}
+  .vc-claim:hover{background:rgba(255,255,255,0.25);}
+  .vc-claim:disabled{opacity:0.4;cursor:not-allowed;}
+
+  /* TABLE */
+  .table-wrap{background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{padding:10px 16px;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;color:var(--muted);text-align:left;text-transform:uppercase;border-bottom:1px solid var(--dark3);}
+  tbody td{padding:12px 16px;font-size:0.8rem;color:var(--slate);border-bottom:1px solid var(--dark4);}
+  tbody td:first-child{color:#1a1a1a;font-weight:600;}
+  tbody tr:last-child td{border-bottom:none;}
+
+  /* TERM SHEET */
+  .ts-section{margin-bottom:28px;}
+  .ts-h3{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--green);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--dark3);}
+  .ts-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--dark4);font-size:0.82rem;}
+  .ts-row:last-child{border-bottom:none;}
+  .ts-key{color:var(--slate);}
+  .ts-val{font-weight:600;color:#1a1a1a;text-align:right;}
+
+  /* TOAST */
+  #toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:10px;font-size:0.78rem;font-weight:600;color:#1a1a1a;background:#fff;border:1px solid var(--dark3);box-shadow:0 4px 20px rgba(0,0,0,0.12);opacity:0;transform:translateY(8px);transition:all 0.3s;z-index:999;pointer-events:none;}
+  #toast.show{opacity:1;transform:translateY(0);}
+  #toast.success{border-color:rgba(26,71,42,0.3);background:#f0fdf4;}
+  #toast.error{border-color:rgba(192,57,43,0.3);background:#fef2f2;}
+  .spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(26,71,42,0.2);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:5px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="s-logo">
+      <div class="s-logo-title">SWR</div>
+      <div class="s-logo-sub">SAFT Investor Portal</div>
+    </div>
+    <div class="s-section">
+      <div class="s-label">My Account</div>
+      <div class="s-item active" onclick="showSection('overview')">📊 Overview</div>
+      <div class="s-item" onclick="showSection('vesting')">🔐 Vesting Schedule</div>
+      <div class="s-item" onclick="showSection('claim')">💰 Claim Tokens</div>
+    </div>
+    <div class="s-section">
+      <div class="s-label">Documents</div>
+      <div class="s-item" onclick="showSection('termsheet')">📄 Term Sheet</div>
+      <div class="s-item" onclick="window.open('whitepaper.html')">📘 Whitepaper ↗</div>
+      <div class="s-item" onclick="window.open('dashboard.html')">🖥️ Live Demo ↗</div>
+    </div>
+    <div class="s-bottom">
+      <div>SWR Platform · founders@swr.sa</div>
+      <div style="margin-top:4px;">Riyadh, Saudi Arabia</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">SAFT Overview</div>
+      <div class="topbar-right">
+        <div id="wallet-chip" class="wallet-chip" style="display:none"><div class="wdot"></div><span id="wallet-addr">—</span></div>
+        <button id="btn-connect" class="btn-sm" onclick="connectWallet()">Connect Wallet</button>
+        <button id="btn-disconnect" style="display:none;padding:8px 14px;border-radius:8px;font-size:0.72rem;font-weight:600;border:1px solid var(--dark3);background:transparent;color:var(--slate);cursor:pointer;" onclick="disconnectWallet()">Disconnect</button>
+      </div>
+    </div>
+
+    <!-- CONNECT -->
+    <div id="connect-overlay">
+      <div style="font-size:2.5rem">🤝</div>
+      <h2>SAFT Investor Portal</h2>
+      <p>Connect the wallet you registered as a SAFT investor to view your token allocation and vesting schedule.</p>
+      <button class="btn-connect" onclick="connectWallet()">Connect MetaMask</button>
+    </div>
+
+    <!-- NOT AN INVESTOR -->
+    <div id="not-investor">
+      <div style="font-size:2rem">🔒</div>
+      <h2>Not an Investor</h2>
+      <p>This wallet is not registered as a SAFT investor. If you believe this is an error, contact founders@swr.sa</p>
+    </div>
+
+    <!-- SECTIONS -->
+    <div id="dashboard-wrap" style="display:none;flex:1;overflow:auto;">
+
+      <!-- OVERVIEW -->
+      <div class="content">
+        <div id="section-overview" class="section active">
+          <div class="page-title">Portfolio Overview</div>
+          <div class="page-sub">Your SWR SAFT allocation and current vesting status.</div>
+
+          <div class="vesting-card">
+            <div class="vc-label">Total SWR Allocation</div>
+            <div class="vc-num" id="ov-total">— SWR</div>
+            <div class="vc-sub" id="ov-usd">Estimated value at $0.03 public price: —</div>
+            <div class="progress-bg"><div class="progress-bar" id="ov-bar" style="width:0%"></div></div>
+            <div class="progress-labels"><span id="ov-pct">0% vested</span><span id="ov-status">Waiting for mainnet launch</span></div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card"><div class="card-title">Claimable Now</div><div class="card-num grad-g" id="ov-claimable">—</div><div class="card-sub">Ready to claim</div></div>
+            <div class="card"><div class="card-title">Already Claimed</div><div class="card-num" style="color:#1a1a1a" id="ov-claimed">—</div><div class="card-sub">Transferred to your wallet</div></div>
+            <div class="card"><div class="card-title">Remaining</div><div class="card-num" style="color:var(--gold)" id="ov-remaining">—</div><div class="card-sub">Still locked</div></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">Your Contribution</div>
+              <div class="card-num" id="ov-eth" style="color:#1a1a1a">— ETH</div>
+              <div class="card-sub" id="ov-price">At $0.015/SWR (SAFT price)</div>
+            </div>
+            <div class="card">
+              <div class="card-title">Vesting Timeline</div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+                <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span style="color:var(--slate);">Vesting starts</span><span id="ov-start" style="font-weight:600">At mainnet launch</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span style="color:var(--slate);">Cliff ends</span><span id="ov-cliff" style="font-weight:600">Start + 6 months</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span style="color:var(--slate);">Fully vested</span><span id="ov-full" style="font-weight:600">Start + 18 months</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VESTING -->
+        <div id="section-vesting" class="section">
+          <div class="page-title">Vesting Schedule</div>
+          <div class="page-sub">Linear unlock after a 6-month cliff from mainnet launch.</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Milestone</th><th>Date</th><th>SWR Unlocked</th><th>Cumulative %</th><th>Status</th></tr></thead>
+              <tbody id="vesting-table"></tbody>
+            </table>
+          </div>
+          <div class="card" style="font-size:0.82rem;color:var(--slate);line-height:1.8;">
+            <strong style="color:#1a1a1a;display:block;margin-bottom:8px;">How vesting works</strong>
+            Tokens are locked in the SWRSaft smart contract. After the mainnet launch event (triggered by the SWR team), a 6-month cliff begins. After the cliff, tokens unlock linearly over 12 months — meaning 1/12th of your post-cliff allocation unlocks each month. You can claim at any time; unclaimed tokens continue to accumulate.
+          </div>
+        </div>
+
+        <!-- CLAIM -->
+        <div id="section-claim" class="section">
+          <div class="page-title">Claim Tokens</div>
+          <div class="page-sub">Claim your unlocked SWR tokens to your connected wallet.</div>
+          <div class="vesting-card" style="margin-bottom:20px;">
+            <div class="vc-label">Available to Claim</div>
+            <div class="vc-num" id="cl-claimable">— SWR</div>
+            <div class="vc-sub" id="cl-sub">Connect wallet to check</div>
+            <button class="vc-claim" id="btn-claim" onclick="claimTokens()" disabled>Claim Tokens →</button>
+          </div>
+          <div class="card" id="claim-history">
+            <div class="card-title">Claim History</div>
+            <div style="font-size:0.8rem;color:var(--muted);margin-top:8px;">On-chain claim events will appear here after the first claim.</div>
+          </div>
+        </div>
+
+        <!-- TERM SHEET -->
+        <div id="section-termsheet" class="section">
+          <div class="page-title">SAFT Term Sheet</div>
+          <div class="page-sub">Simple Agreement for Future Tokens — SWR Platform Private Round</div>
+
+          <div class="card">
+            <div class="ts-section">
+              <div class="ts-h3">Round Details</div>
+              <div class="ts-row"><span class="ts-key">Round name</span><span class="ts-val">SWR SAFT — Private Round</span></div>
+              <div class="ts-row"><span class="ts-key">Round type</span><span class="ts-val">Simple Agreement for Future Tokens (SAFT)</span></div>
+              <div class="ts-row"><span class="ts-key">Eligible investors</span><span class="ts-val">Accredited &amp; Institutional only (3–5 investors)</span></div>
+              <div class="ts-row"><span class="ts-key">Total raise</span><span class="ts-val">$75,000 – $250,000</span></div>
+            </div>
+
+            <div class="ts-section">
+              <div class="ts-h3">Token Terms</div>
+              <div class="ts-row"><span class="ts-key">Token</span><span class="ts-val">$SWR — SWR Platform Utility Token</span></div>
+              <div class="ts-row"><span class="ts-key">Token standard</span><span class="ts-val">ERC-20, 18 decimals, Ethereum</span></div>
+              <div class="ts-row"><span class="ts-key">Total supply</span><span class="ts-val">200,000,000 SWR (fixed, no additional mint)</span></div>
+              <div class="ts-row"><span class="ts-key">SAFT allocation</span><span class="ts-val">From 18% Investor tranche = 36,000,000 SWR</span></div>
+              <div class="ts-row"><span class="ts-key">SAFT price</span><span class="ts-val">$0.015 per SWR</span></div>
+              <div class="ts-row"><span class="ts-key">Public sale price</span><span class="ts-val">$0.03 per SWR (50% premium over SAFT)</span></div>
+              <div class="ts-row"><span class="ts-key">Min ticket</span><span class="ts-val">$25,000 USD</span></div>
+              <div class="ts-row"><span class="ts-key">Max ticket</span><span class="ts-val">$100,000 USD</span></div>
+            </div>
+
+            <div class="ts-section">
+              <div class="ts-h3">Vesting Schedule</div>
+              <div class="ts-row"><span class="ts-key">Vesting trigger</span><span class="ts-val">SWR mainnet launch (owner-triggered on-chain)</span></div>
+              <div class="ts-row"><span class="ts-key">Cliff</span><span class="ts-val">6 months after vesting trigger</span></div>
+              <div class="ts-row"><span class="ts-key">Vesting duration</span><span class="ts-val">12 months linear after cliff</span></div>
+              <div class="ts-row"><span class="ts-key">Total lock period</span><span class="ts-val">18 months from mainnet launch</span></div>
+              <div class="ts-row"><span class="ts-key">Mechanism</span><span class="ts-val">On-chain smart contract — SWRSaft.sol (auditable)</span></div>
+            </div>
+
+            <div class="ts-section">
+              <div class="ts-h3">Payment</div>
+              <div class="ts-row"><span class="ts-key">Currency accepted</span><span class="ts-val">ETH (USDT/USDC on request)</span></div>
+              <div class="ts-row"><span class="ts-key">ETH rate locked</span><span class="ts-val">At time of transfer (7-day avg used for disputes)</span></div>
+              <div class="ts-row"><span class="ts-key">Receiving wallet</span><span class="ts-val">founders@swr.sa — address provided on request</span></div>
+            </div>
+
+            <div class="ts-section">
+              <div class="ts-h3">Rights &amp; Restrictions</div>
+              <div class="ts-row"><span class="ts-key">Token utility</span><span class="ts-val">Fee discounts, governance, validator staking</span></div>
+              <div class="ts-row"><span class="ts-key">Equity rights</span><span class="ts-val">None — utility token, not a security</span></div>
+              <div class="ts-row"><span class="ts-key">Transferability</span><span class="ts-val">SAFT position non-transferable. Tokens transferable after unlock.</span></div>
+              <div class="ts-row"><span class="ts-key">Jurisdiction</span><span class="ts-val">Saudi Arabia · Governed by Saudi law</span></div>
+            </div>
+
+            <div style="margin-top:24px;padding:16px;background:var(--dark4);border-radius:10px;font-size:0.78rem;color:var(--slate);line-height:1.8;">
+              ⚠️ <strong style="color:#1a1a1a;">Important:</strong> This is a utility token agreement. $SWR is not a security and does not represent equity, debt, or a profit-sharing arrangement. Investors should conduct their own legal and financial due diligence. Subject to regulatory developments in Saudi Arabia.
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;margin-top:20px;">
+            <a href="mailto:founders@swr.sa?subject=SWR SAFT Interest&body=I am interested in participating in the SWR SAFT private round." style="padding:12px 24px;border-radius:8px;font-size:0.8rem;font-weight:700;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;text-decoration:none;">Express Interest →</a>
+            <a href="whitepaper.html" style="padding:12px 24px;border-radius:8px;font-size:0.8rem;font-weight:600;border:1px solid var(--dark3);color:var(--slate);text-decoration:none;">Read Whitepaper</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="contracts.js?v=3"></script>
+<script>
+let provider, signer, account;
+
+// SAFT contract ABI (minimal)
+const SAFT_ABI = [
+  'function investors(address) view returns (uint256 totalAllocation, uint256 claimed, uint256 ethContributed, bool registered)',
+  'function claimable(address) view returns (uint256)',
+  'function vestingStatus(address) view returns (uint256 total, uint256 vested, uint256 claimed, uint256 claimableNow, uint256 cliffEnds, uint256 fullyVestedAt)',
+  'function vestingActive() view returns (bool)',
+  'function vestingStart() view returns (uint256)',
+  'function claim()',
+];
+
+// TODO: update with deployed SAFT address after running deploy-saft.js
+const SAFT_ADDRESS = '0x0000000000000000000000000000000000000000'; // placeholder
+
+const SECTIONS = { overview:'SAFT Overview', vesting:'Vesting Schedule', claim:'Claim Tokens', termsheet:'Term Sheet' };
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.s-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  event?.target?.classList.add('active');
+  document.getElementById('topbar-title').textContent = SECTIONS[id] || id;
+}
+
+async function connectWallet() {
+  if (!window.ethereum) { showToast('MetaMask not found.', 'error'); return; }
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    account  = accounts[0];
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer   = provider.getSigner();
+    await afterConnect();
+  } catch(e) { showToast('Connection rejected.', 'error'); }
+}
+
+async function afterConnect() {
+  document.getElementById('wallet-addr').textContent = SWR.fmt.addr(account);
+  document.getElementById('wallet-chip').style.display = '';
+  document.getElementById('btn-connect').style.display = 'none';
+  document.getElementById('btn-disconnect').style.display = '';
+
+  await loadInvestorData();
+}
+
+async function loadInvestorData() {
+  if (SAFT_ADDRESS === '0x0000000000000000000000000000000000000000') {
+    // Contract not deployed yet — show term sheet view for non-registered visitors
+    document.getElementById('connect-overlay').style.display = 'none';
+    document.getElementById('dashboard-wrap').style.display = 'flex';
+    document.getElementById('dashboard-wrap').style.flexDirection = 'column';
+    showToast('SAFT contract not yet deployed — showing term sheet', '');
+    showSection('termsheet');
+    document.querySelector('.s-item[onclick*="termsheet"]').classList.add('active');
+    document.querySelector('.s-item[onclick*="overview"]').classList.remove('active');
+    return;
+  }
+
+  try {
+    const saft = new ethers.Contract(SAFT_ADDRESS, SAFT_ABI, provider);
+    const inv  = await saft.investors(account);
+
+    if (!inv.registered) {
+      document.getElementById('connect-overlay').style.display = 'none';
+      document.getElementById('not-investor').style.display = 'flex';
+      return;
+    }
+
+    document.getElementById('connect-overlay').style.display = 'none';
+    document.getElementById('not-investor').style.display = 'none';
+    document.getElementById('dashboard-wrap').style.display = 'flex';
+    document.getElementById('dashboard-wrap').style.flexDirection = 'column';
+
+    const status = await saft.vestingStatus(account);
+    const total        = Number(ethers.utils.formatEther(status[0]));
+    const vested       = Number(ethers.utils.formatEther(status[1]));
+    const claimed      = Number(ethers.utils.formatEther(status[2]));
+    const claimableNow = Number(ethers.utils.formatEther(status[3]));
+    const cliffEnds    = Number(status[4]);
+    const fullyVested  = Number(status[5]);
+    const ethPaid      = Number(ethers.utils.formatEther(inv.ethContributed));
+    const pct          = total > 0 ? (vested / total * 100).toFixed(1) : '0';
+    const fmt          = n => n.toLocaleString('en-SA', { maximumFractionDigits: 0 });
+    const isActive     = await saft.vestingActive();
+
+    // Overview
+    document.getElementById('ov-total').textContent     = fmt(total) + ' SWR';
+    document.getElementById('ov-usd').textContent       = 'Estimated value at $0.03 public price: $' + (total * 0.03).toLocaleString();
+    document.getElementById('ov-bar').style.width       = pct + '%';
+    document.getElementById('ov-pct').textContent       = pct + '% vested';
+    document.getElementById('ov-status').textContent    = isActive ? 'Vesting active' : 'Waiting for mainnet launch';
+    document.getElementById('ov-claimable').textContent = fmt(claimableNow) + ' SWR';
+    document.getElementById('ov-claimed').textContent   = fmt(claimed) + ' SWR';
+    document.getElementById('ov-remaining').textContent = fmt(total - claimed) + ' SWR';
+    document.getElementById('ov-eth').textContent       = ethPaid.toFixed(4) + ' ETH';
+
+    if (cliffEnds > 0) {
+      document.getElementById('ov-cliff').textContent = new Date(cliffEnds * 1000).toLocaleDateString('en-SA');
+      document.getElementById('ov-full').textContent  = new Date(fullyVested  * 1000).toLocaleDateString('en-SA');
+    }
+
+    // Claim
+    document.getElementById('cl-claimable').textContent = fmt(claimableNow) + ' SWR';
+    document.getElementById('cl-sub').textContent = claimableNow > 0 ? 'Ready to claim to your wallet' : 'No tokens unlocked yet — check back after the cliff';
+    const btnClaim = document.getElementById('btn-claim');
+    btnClaim.disabled = claimableNow <= 0;
+    btnClaim.textContent = claimableNow > 0 ? `Claim ${fmt(claimableNow)} SWR →` : 'No tokens unlocked yet';
+
+    // Vesting table
+    buildVestingTable(total, cliffEnds, fullyVested);
+
+  } catch(e) {
+    console.error(e);
+    showToast('Error loading investor data: ' + e.message, 'error');
+  }
+}
+
+function buildVestingTable(total, cliffEnds, fullyVested) {
+  const tbody = document.getElementById('vesting-table');
+  if (!cliffEnds) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Vesting not started — triggered at mainnet launch</td></tr>';
+    return;
+  }
+
+  const rows = [];
+  const milestones = [
+    { label: 'Cliff ends (0% unlocked)', ts: cliffEnds, pct: 0 },
+  ];
+  // Monthly unlocks
+  const vestingDuration = fullyVested - cliffEnds;
+  for (let m = 1; m <= 12; m++) {
+    const ts = cliffEnds + Math.floor(vestingDuration * m / 12);
+    milestones.push({ label: `Month ${m} unlock`, ts, pct: Math.floor(m / 12 * 100) });
+  }
+  milestones.push({ label: 'Fully vested', ts: fullyVested, pct: 100 });
+
+  const now = Date.now() / 1000;
+  milestones.forEach(m => {
+    const unlocked = Math.floor(total * m.pct / 100);
+    const status = now >= m.ts ? '<span style="color:var(--green);font-weight:600">✓ Unlocked</span>' : '<span style="color:var(--muted)">Upcoming</span>';
+    rows.push(`<tr>
+      <td>${m.label}</td>
+      <td style="font-family:monospace">${new Date(m.ts * 1000).toLocaleDateString('en-SA')}</td>
+      <td>${unlocked.toLocaleString()} SWR</td>
+      <td>${m.pct}%</td>
+      <td>${status}</td>
+    </tr>`);
+  });
+  tbody.innerHTML = rows.join('');
+}
+
+async function claimTokens() {
+  if (!signer || SAFT_ADDRESS === '0x0000000000000000000000000000000000000000') return;
+  const btn = document.getElementById('btn-claim');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Claiming…';
+  try {
+    const saft = new ethers.Contract(SAFT_ADDRESS, SAFT_ABI, signer);
+    const tx = await saft.claim();
+    showToast('Transaction sent. Waiting for confirmation…');
+    await tx.wait();
+    showToast('Tokens claimed successfully ✓', 'success');
+    await loadInvestorData();
+  } catch(e) {
+    showToast('Claim failed: ' + (e.reason || e.message), 'error');
+    btn.disabled = false;
+    btn.textContent = 'Retry Claim →';
+  }
+}
+
+function disconnectWallet() {
+  provider = signer = account = null;
+  document.getElementById('wallet-chip').style.display = 'none';
+  document.getElementById('btn-connect').style.display = '';
+  document.getElementById('btn-disconnect').style.display = 'none';
+  document.getElementById('connect-overlay').style.display = 'flex';
+  document.getElementById('not-investor').style.display = 'none';
+  document.getElementById('dashboard-wrap').style.display = 'none';
+}
+
+let toastTimer;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.className = ''; }, 4000);
+}
+
+window.addEventListener('load', async () => {
+  if (window.ethereum) {
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    if (accounts.length) { account = accounts[0]; provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner(); await afterConnect(); }
+    window.ethereum.on('accountsChanged', accs => { if (!accs.length) disconnectWallet(); else { account = accs[0]; provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner(); afterConnect(); } });
+  }
+});
+</script>
+</body>
+</html>
