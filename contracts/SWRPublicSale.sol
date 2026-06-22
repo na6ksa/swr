@@ -12,8 +12,8 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  *
  *         Sale parameters:
  *           - 10,000,000 SWR (5% of total supply)
- *           - Price: 0.0000167 ETH per SWR (~$0.05 at $3000/ETH)
- *           - Hard cap: 100 ETH raised
+ *           - Price: 0.0000222 ETH per SWR (0.25 SAR / ~$0.067 at $3000/ETH, 3.75 SAR/USD)
+ *           - Hard cap: 222 ETH raised (~$666K / ~2,500,000 SAR)
  *           - Min per wallet: 0.01 ETH (~333 SWR)
  *           - Max per wallet: 2 ETH (~66,666 SWR)
  *
@@ -31,8 +31,8 @@ contract SWRPublicSale is Ownable, ReentrancyGuard {
     IERC20 public immutable swrToken;
 
     // ── SALE PARAMETERS ──────────────────────────────────────
-    uint256 public constant PRICE_PER_TOKEN = 0.0000167 ether; // ETH per 1 SWR (~$0.05 at $3000/ETH)
-    uint256 public constant HARD_CAP        = 100 ether;       // max ETH raised
+    uint256 public constant PRICE_PER_TOKEN = 0.0000222 ether; // ETH per 1 SWR (0.25 SAR / ~$0.067 at $3000/ETH)
+    uint256 public constant HARD_CAP        = 222 ether;       // ~$666K / ~2,500,000 SAR
     uint256 public constant SALE_SUPPLY     = 10_000_000 * 1e18; // 10M SWR
     uint256 public constant MIN_CONTRIBUTION = 0.01 ether;
     uint256 public constant MAX_CONTRIBUTION = 2 ether;

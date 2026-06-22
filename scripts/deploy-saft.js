@@ -15,7 +15,7 @@ require("dotenv").config();
 // ── INVESTORS — fill in before deploying ─────────────────────
 // ethContributed: how much ETH they paid (for on-chain record)
 // swrAllocation: how many SWR they receive (ethPaid / 0.000005 ETH per SWR at $0.015)
-// Example: $25,000 at $3,000/ETH = 8.33 ETH → $25,000 / $0.025 = 1,000,000 SWR
+// Example: 93,750 SAR ($25,000) at 0.125 SAR/SWR → 750,000 SWR
 
 const INVESTORS = [
   // { address: "0xINVESTOR_1", ethContributed: ethers.parseEther("16.67"), swrAllocation: ethers.parseEther("3333400") },
