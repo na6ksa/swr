@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWR — بوابة مستثمري SAFT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--green:#1a472a;--green3:#2d7a35;--gold:#b8860b;--gold2:#c9980a;--dark:#faf7f2;--dark2:#fffdf8;--dark3:#e8e0d0;--dark4:#f2ede4;--slate:#8b7355;--muted:#c4b49a;--red:#c0392b;}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--dark);font-family:'Cairo',sans-serif;color:#1a1a1a;line-height:1.8;letter-spacing:0;}
+  .grad-g{background:linear-gradient(135deg,var(--green),var(--green3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+  /* SHELL */
+  .shell{display:flex;flex-direction:row-reverse;min-height:100vh;}
+  .sidebar{width:260px;flex-shrink:0;background:var(--dark2);border-left:1px solid var(--dark3);padding:28px 0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+  .s-logo{padding:0 22px 24px;border-bottom:1px solid var(--dark3);margin-bottom:20px;text-align:right;}
+  .s-logo-title{font-size:1.3rem;font-weight:900;color:var(--green);}
+  .s-logo-sub{font-size:0.68rem;font-weight:700;color:var(--muted);margin-top:2px;}
+  .s-section{padding:0 14px;margin-bottom:8px;}
+  .s-label{font-size:0.6rem;font-weight:700;color:var(--muted);padding:8px 8px 4px;text-align:right;letter-spacing:0;}
+  .s-item{display:flex;align-items:center;flex-direction:row-reverse;gap:10px;padding:9px 10px;border-radius:8px;font-size:0.82rem;color:var(--slate);cursor:pointer;transition:all 0.15s;}
+  .s-item:hover{background:var(--dark3);color:#1a1a1a;}
+  .s-item.active{background:rgba(26,71,42,0.1);color:var(--green);font-weight:700;}
+  .s-bottom{margin-top:auto;padding:16px 22px;border-top:1px solid var(--dark3);font-size:0.72rem;color:var(--muted);text-align:right;}
+
+  .main{flex:1;display:flex;flex-direction:column;}
+  .topbar{height:60px;border-bottom:1px solid var(--dark3);display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(250,247,242,0.96);backdrop-filter:blur(12px);position:sticky;top:0;z-index:10;}
+  .topbar-title{font-size:0.9rem;font-weight:800;}
+  .topbar-left{display:flex;align-items:center;gap:10px;}
+  .wallet-chip{display:flex;align-items:center;gap:6px;background:var(--dark2);border:1px solid var(--dark3);border-radius:8px;padding:6px 12px;font-size:0.68rem;font-weight:600;direction:ltr;}
+  .wdot{width:5px;height:5px;border-radius:50%;background:var(--green);}
+  .btn-sm{padding:8px 18px;border-radius:8px;font-size:0.78rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;border:none;cursor:pointer;}
+  .btn-sm:disabled{opacity:0.4;cursor:not-allowed;}
+
+  /* OVERLAYS */
+  #connect-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:18px;padding:40px;text-align:center;}
+  #connect-overlay h2{font-size:1.4rem;font-weight:900;}
+  #connect-overlay p{font-size:0.88rem;color:var(--slate);max-width:360px;line-height:1.9;}
+  .btn-connect{padding:13px 32px;border-radius:10px;font-size:0.9rem;font-weight:900;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;border:none;cursor:pointer;}
+
+  #not-investor{display:none;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px;padding:40px;text-align:center;}
+  #not-investor h2{font-size:1.2rem;font-weight:800;color:var(--red);}
+  #not-investor p{font-size:0.88rem;color:var(--slate);max-width:360px;line-height:1.9;}
+
+  /* CONTENT */
+  .content{padding:32px;flex:1;}
+  .section{display:none;}
+  .section.active{display:block;}
+  .page-title{font-size:1.2rem;font-weight:900;margin-bottom:4px;text-align:right;}
+  .page-sub{font-size:0.85rem;color:var(--slate);margin-bottom:28px;text-align:right;}
+
+  /* CARDS */
+  .card{background:var(--dark2);border:1px solid var(--dark3);border-radius:14px;padding:24px;margin-bottom:16px;text-align:right;}
+  .card-title{font-size:0.68rem;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:0;}
+  .card-num{font-size:2rem;font-weight:900;margin-bottom:4px;direction:rtl;}
+  .card-sub{font-size:0.75rem;color:var(--slate);}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+
+  /* VESTING CARD */
+  .vesting-card{background:linear-gradient(135deg,#1a472a,#2d7a35);border-radius:16px;padding:28px;color:#fff;margin-bottom:20px;text-align:right;}
+  .vc-label{font-size:0.65rem;font-weight:700;color:rgba(255,255,255,0.65);margin-bottom:6px;letter-spacing:0;}
+  .vc-num{font-size:2.4rem;font-weight:900;margin-bottom:4px;direction:ltr;display:block;text-align:right;}
+  .vc-sub{font-size:0.78rem;color:rgba(255,255,255,0.65);margin-bottom:24px;}
+  .progress-bg{background:rgba(255,255,255,0.15);border-radius:6px;height:10px;margin-bottom:8px;}
+  .progress-bar{height:100%;border-radius:6px;background:#fff;transition:width 0.5s;}
+  .progress-labels{display:flex;justify-content:space-between;flex-direction:row-reverse;font-size:0.62rem;color:rgba(255,255,255,0.6);}
+  .vc-claim{width:100%;padding:12px;border-radius:10px;font-size:0.88rem;font-weight:800;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;cursor:pointer;margin-top:18px;transition:background 0.2s;font-family:'Cairo',sans-serif;letter-spacing:0;}
+  .vc-claim:hover{background:rgba(255,255,255,0.25);}
+  .vc-claim:disabled{opacity:0.4;cursor:not-allowed;}
+
+  /* TABLE */
+  .table-wrap{background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+  table{width:100%;border-collapse:collapse;direction:rtl;}
+  thead th{padding:10px 16px;font-size:0.62rem;font-weight:700;color:var(--muted);text-align:right;border-bottom:1px solid var(--dark3);background:var(--dark4);letter-spacing:0;}
+  tbody td{padding:12px 16px;font-size:0.82rem;color:var(--slate);border-bottom:1px solid var(--dark4);text-align:right;}
+  tbody td:first-child{color:#1a1a1a;font-weight:700;}
+  tbody tr:last-child td{border-bottom:none;}
+
+  /* TERM SHEET */
+  .ts-section{margin-bottom:28px;}
+  .ts-h3{font-size:0.8rem;font-weight:800;color:var(--green);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--dark3);letter-spacing:0;}
+  .ts-row{display:flex;justify-content:space-between;flex-direction:row-reverse;padding:9px 0;border-bottom:1px solid var(--dark4);font-size:0.85rem;}
+  .ts-row:last-child{border-bottom:none;}
+  .ts-key{color:var(--slate);}
+  .ts-val{font-weight:600;color:#1a1a1a;text-align:left;direction:ltr;}
+
+  /* TOAST */
+  #toast{position:fixed;bottom:24px;left:24px;padding:12px 18px;border-radius:10px;font-size:0.82rem;font-weight:600;color:#1a1a1a;background:#fff;border:1px solid var(--dark3);box-shadow:0 4px 20px rgba(0,0,0,0.12);opacity:0;transform:translateY(8px);transition:all 0.3s;z-index:999;pointer-events:none;text-align:right;}
+  #toast.show{opacity:1;transform:translateY(0);}
+  #toast.success{border-color:rgba(26,71,42,0.3);background:#f0fdf4;}
+  #toast.error{border-color:rgba(192,57,43,0.3);background:#fef2f2;}
+  .spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(26,71,42,0.2);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-left:5px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  @media(max-width:840px){.sidebar{display:none;}.shell{flex-direction:column;}.grid-3,.grid-2{grid-template-columns:1fr;}.content{padding:20px;}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR (right in RTL) -->
+  <aside class="sidebar">
+    <div class="s-logo">
+      <div class="s-logo-title">SWR</div>
+      <div class="s-logo-sub">بوابة مستثمري SAFT</div>
+    </div>
+    <div class="s-section">
+      <div class="s-label">حسابي</div>
+      <div class="s-item active" onclick="showSection('overview')">📊 نظرة عامة</div>
+      <div class="s-item" onclick="showSection('vesting')">🔐 جدول الاستحقاق</div>
+      <div class="s-item" onclick="showSection('claim')">💰 استلام الرموز</div>
+    </div>
+    <div class="s-section">
+      <div class="s-label">الوثائق</div>
+      <div class="s-item" onclick="showSection('termsheet')">📄 شروط الاتفاقية</div>
+      <div class="s-item" onclick="window.open('whitepaper-ar.html')">📘 الورقة البيضاء ↗</div>
+      <div class="s-item" onclick="window.open('dashboard-ar.html')">🖥️ العرض المباشر ↗</div>
+      <div class="s-item" onclick="window.open('saft.html')">🌐 English Version ↗</div>
+    </div>
+    <div class="s-bottom">
+      <div>منصة SWR · founders@swr.sa</div>
+      <div style="margin-top:4px;">الرياض، المملكة العربية السعودية</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">نظرة عامة على SAFT</div>
+      <div class="topbar-left">
+        <div id="wallet-chip" class="wallet-chip" style="display:none"><div class="wdot"></div><span id="wallet-addr">—</span></div>
+        <button id="btn-connect" class="btn-sm" onclick="connectWallet()">ربط المحفظة</button>
+        <button id="btn-disconnect" style="display:none;padding:8px 14px;border-radius:8px;font-size:0.75rem;font-weight:700;border:1px solid var(--dark3);background:transparent;color:var(--slate);cursor:pointer;font-family:'Cairo',sans-serif;" onclick="disconnectWallet()">قطع الاتصال</button>
+      </div>
+    </div>
+
+    <!-- CONNECT -->
+    <div id="connect-overlay">
+      <div style="font-size:2.5rem">🤝</div>
+      <h2>بوابة مستثمري SAFT</h2>
+      <p>قم بربط المحفظة المسجلة كمستثمر SAFT لعرض تخصيصك وجدول الاستحقاق.</p>
+      <button class="btn-connect" onclick="connectWallet()">ربط MetaMask</button>
+    </div>
+
+    <!-- NOT AN INVESTOR -->
+    <div id="not-investor">
+      <div style="font-size:2rem">🔒</div>
+      <h2>غير مسجل كمستثمر</h2>
+      <p>هذه المحفظة غير مسجلة كمستثمر SAFT. إذا كنت تعتقد أن هذا خطأ، تواصل معنا على founders@swr.sa</p>
+    </div>
+
+    <!-- SECTIONS -->
+    <div id="dashboard-wrap" style="display:none;flex:1;overflow:auto;">
+      <div class="content">
+
+        <!-- OVERVIEW -->
+        <div id="section-overview" class="section active">
+          <div class="page-title">نظرة عامة على المحفظة</div>
+          <div class="page-sub">تخصيصك من SWR عبر SAFT وحالة الاستحقاق الحالية.</div>
+
+          <div class="vesting-card">
+            <div class="vc-label">إجمالي تخصيص SWR</div>
+            <div class="vc-num" id="ov-total">— SWR</div>
+            <div class="vc-sub" id="ov-usd">القيمة التقديرية بسعر 0.25 ر.س العام: —</div>
+            <div class="progress-bg"><div class="progress-bar" id="ov-bar" style="width:0%"></div></div>
+            <div class="progress-labels"><span id="ov-status">في انتظار إطلاق الشبكة الرئيسية</span><span id="ov-pct">0% مستحق</span></div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card"><div class="card-title">مستحق الاستلام</div><div class="card-num grad-g" id="ov-claimable">—</div><div class="card-sub">جاهز للاستلام الآن</div></div>
+            <div class="card"><div class="card-title">تم استلامه</div><div class="card-num" style="color:#1a1a1a" id="ov-claimed">—</div><div class="card-sub">محوَّل إلى محفظتك</div></div>
+            <div class="card"><div class="card-title">المتبقي مقفل</div><div class="card-num" style="color:var(--gold)" id="ov-remaining">—</div><div class="card-sub">لا يزال تحت الاستحقاق</div></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">مبلغ استثمارك</div>
+              <div class="card-num" id="ov-eth" style="color:#1a1a1a;direction:ltr;text-align:right;">— ETH</div>
+              <div class="card-sub" id="ov-price">بسعر 0.125 ر.س/SWR (سعر SAFT)</div>
+            </div>
+            <div class="card">
+              <div class="card-title">الجدول الزمني للاستحقاق</div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+                <div style="display:flex;justify-content:space-between;flex-direction:row-reverse;font-size:0.82rem;"><span style="color:var(--slate);">بداية الاستحقاق</span><span id="ov-start" style="font-weight:700">عند إطلاق الشبكة الرئيسية</span></div>
+                <div style="display:flex;justify-content:space-between;flex-direction:row-reverse;font-size:0.82rem;"><span style="color:var(--slate);">انتهاء المهلة</span><span id="ov-cliff" style="font-weight:700">البداية + 6 أشهر</span></div>
+                <div style="display:flex;justify-content:space-between;flex-direction:row-reverse;font-size:0.82rem;"><span style="color:var(--slate);">الاستحقاق الكامل</span><span id="ov-full" style="font-weight:700">البداية + 18 شهراً</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VESTING -->
+        <div id="section-vesting" class="section">
+          <div class="page-title">جدول الاستحقاق</div>
+          <div class="page-sub">استحقاق خطي بعد مهلة 6 أشهر من إطلاق الشبكة الرئيسية.</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>الحدث</th><th>التاريخ</th><th>SWR المُفتَح</th><th>النسبة التراكمية</th><th>الحالة</th></tr></thead>
+              <tbody id="vesting-table"></tbody>
+            </table>
+          </div>
+          <div class="card" style="font-size:0.85rem;color:var(--slate);line-height:1.9;">
+            <strong style="color:#1a1a1a;display:block;margin-bottom:8px;">كيف يعمل الاستحقاق</strong>
+            الرموز محفوظة في العقد الذكي SWRSaft. بعد إطلاق الشبكة الرئيسية (يُفعَّل على السلسلة من قِبل فريق SWR)، تبدأ مهلة 6 أشهر. بعد المهلة، تُفتَح الرموز تدريجياً على مدى 12 شهراً — أي 1/12 من تخصيصك بعد المهلة يُفتَح شهرياً. يمكنك الاستلام في أي وقت.
+          </div>
+        </div>
+
+        <!-- CLAIM -->
+        <div id="section-claim" class="section">
+          <div class="page-title">استلام الرموز</div>
+          <div class="page-sub">استلم رموز SWR المُفتَحة إلى محفظتك المتصلة.</div>
+          <div class="vesting-card" style="margin-bottom:20px;">
+            <div class="vc-label">متاح للاستلام</div>
+            <div class="vc-num" id="cl-claimable">— SWR</div>
+            <div class="vc-sub" id="cl-sub">قم بربط المحفظة للتحقق</div>
+            <button class="vc-claim" id="btn-claim" onclick="claimTokens()" disabled>استلام الرموز →</button>
+          </div>
+          <div class="card" id="claim-history">
+            <div class="card-title">سجل الاستلام</div>
+            <div style="font-size:0.82rem;color:var(--muted);margin-top:8px;">ستظهر عمليات الاستلام على السلسلة هنا بعد أول استلام.</div>
+          </div>
+        </div>
+
+        <!-- TERM SHEET -->
+        <div id="section-termsheet" class="section">
+          <div class="page-title">شروط اتفاقية SAFT</div>
+          <div class="page-sub">اتفاقية بسيطة للرموز المستقبلية — جولة SWR الخاصة</div>
+
+          <div class="card">
+            <div class="ts-section">
+              <div class="ts-h3">تفاصيل الجولة</div>
+              <div class="ts-row"><span class="ts-key">اسم الجولة</span><span class="ts-val">SWR SAFT — جولة خاصة</span></div>
+              <div class="ts-row"><span class="ts-key">نوع الجولة</span><span class="ts-val">Simple Agreement for Future Tokens (SAFT)</span></div>
+              <div class="ts-row"><span class="ts-key">المستثمرون المؤهلون</span><span class="ts-val">معتمدون ومؤسسيون فقط (3–5 مستثمرين)</span></div>
+              <div class="ts-row"><span class="ts-key">هدف التمويل</span><span class="ts-val">1,250,000 ر.س (~$333,000)</span></div>
+            </div>
+
+            <div class="ts-section">
+              <div class="ts-h3">شروط الرمز</div>
+              <div class="ts-row"><span class="ts-key">الرمز</span><span class="ts-val">$SWR — رمز استخدام منصة SWR</span></div>
+              <div class="ts-row"><span class="ts-key">معيار الرمز</span><span class="ts-val">ERC-20، 18 خانة عشرية، Ethereum</span></div>
+              <div class="ts-row"><span class="ts-key">إجمالي العرض</span><span class="ts-val">200,000,000 SWR (ثابت، لا سك إضافي)</span></div>
+              <div class="ts-row"><span class="ts-key">تخصيص SAFT</span><span class="ts-val">من شريحة 18% للمستثمرين = 36,000,000 SWR</span></div>
+              <div class="ts-row"><span class="ts-key">سعر SAFT</span><span class="ts-val">0.125 ر.س للـ SWR (~$0.033)</span></div>
+              <div class="ts-row"><span class="ts-key">سعر البيع العام</span><span class="ts-val">0.25 ر.س للـ SWR — علاوة 100% فوق SAFT</span></div>
+              <div class="ts-row"><span class="ts-key">الحد الأدنى للاستثمار</span><span class="ts-val">93,750 ر.س ($25,000)</span></div>
+              <div class="ts-row"><span class="ts-key">الحد الأقصى للاستثمار</span><span class="ts-val">375,000 ر.س ($100,000)</span></div>
+            </div>
+
+            <div class="ts-section">
+              <div class="ts-h3">جدول الاستحقاق</div>
+              <div class="ts-row"><span class="ts-key">محفز الاستحقاق</span><span class="ts-val">إطلاق الشبكة الرئيسية لـ SWR (على السلسلة)</span></div>
+              <div class="ts-row"><span class="ts-key">المهلة</span><span class="ts-val">6 أشهر بعد المحفز</span></div>
+              <div class="ts-row"><span class="ts-key">مدة الاستحقاق</span><span class="ts-val">12 شهراً خطياً بعد المهلة</span></div>
+              <div class="ts-row"><span class="ts-key">إجمالي فترة القفل</span><span class="ts-val">18 شهراً من إطلاق الشبكة الرئيسية</span></div>
+              <div class="ts-row"><span class="ts-key">الآلية</span><span class="ts-val">عقد SWRSaft.sol الذكي (قابل للتدقيق)</span></div>
+            </div>
+
+            <div class="ts-section">
+              <div class="ts-h3">الدفع</div>
+              <div class="ts-row"><span class="ts-key">العملة المقبولة</span><span class="ts-val">ETH (أو USDT/USDC بالاتفاق)</span></div>
+              <div class="ts-row"><span class="ts-key">سعر ETH المعتمد</span><span class="ts-val">وقت التحويل (متوسط 7 أيام للنزاعات)</span></div>
+              <div class="ts-row"><span class="ts-key">محفظة الاستقبال</span><span class="ts-val">founders@swr.sa — العنوان عند الطلب</span></div>
+            </div>
+
+            <div class="ts-section">
+              <div class="ts-h3">الحقوق والقيود</div>
+              <div class="ts-row"><span class="ts-key">استخدام الرمز</span><span class="ts-val">خصومات الرسوم، الحوكمة، التخزين</span></div>
+              <div class="ts-row"><span class="ts-key">حقوق حقوق الملكية</span><span class="ts-val">لا شيء — رمز استخدام، ليس ورقة مالية</span></div>
+              <div class="ts-row"><span class="ts-key">قابلية النقل</span><span class="ts-val">اتفاقية SAFT غير قابلة للنقل. الرموز قابلة للنقل بعد الفتح.</span></div>
+              <div class="ts-row"><span class="ts-key">الاختصاص القانوني</span><span class="ts-val">المملكة العربية السعودية · القانون السعودي</span></div>
+            </div>
+
+            <div style="margin-top:24px;padding:16px;background:var(--dark4);border-radius:10px;font-size:0.82rem;color:var(--slate);line-height:1.9;">
+              ⚠️ <strong style="color:#1a1a1a;">ملاحظة هامة:</strong> هذه اتفاقية رمز استخدام. $SWR ليس ورقة مالية ولا يمثل حقوق ملكية أو دين أو ترتيب مشاركة في الأرباح. على المستثمرين إجراء العناية القانونية والمالية الخاصة بهم. خاضع للمستجدات التنظيمية في المملكة العربية السعودية.
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;margin-top:20px;flex-direction:row-reverse;">
+            <a href="mailto:founders@swr.sa?subject=اهتمام بـ SWR SAFT&body=أرغب في الاستثمار في جولة SAFT الخاصة لمنصة SWR." style="padding:12px 24px;border-radius:8px;font-size:0.82rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;text-decoration:none;font-family:'Cairo',sans-serif;">التعبير عن الاهتمام →</a>
+            <a href="whitepaper-ar.html" style="padding:12px 24px;border-radius:8px;font-size:0.82rem;font-weight:700;border:1px solid var(--dark3);color:var(--slate);text-decoration:none;font-family:'Cairo',sans-serif;">الورقة البيضاء</a>
+            <a href="found-ar.html" style="padding:12px 24px;border-radius:8px;font-size:0.82rem;font-weight:700;border:1px solid var(--dark3);color:var(--slate);text-decoration:none;font-family:'Cairo',sans-serif;">جولة التأسيس</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="contracts.js?v=3"></script>
+<script>
+let provider, signer, account;
+
+const SAFT_ABI = [
+  'function investors(address) view returns (uint256 totalAllocation, uint256 claimed, uint256 ethContributed, bool registered)',
+  'function claimable(address) view returns (uint256)',
+  'function vestingStatus(address) view returns (uint256 total, uint256 vested, uint256 claimed, uint256 claimableNow, uint256 cliffEnds, uint256 fullyVestedAt)',
+  'function vestingActive() view returns (bool)',
+  'function vestingStart() view returns (uint256)',
+  'function claim()',
+];
+
+const SAFT_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+const SECTIONS = {
+  overview:  'نظرة عامة على SAFT',
+  vesting:   'جدول الاستحقاق',
+  claim:     'استلام الرموز',
+  termsheet: 'شروط الاتفاقية'
+};
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.s-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  event?.target?.classList.add('active');
+  document.getElementById('topbar-title').textContent = SECTIONS[id] || id;
+}
+
+async function connectWallet() {
+  if (!window.ethereum) { showToast('MetaMask غير موجود.', 'error'); return; }
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    account  = accounts[0];
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer   = provider.getSigner();
+    await afterConnect();
+  } catch(e) { showToast('تم رفض الاتصال.', 'error'); }
+}
+
+async function afterConnect() {
+  document.getElementById('wallet-addr').textContent = SWR.fmt.addr(account);
+  document.getElementById('wallet-chip').style.display = '';
+  document.getElementById('btn-connect').style.display = 'none';
+  document.getElementById('btn-disconnect').style.display = '';
+  await loadInvestorData();
+}
+
+async function loadInvestorData() {
+  if (SAFT_ADDRESS === '0x0000000000000000000000000000000000000000') {
+    document.getElementById('connect-overlay').style.display = 'none';
+    document.getElementById('dashboard-wrap').style.display = 'flex';
+    document.getElementById('dashboard-wrap').style.flexDirection = 'column';
+    showToast('عقد SAFT لم يُنشر بعد — عرض شروط الاتفاقية', '');
+    showSection('termsheet');
+    document.querySelector('.s-item[onclick*="termsheet"]').classList.add('active');
+    document.querySelector('.s-item[onclick*="overview"]').classList.remove('active');
+    return;
+  }
+
+  try {
+    const saft = new ethers.Contract(SAFT_ADDRESS, SAFT_ABI, provider);
+    const inv  = await saft.investors(account);
+
+    if (!inv.registered) {
+      document.getElementById('connect-overlay').style.display = 'none';
+      document.getElementById('not-investor').style.display = 'flex';
+      return;
+    }
+
+    document.getElementById('connect-overlay').style.display = 'none';
+    document.getElementById('not-investor').style.display = 'none';
+    document.getElementById('dashboard-wrap').style.display = 'flex';
+    document.getElementById('dashboard-wrap').style.flexDirection = 'column';
+
+    const status = await saft.vestingStatus(account);
+    const total        = Number(ethers.utils.formatEther(status[0]));
+    const vested       = Number(ethers.utils.formatEther(status[1]));
+    const claimed      = Number(ethers.utils.formatEther(status[2]));
+    const claimableNow = Number(ethers.utils.formatEther(status[3]));
+    const cliffEnds    = Number(status[4]);
+    const fullyVested  = Number(status[5]);
+    const ethPaid      = Number(ethers.utils.formatEther(inv.ethContributed));
+    const pct          = total > 0 ? (vested / total * 100).toFixed(1) : '0';
+    const fmt          = n => n.toLocaleString('ar-SA', { maximumFractionDigits: 0 });
+    const isActive     = await saft.vestingActive();
+
+    document.getElementById('ov-total').textContent     = fmt(total) + ' SWR';
+    document.getElementById('ov-usd').textContent       = 'القيمة التقديرية بسعر 0.25 ر.س: ' + (total * 0.25).toLocaleString('ar-SA', {maximumFractionDigits:0}) + ' ر.س';
+    document.getElementById('ov-bar').style.width       = pct + '%';
+    document.getElementById('ov-pct').textContent       = pct + '% مستحق';
+    document.getElementById('ov-status').textContent    = isActive ? 'الاستحقاق نشط' : 'في انتظار إطلاق الشبكة الرئيسية';
+    document.getElementById('ov-claimable').textContent = fmt(claimableNow) + ' SWR';
+    document.getElementById('ov-claimed').textContent   = fmt(claimed) + ' SWR';
+    document.getElementById('ov-remaining').textContent = fmt(total - claimed) + ' SWR';
+    document.getElementById('ov-eth').textContent       = ethPaid.toFixed(4) + ' ETH';
+
+    if (cliffEnds > 0) {
+      document.getElementById('ov-cliff').textContent = new Date(cliffEnds * 1000).toLocaleDateString('ar-SA');
+      document.getElementById('ov-full').textContent  = new Date(fullyVested  * 1000).toLocaleDateString('ar-SA');
+    }
+
+    document.getElementById('cl-claimable').textContent = fmt(claimableNow) + ' SWR';
+    document.getElementById('cl-sub').textContent = claimableNow > 0 ? 'جاهز للاستلام إلى محفظتك' : 'لا رموز مفتوحة بعد — تحقق بعد المهلة';
+    const btnClaim = document.getElementById('btn-claim');
+    btnClaim.disabled = claimableNow <= 0;
+    btnClaim.textContent = claimableNow > 0 ? `استلام ${fmt(claimableNow)} SWR →` : 'لا رموز مفتوحة بعد';
+
+    buildVestingTable(total, cliffEnds, fullyVested);
+
+  } catch(e) {
+    console.error(e);
+    showToast('خطأ في تحميل بيانات المستثمر: ' + e.message, 'error');
+  }
+}
+
+function buildVestingTable(total, cliffEnds, fullyVested) {
+  const tbody = document.getElementById('vesting-table');
+  if (!cliffEnds) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">الاستحقاق لم يبدأ — يُفعَّل عند إطلاق الشبكة الرئيسية</td></tr>';
+    return;
+  }
+  const milestones = [{ label: 'انتهاء المهلة (0% مفتوح)', ts: cliffEnds, pct: 0 }];
+  const vestingDuration = fullyVested - cliffEnds;
+  for (let m = 1; m <= 12; m++) {
+    milestones.push({ label: `فتح الشهر ${m}`, ts: cliffEnds + Math.floor(vestingDuration * m / 12), pct: Math.floor(m / 12 * 100) });
+  }
+  milestones.push({ label: 'استحقاق كامل', ts: fullyVested, pct: 100 });
+  const now = Date.now() / 1000;
+  tbody.innerHTML = milestones.map(m => {
+    const unlocked = Math.floor(total * m.pct / 100);
+    const status = now >= m.ts ? '<span style="color:var(--green);font-weight:700">✓ مفتوح</span>' : '<span style="color:var(--muted)">قادم</span>';
+    return `<tr><td>${m.label}</td><td style="direction:ltr;text-align:right">${new Date(m.ts*1000).toLocaleDateString('ar-SA')}</td><td>${unlocked.toLocaleString('ar-SA')} SWR</td><td>${m.pct}%</td><td>${status}</td></tr>`;
+  }).join('');
+}
+
+async function claimTokens() {
+  if (!signer || SAFT_ADDRESS === '0x0000000000000000000000000000000000000000') return;
+  const btn = document.getElementById('btn-claim');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>جارٍ الاستلام…';
+  try {
+    const saft = new ethers.Contract(SAFT_ADDRESS, SAFT_ABI, signer);
+    const tx = await saft.claim();
+    showToast('تم إرسال المعاملة. في انتظار التأكيد…');
+    await tx.wait();
+    showToast('تم استلام الرموز بنجاح ✓', 'success');
+    await loadInvestorData();
+  } catch(e) {
+    showToast('فشل الاستلام: ' + (e.reason || e.message), 'error');
+    btn.disabled = false;
+    btn.textContent = 'إعادة المحاولة →';
+  }
+}
+
+function disconnectWallet() {
+  provider = signer = account = null;
+  document.getElementById('wallet-chip').style.display = 'none';
+  document.getElementById('btn-connect').style.display = '';
+  document.getElementById('btn-disconnect').style.display = 'none';
+  document.getElementById('connect-overlay').style.display = 'flex';
+  document.getElementById('not-investor').style.display = 'none';
+  document.getElementById('dashboard-wrap').style.display = 'none';
+}
+
+let toastTimer;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.className = ''; }, 4000);
+}
+
+window.addEventListener('load', async () => {
+  if (window.ethereum) {
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    if (accounts.length) { account = accounts[0]; provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner(); await afterConnect(); }
+    window.ethereum.on('accountsChanged', accs => { if (!accs.length) disconnectWallet(); else { account = accs[0]; provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner(); afterConnect(); } });
+  }
+});
+</script>
+</body>
+</html>
