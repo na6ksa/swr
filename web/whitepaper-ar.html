@@ -40,16 +40,16 @@
   .content{margin-right:260px;max-width:900px;padding:64px 80px;min-height:100vh;}
 
   /* ── COVER ── */
-  .cover{min-height:60vh;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:64px;margin-bottom:80px;border-bottom:1px solid var(--dark3);position:relative;}
-  .cover-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 80% 50%,rgba(0,166,81,0.04),transparent);pointer-events:none;}
-  .cover-tag{font-size:0.65rem;font-weight:700;color:var(--green);margin-bottom:20px;letter-spacing:0;}
+  .cover{min-height:60vh;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:64px;margin-bottom:80px;border-bottom:none;position:relative;background:linear-gradient(135deg,#1a472a,#2d7a35);border-radius:0;padding:80px 80px 64px;}
+  .cover-bg{position:absolute;inset:0;opacity:0.07;background-image:linear-gradient(rgba(255,255,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;border-radius:inherit;}
+  .cover-tag{font-size:0.65rem;font-weight:700;color:rgba(255,255,255,0.75);margin-bottom:20px;letter-spacing:0;}
   .cover h1{font-size:3.2rem;font-weight:900;line-height:1.15;margin-bottom:16px;color:#fff;}
-  .cover-sub{font-size:1rem;color:var(--slate);font-weight:300;max-width:600px;line-height:2;margin-bottom:40px;}
+  .cover-sub{font-size:1rem;color:rgba(255,255,255,0.78);font-weight:300;max-width:600px;line-height:2;margin-bottom:40px;}
   .cover-meta{display:flex;gap:40px;flex-wrap:wrap;flex-direction:row-reverse;}
   .cover-meta-item{display:flex;flex-direction:column;gap:3px;text-align:right;}
-  .cover-meta-label{font-size:0.6rem;font-weight:700;color:var(--muted);letter-spacing:0;}
-  .cover-meta-value{font-size:0.85rem;color:var(--slate);direction:ltr;text-align:right;}
-  .cover-disclaimer{margin-top:32px;padding:14px 18px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:0.78rem;color:#fca5a5;line-height:1.9;}
+  .cover-meta-label{font-size:0.6rem;font-weight:700;color:rgba(255,255,255,0.55);letter-spacing:0;}
+  .cover-meta-value{font-size:0.85rem;color:rgba(255,255,255,0.78);direction:ltr;text-align:right;}
+  .cover-disclaimer{margin-top:32px;padding:14px 18px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.35);border-radius:8px;font-size:0.78rem;color:#fca5a5;line-height:1.9;}
 
   /* ── TYPOGRAPHY ── */
   .wp-section{margin-bottom:80px;scroll-margin-top:32px;}
