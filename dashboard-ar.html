@@ -905,10 +905,11 @@ async function claimYield() {
 }
 
 async function addToken(symbol) {
+  const base = 'https://na6ksa.github.io/swr/logos/';
   const tokens = {
-    SARX:    { address:SWR.addresses.SARX,      symbol:'SARX',    decimals:6,  name:'SAR Stablecoin' },
-    SWR:     { address:SWR.addresses.SWRToken,   symbol:'SWR',     decimals:18, name:'SWR Token' },
-    xROSHN1: { address:SWR.addresses.AssetToken, symbol:'xROSHN1', decimals:6,  name:'SWR Asset: ROSHN Riyadh Block 1' },
+    SARX:    { address:SWR.addresses.SARX,      symbol:'SARX',    decimals:6,  name:'SAR Stablecoin',                  image: base + 'sarx.svg' },
+    SWR:     { address:SWR.addresses.SWRToken,   symbol:'SWR',     decimals:18, name:'SWR Token',                       image: base + 'swr.svg' },
+    xROSHN1: { address:SWR.addresses.AssetToken, symbol:'xROSHN1', decimals:6,  name:'SWR Asset: ROSHN Riyadh Block 1', image: base + 'xroshn1.svg' },
   };
   const t = tokens[symbol]; if (!t) return;
   try { await window.ethereum.request({ method:'wallet_watchAsset', params:{ type:'ERC20', options:t } }); }
