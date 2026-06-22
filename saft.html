@@ -161,7 +161,7 @@
           <div class="vesting-card">
             <div class="vc-label">Total SWR Allocation</div>
             <div class="vc-num" id="ov-total">— SWR</div>
-            <div class="vc-sub" id="ov-usd">Estimated value at $0.01 public price: —</div>
+            <div class="vc-sub" id="ov-usd">Estimated value at $0.05 public price: —</div>
             <div class="progress-bg"><div class="progress-bar" id="ov-bar" style="width:0%"></div></div>
             <div class="progress-labels"><span id="ov-pct">0% vested</span><span id="ov-status">Waiting for mainnet launch</span></div>
           </div>
@@ -176,7 +176,7 @@
             <div class="card">
               <div class="card-title">Your Contribution</div>
               <div class="card-num" id="ov-eth" style="color:#1a1a1a">— ETH</div>
-              <div class="card-sub" id="ov-price">At $0.005/SWR (SAFT price)</div>
+              <div class="card-sub" id="ov-price">At $0.025/SWR (SAFT price)</div>
             </div>
             <div class="card">
               <div class="card-title">Vesting Timeline</div>
@@ -241,8 +241,8 @@
               <div class="ts-row"><span class="ts-key">Token standard</span><span class="ts-val">ERC-20, 18 decimals, Ethereum</span></div>
               <div class="ts-row"><span class="ts-key">Total supply</span><span class="ts-val">200,000,000 SWR (fixed, no additional mint)</span></div>
               <div class="ts-row"><span class="ts-key">SAFT allocation</span><span class="ts-val">From 18% Investor tranche = 36,000,000 SWR</span></div>
-              <div class="ts-row"><span class="ts-key">SAFT price</span><span class="ts-val">$0.005 per SWR</span></div>
-              <div class="ts-row"><span class="ts-key">Public sale price</span><span class="ts-val">$0.01 per SWR (100% premium over SAFT)</span></div>
+              <div class="ts-row"><span class="ts-key">SAFT price</span><span class="ts-val">$0.025 per SWR</span></div>
+              <div class="ts-row"><span class="ts-key">Public sale price</span><span class="ts-val">$0.05 per SWR (100% premium over SAFT)</span></div>
               <div class="ts-row"><span class="ts-key">Min ticket</span><span class="ts-val">$25,000 USD</span></div>
               <div class="ts-row"><span class="ts-key">Max ticket</span><span class="ts-val">$100,000 USD</span></div>
             </div>
@@ -378,7 +378,7 @@ async function loadInvestorData() {
 
     // Overview
     document.getElementById('ov-total').textContent     = fmt(total) + ' SWR';
-    document.getElementById('ov-usd').textContent       = 'Estimated value at $0.01 public price: $' + (total * 0.01).toLocaleString();
+    document.getElementById('ov-usd').textContent       = 'Estimated value at $0.05 public price: $' + (total * 0.05).toLocaleString();
     document.getElementById('ov-bar').style.width       = pct + '%';
     document.getElementById('ov-pct').textContent       = pct + '% vested';
     document.getElementById('ov-status').textContent    = isActive ? 'Vesting active' : 'Waiting for mainnet launch';
