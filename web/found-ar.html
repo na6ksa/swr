@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWR — جولة التأسيس | SAFT والبيع العام</title>
+<meta name="description" content="انضم إلى جولة التأسيس لمنصة SWR — SAFT الخاصة، البيع العام، وفرص الاستثمار في الأصول الحقيقية السعودية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#1a472a; --green3:#2d7a35;
+    --gold:#b8860b;  --gold2:#c9980a;
+    --dark:#faf7f2;  --dark2:#fffdf8;
+    --dark3:#e8e0d0; --dark4:#f2ede4;
+    --slate:#8b7355; --muted:#c4b49a;
+    --red:#c0392b;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--dark);font-family:'Cairo',sans-serif;color:#1a1a1a;line-height:1.8;overflow-x:hidden;letter-spacing:0;}
+  a{color:var(--green);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  .grad-g{background:linear-gradient(135deg,var(--green),var(--green3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .grad-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+  /* ── NAV ── */
+  nav{position:sticky;top:0;z-index:100;background:rgba(250,247,242,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--dark3);padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-logo{font-size:1.2rem;font-weight:900;color:var(--green);}
+  .nav-left{display:flex;align-items:center;gap:12px;}
+  .btn-green{padding:10px 24px;border-radius:8px;font-size:0.82rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;border:none;cursor:pointer;text-decoration:none;}
+  .btn-outline{padding:10px 24px;border-radius:8px;font-size:0.82rem;font-weight:700;border:1px solid var(--dark3);color:var(--slate);cursor:pointer;text-decoration:none;transition:all 0.2s;}
+  .btn-outline:hover{border-color:var(--green);color:var(--green);text-decoration:none;}
+
+  /* ── HERO ── */
+  .hero{background:linear-gradient(135deg,#1a472a,#2d7a35);padding:100px 48px;text-align:center;color:#fff;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;inset:0;opacity:0.06;background-image:linear-gradient(rgba(255,255,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:0.68rem;font-weight:700;letter-spacing:0;text-transform:none;border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:6px 18px;margin-bottom:28px;background:rgba(255,255,255,0.1);}
+  .hero-badge .dot{width:6px;height:6px;border-radius:50%;background:#6ee7b7;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+  .hero h1{font-size:clamp(2rem,5vw,3.6rem);font-weight:900;line-height:1.2;margin-bottom:20px;}
+  .hero p{font-size:1rem;color:rgba(255,255,255,0.8);max-width:600px;margin:0 auto 40px;font-weight:300;line-height:2;}
+  .hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+  .btn-white{padding:13px 32px;border-radius:10px;font-size:0.9rem;font-weight:800;background:#fff;color:var(--green);border:none;cursor:pointer;text-decoration:none;}
+  .btn-white-outline{padding:13px 32px;border-radius:10px;font-size:0.9rem;font-weight:700;background:transparent;border:2px solid rgba(255,255,255,0.5);color:#fff;cursor:pointer;text-decoration:none;}
+
+  /* ── PAGE ── */
+  .page{max-width:1100px;margin:0 auto;padding:0 48px;}
+  section{padding:72px 0;border-bottom:1px solid var(--dark3);}
+  section:last-child{border-bottom:none;}
+  .sec-label{font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--muted);margin-bottom:8px;}
+  .sec-title{font-size:clamp(1.5rem,3vw,2rem);font-weight:900;margin-bottom:14px;line-height:1.3;}
+  .sec-sub{font-size:0.92rem;color:var(--slate);max-width:560px;line-height:1.9;margin-bottom:40px;}
+
+  /* ── STATS ── */
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px;}
+  .stat-card{background:var(--dark2);border:1px solid var(--dark3);border-radius:14px;padding:22px 24px;text-align:right;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+  .stat-num{font-size:1.8rem;font-weight:900;margin-bottom:4px;direction:rtl;display:block;}
+  .stat-lbl{font-size:0.65rem;color:var(--muted);letter-spacing:0;}
+
+  /* ── SAFT CARD ── */
+  .saft-card{background:linear-gradient(135deg,#1a472a,#2d7a35);border-radius:20px;padding:44px;color:#fff;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;margin-bottom:24px;}
+  .sc-eyebrow{font-size:0.62rem;font-weight:700;color:rgba(255,255,255,0.65);margin-bottom:8px;letter-spacing:0;}
+  .sc-title{font-size:2rem;font-weight:900;margin-bottom:6px;}
+  .sc-sub{font-size:0.88rem;color:rgba(255,255,255,0.7);line-height:1.9;margin-bottom:28px;}
+  .sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .sc-item{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:16px;}
+  .sc-item-label{font-size:0.58rem;font-weight:700;color:rgba(255,255,255,0.6);margin-bottom:5px;letter-spacing:0;}
+  .sc-item-val{font-size:1rem;font-weight:800;}
+  .sc-item-sub{font-size:0.65rem;color:rgba(255,255,255,0.55);margin-top:2px;}
+  .sc-btns{display:flex;gap:12px;flex-wrap:wrap;}
+  .sc-btn-white{padding:12px 28px;border-radius:10px;font-size:0.85rem;font-weight:800;background:#fff;color:var(--green);border:none;cursor:pointer;text-decoration:none;}
+  .sc-btn-outline{padding:12px 24px;border-radius:10px;font-size:0.85rem;font-weight:700;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);color:#fff;cursor:pointer;text-decoration:none;}
+
+  /* ── SALE CARD ── */
+  .sale-card{background:var(--dark2);border:1px solid var(--dark3);border-radius:16px;padding:36px;margin-bottom:16px;}
+  .sale-card-title{font-size:1rem;font-weight:800;margin-bottom:4px;}
+  .sale-card-sub{font-size:0.82rem;color:var(--slate);margin-bottom:24px;line-height:1.8;}
+  .params{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+  .param{background:var(--dark4);border-radius:10px;padding:14px 16px;text-align:right;}
+  .param-label{font-size:0.58rem;font-weight:700;color:var(--muted);margin-bottom:5px;letter-spacing:0;}
+  .param-val{font-size:0.95rem;font-weight:800;color:#1a1a1a;direction:rtl;}
+  .param-sub{font-size:0.62rem;color:var(--slate);margin-top:2px;}
+
+  /* ── TABLE ── */
+  .table-wrap{overflow-x:auto;margin:20px 0;}
+  table{width:100%;border-collapse:collapse;font-size:0.88rem;direction:rtl;}
+  thead th{padding:10px 16px;font-size:0.62rem;font-weight:700;color:var(--muted);text-align:right;border-bottom:1px solid var(--dark3);background:var(--dark4);letter-spacing:0;}
+  tbody td{padding:12px 16px;color:#8b7355;border-bottom:1px solid var(--dark4);}
+  tbody td:first-child{color:#1a1a1a;font-weight:600;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:rgba(26,71,42,0.02);}
+
+  /* ── LAUNCHPAD ── */
+  .lp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .lp-card{background:var(--dark2);border:1px solid var(--dark3);border-radius:16px;padding:24px;transition:all 0.2s;}
+  .lp-card:hover{border-color:rgba(26,71,42,0.3);transform:translateY(-3px);}
+  .lp-card.best{border-color:rgba(26,71,42,0.35);background:linear-gradient(135deg,rgba(26,71,42,0.04),#fffdf8);}
+  .lp-name{font-size:1rem;font-weight:800;margin-bottom:4px;}
+  .lp-tag{font-size:0.6rem;font-weight:700;padding:3px 9px;border-radius:10px;display:inline-block;margin-bottom:12px;}
+  .tag-best{background:rgba(26,71,42,0.1);color:var(--green);border:1px solid rgba(26,71,42,0.2);}
+  .tag-mid{background:rgba(184,134,11,0.1);color:var(--gold);border:1px solid rgba(184,134,11,0.2);}
+  .tag-self{background:rgba(139,115,85,0.08);color:var(--slate);border:1px solid var(--dark3);}
+  .lp-desc{font-size:0.8rem;color:var(--slate);line-height:1.8;margin-bottom:16px;}
+  .lp-row{display:flex;justify-content:space-between;font-size:0.75rem;padding:7px 0;border-bottom:1px solid var(--dark4);}
+  .lp-row:last-of-type{border-bottom:none;}
+  .lp-key{color:var(--muted);}
+  .lp-val{font-weight:700;color:#1a1a1a;}
+  .lp-btn{display:block;margin-top:14px;text-align:center;padding:10px;border-radius:8px;font-size:0.78rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;text-decoration:none;}
+  .lp-btn.outline{background:transparent;border:1px solid var(--dark3);color:var(--slate);}
+  .lp-btn.outline:hover{border-color:var(--green);color:var(--green);}
+
+  /* ── CHECKLIST ── */
+  .checklist{display:flex;flex-direction:column;gap:10px;}
+  .check-item{display:flex;align-items:flex-start;gap:14px;flex-direction:row-reverse;padding:14px 18px;background:var(--dark2);border:1px solid var(--dark3);border-radius:10px;}
+  .check-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;flex-shrink:0;margin-top:2px;}
+  .done{background:#d1fae5;color:var(--green);border:1px solid #a7f3d0;}
+  .todo{background:var(--dark4);color:var(--muted);border:1px solid var(--dark3);}
+  .check-text{font-size:0.85rem;color:#1a1a1a;line-height:1.7;text-align:right;}
+  .check-sub{font-size:0.72rem;color:var(--muted);margin-top:2px;}
+
+  /* ── PILL ── */
+  .pill{font-size:0.62rem;font-weight:700;padding:3px 9px;border-radius:20px;display:inline-flex;margin:2px;}
+  .pill-g{background:rgba(26,71,42,0.1);border:1px solid rgba(26,71,42,0.25);color:var(--green);}
+  .pill-gold{background:rgba(184,134,11,0.1);border:1px solid rgba(184,134,11,0.25);color:var(--gold);}
+
+  /* ── CALLOUT ── */
+  .callout{border-radius:10px;padding:16px 20px;margin:20px 0;font-size:0.88rem;line-height:1.9;}
+  .callout-green{background:rgba(26,71,42,0.06);border:1px solid rgba(26,71,42,0.2);border-right:3px solid var(--green);color:var(--green);}
+  .callout-gold{background:rgba(184,134,11,0.06);border:1px solid rgba(184,134,11,0.2);border-right:3px solid var(--gold);color:var(--gold);}
+
+  /* ── CTA FOOTER ── */
+  .cta-section{text-align:center;background:radial-gradient(ellipse 70% 80% at 50% 50%,#f0ebe0 0%,var(--dark) 70%);}
+  .cta-section h2{font-size:1.8rem;font-weight:900;margin-bottom:14px;}
+  .cta-section p{color:var(--slate);max-width:480px;margin:0 auto 36px;font-size:0.92rem;line-height:1.9;}
+
+  footer{padding:40px 48px;text-align:center;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--dark3);}
+
+  @media(max-width:900px){
+    nav{padding:0 24px;}
+    .hero{padding:80px 24px;}
+    .page{padding:0 24px;}
+    .saft-card{grid-template-columns:1fr;}
+    .stat-row,.params{grid-template-columns:1fr 1fr;}
+    .lp-grid{grid-template-columns:1fr;}
+    .sc-grid{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">SWR</div>
+  <div class="nav-left">
+    <a href="index-ar.html" class="btn-outline">الرئيسية</a>
+    <a href="whitepaper-ar.html" class="btn-outline">الورقة البيضاء</a>
+    <a href="saft.html" class="btn-green">بوابة المستثمر →</a>
+  </div>
+</nav>
+
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge"><div class="dot"></div> جولة التأسيس مفتوحة الآن</div>
+  <h1>استثمر في مستقبل<br>الأصول الحقيقية السعودية</h1>
+  <p>SWR هي أول منصة منظمة لتوكنة الأصول الحقيقية السعودية — العقارات والصكوك والبنية التحتية — على شبكة Ethereum. جولة التأسيس مفتوحة الآن للمستثمرين المعتمدين.</p>
+  <div class="hero-btns">
+    <a href="#saft" class="btn-white">جولة SAFT الخاصة ←</a>
+    <a href="#sale" class="btn-white-outline">البيع العام</a>
+    <a href="whitepaper-ar.html" class="btn-white-outline">الورقة البيضاء</a>
+  </div>
+</div>
+
+
+<div class="page">
+
+<!-- ══════════════════════════════════
+     إثبات العمل
+════════════════════════════════════ -->
+<section>
+  <div class="sec-label">ما تم بناؤه</div>
+  <div class="sec-title">المنصة <span class="grad-g">حية بالفعل</span></div>
+  <div class="sec-sub">الشبكة التجريبية مُشغَّلة مع 5 عقود موثقة على Ethereum Sepolia. جرّب التجربة الكاملة للمستثمر الآن.</div>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-num grad-g">5</div><div class="stat-lbl">عقود منشورة وموثقة على Sepolia</div></div>
+    <div class="stat-card"><div class="stat-num grad-g">55</div><div class="stat-lbl">اختبار ناجح</div></div>
+    <div class="stat-card"><div class="stat-num grad-gold">10 مليون ر.س</div><div class="stat-lbl">أول أصل موكَّن (xROSHN1)</div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <a href="dashboard-ar.html" style="display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:18px 22px;text-decoration:none;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(26,71,42,0.3)'" onmouseout="this.style.borderColor='var(--dark3)'">
+      <div style="text-align:right;"><div style="font-size:0.62rem;color:var(--muted);margin-bottom:4px;">عرض مباشر</div><div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;">لوحة تحكم المستثمر ←</div></div><span style="font-size:1.3rem">📊</span>
+    </a>
+    <a href="whitepaper-ar.html" style="display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:18px 22px;text-decoration:none;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(26,71,42,0.3)'" onmouseout="this.style.borderColor='var(--dark3)'">
+      <div style="text-align:right;"><div style="font-size:0.62rem;color:var(--muted);margin-bottom:4px;">وثيقة</div><div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;">الورقة البيضاء التقنية ←</div></div><span style="font-size:1.3rem">📄</span>
+    </a>
+    <a href="https://github.com/na6ksa/swr" target="_blank" style="display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:18px 22px;text-decoration:none;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(26,71,42,0.3)'" onmouseout="this.style.borderColor='var(--dark3)'">
+      <div style="text-align:right;"><div style="font-size:0.62rem;color:var(--muted);margin-bottom:4px;">مفتوح المصدر</div><div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;">مستودع GitHub ←</div></div><span style="font-size:1.3rem">💻</span>
+    </a>
+    <a href="https://sepolia.etherscan.io/address/0x34E21ec5E04d801C468F76c83782FA5D6F0fb1D6#code" target="_blank" style="display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:18px 22px;text-decoration:none;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(26,71,42,0.3)'" onmouseout="this.style.borderColor='var(--dark3)'">
+      <div style="text-align:right;"><div style="font-size:0.62rem;color:var(--muted);margin-bottom:4px;">على البلوكشين</div><div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;">عقود موثقة على Etherscan ←</div></div><span style="font-size:1.3rem">🔍</span>
+    </a>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════
+     SAFT الخاصة
+════════════════════════════════════ -->
+<section id="saft">
+  <div class="sec-label">جولة خاصة للمستثمرين المعتمدين</div>
+  <div class="sec-title">SAFT <span class="grad-gold">الأولى — مفتوحة الآن</span></div>
+
+  <div class="saft-card">
+    <div>
+      <div class="sc-eyebrow">هدف التمويل</div>
+      <div class="sc-title">1,250,000 ر.س</div>
+      <div class="sc-sub">~$333,000 · 3–5 مستثمرين معتمدين فقط · من الشريحة الأولى للمستثمرين</div>
+      <div class="sc-btns">
+        <a href="saft.html" class="sc-btn-white">بوابة المستثمر ←</a>
+        <a href="mailto:founders@swr.sa?subject=SWR SAFT&body=أرغب في الاستثمار في جولة SAFT." class="sc-btn-outline">تواصل معنا</a>
+      </div>
+    </div>
+    <div class="sc-grid">
+      <div class="sc-item"><div class="sc-item-label">سعر SAFT</div><div class="sc-item-val">0.125 ر.س</div><div class="sc-item-sub">للرمز الواحد · ~$0.033</div></div>
+      <div class="sc-item"><div class="sc-item-label">سعر البيع العام</div><div class="sc-item-val">0.25 ر.س</div><div class="sc-item-sub">علاوة 100% فوق SAFT</div></div>
+      <div class="sc-item"><div class="sc-item-label">الحد الأدنى</div><div class="sc-item-val">93,750 ر.س</div><div class="sc-item-sub">$25,000</div></div>
+      <div class="sc-item"><div class="sc-item-label">الحد الأقصى</div><div class="sc-item-val">375,000 ر.س</div><div class="sc-item-sub">$100,000 للمستثمر</div></div>
+      <div class="sc-item"><div class="sc-item-label">مهلة الاستحقاق</div><div class="sc-item-val">6 أشهر</div><div class="sc-item-sub">بعد إطلاق الشبكة الرئيسية</div></div>
+      <div class="sc-item"><div class="sc-item-label">الاستحقاق</div><div class="sc-item-val">12 شهراً</div><div class="sc-item-sub">خطياً بعد المهلة</div></div>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    ميزة المستثمر المبكر: من يشتري عبر SAFT بسعر 0.125 ر.س يحقق ضعف قيمة استثماره عند إطلاق البيع العام بسعر 0.25 ر.س — فضلاً عن الاستحقاق المبكر قبل عامة الجمهور.
+  </div>
+
+  <h3 style="font-size:0.9rem;font-weight:800;margin:28px 0 14px;color:#1a1a1a;">شروط SAFT كاملة</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>البند</th><th>التفاصيل</th></tr></thead>
+    <tbody>
+      <tr><td>نوع الاتفاقية</td><td>SAFT — اتفاقية بسيطة للرموز المستقبلية</td></tr>
+      <tr><td>الرمز</td><td>$SWR — رمز استخدام منصة SWR (ERC-20)</td></tr>
+      <tr><td>الكمية المخصصة</td><td>10,000,000 SWR من شريحة 18% للمستثمرين</td></tr>
+      <tr><td>السعر</td><td>0.125 ر.س/SWR (~$0.033)</td></tr>
+      <tr><td>سعر البيع العام</td><td>0.25 ر.س/SWR — علاوة 100%</td></tr>
+      <tr><td>الحد الأدنى للمشاركة</td><td>93,750 ر.س ($25,000)</td></tr>
+      <tr><td>الحد الأقصى للمشاركة</td><td>375,000 ر.س ($100,000)</td></tr>
+      <tr><td>عدد المستثمرين</td><td>3–5 مستثمرين معتمدين فقط</td></tr>
+      <tr><td>محفز الاستحقاق</td><td>إطلاق الشبكة الرئيسية (يُفعَّل على السلسلة)</td></tr>
+      <tr><td>المهلة</td><td>6 أشهر من محفز الاستحقاق</td></tr>
+      <tr><td>مدة الاستحقاق</td><td>12 شهراً خطياً بعد المهلة</td></tr>
+      <tr><td>إجمالي فترة القفل</td><td>18 شهراً من إطلاق الشبكة الرئيسية</td></tr>
+      <tr><td>الآلية</td><td>عقد SWRSaft.sol الذكي — قابل للتدقيق</td></tr>
+      <tr><td>وسيلة الدفع</td><td>ETH (أو USDT/USDC بالاتفاق)</td></tr>
+      <tr><td>الاختصاص القانوني</td><td>المملكة العربية السعودية</td></tr>
+      <tr><td>بوابة المستثمر</td><td><a href="saft.html">saft.html</a></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+
+<!-- ══════════════════════════════════
+     البيع العام
+════════════════════════════════════ -->
+<section id="sale">
+  <div class="sec-label">البيع العام للرموز</div>
+  <div class="sec-title">البيع العام — <span class="grad-g">الربع الأول 2027</span></div>
+  <div class="sec-sub">بعد جولة SAFT، سيُطرح 10,000,000 رمز SWR للبيع العام عبر منصة إطلاق مشهورة.</div>
+
+  <div class="sale-card">
+    <div class="sale-card-title">معاملات البيع العام</div>
+    <div class="sale-card-sub">10,000,000 SWR (5% من إجمالي العرض) · بدون استحقاق — رموز فورية</div>
+    <div class="params">
+      <div class="param"><div class="param-label">السعر للرمز</div><div class="param-val">0.25 ر.س</div><div class="param-sub">~$0.067 · 0.0000222 ETH</div></div>
+      <div class="param"><div class="param-label">الحد الأقصى للتمويل</div><div class="param-val">2,500,000 ر.س</div><div class="param-sub">~$667,000 · ~222 ETH</div></div>
+      <div class="param"><div class="param-label">الكمية للبيع</div><div class="param-val">10,000,000</div><div class="param-sub">رمز SWR (5%)</div></div>
+      <div class="param"><div class="param-label">الحد الأدنى للشراء</div><div class="param-val">0.01 ETH</div><div class="param-sub">~90,000 SWR</div></div>
+      <div class="param"><div class="param-label">الحد الأقصى للمحفظة</div><div class="param-val">2 ETH</div><div class="param-sub">~90,000 SWR</div></div>
+      <div class="param"><div class="param-label">الاستحقاق</div><div class="param-val">لا يوجد</div><div class="param-sub">رموز فورية</div></div>
+    </div>
+    <div class="callout callout-gold" style="margin:0;">
+      قيمة محفظة SAFT عند البيع العام: من يستثمر 93,750 ر.س في SAFT يحصل على 750,000 SWR — تبلغ قيمتها 187,500 ر.س عند سعر البيع العام (0.25 ر.س).
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════
+     منصات الإطلاق
+════════════════════════════════════ -->
+<section id="launchpad">
+  <div class="sec-label">أين سيُطلق البيع العام</div>
+  <div class="sec-title">منصات الإطلاق <span class="grad-g">الموصى بها</span></div>
+  <div class="sec-sub">مرتبة حسب الملاءمة لـ SWR — التركيز على الأصول الحقيقية، بدون تدقيق مطلوب مسبقاً، صديقة لدول الخليج.</div>
+
+  <div class="lp-grid">
+    <div class="lp-card best">
+      <div class="lp-name">Fjord Foundry</div>
+      <span class="lp-tag tag-best">⭐ الأنسب — خدمة ذاتية</span>
+      <div class="lp-desc">تجمع سيولة تدريجي (LBP) — تُطلقه بنفسك دون حاجة لموافقة. السعر يبدأ مرتفعاً وينخفض تلقائياً حتى يجد السوق سعراً عادلاً. لا تسويق مطلوب منك.</div>
+      <div class="lp-row"><span class="lp-key">موافقة مطلوبة</span><span class="lp-val">لا — خدمة ذاتية</span></div>
+      <div class="lp-row"><span class="lp-key">تدقيق مطلوب</span><span class="lp-val">لا</span></div>
+      <div class="lp-row"><span class="lp-key">رسوم المنصة</span><span class="lp-val">2% من التمويل</span></div>
+      <div class="lp-row"><span class="lp-key">الجدول الزمني</span><span class="lp-val">يوم واحد للإطلاق</span></div>
+      <a href="https://fjordfoundry.com" target="_blank" class="lp-btn">التقديم على Fjord →</a>
+    </div>
+
+    <div class="lp-card">
+      <div class="lp-name">DAO Maker</div>
+      <span class="lp-tag tag-mid">🏅 الأفضل للأصول الحقيقية</span>
+      <div class="lp-desc">منصة منتقاة بمجتمع قوي (+200K حامل). مثالية لسرد الأصول الحقيقية. يتولى التسويق بدلاً عنك. التقديم بالورقة البيضاء والعرض.</div>
+      <div class="lp-row"><span class="lp-key">موافقة مطلوبة</span><span class="lp-val">نعم — منتقاة</span></div>
+      <div class="lp-row"><span class="lp-key">تدقيق مطلوب</span><span class="lp-val">مفضل</span></div>
+      <div class="lp-row"><span class="lp-key">رسوم المنصة</span><span class="lp-val">5–10% من التمويل</span></div>
+      <div class="lp-row"><span class="lp-key">الجدول الزمني</span><span class="lp-val">3–6 أسابيع</span></div>
+      <a href="https://daomaker.com/company/submit" target="_blank" class="lp-btn">التقديم على DAO Maker →</a>
+    </div>
+
+    <div class="lp-card">
+      <div class="lp-name">PinkSale</div>
+      <span class="lp-tag tag-self">خدمة ذاتية · سريع</span>
+      <div class="lp-desc">أسهل منصة للإطلاق الذاتي. لا موافقة مطلوبة — تحدد شروطك وتنطلق خلال ساعات. مجتمع ETH وBSC قوي.</div>
+      <div class="lp-row"><span class="lp-key">موافقة مطلوبة</span><span class="lp-val">لا — خدمة ذاتية</span></div>
+      <div class="lp-row"><span class="lp-key">تدقيق مطلوب</span><span class="lp-val">لا</span></div>
+      <div class="lp-row"><span class="lp-key">رسوم المنصة</span><span class="lp-val">2% + رسوم الإدراج</span></div>
+      <div class="lp-row"><span class="lp-key">الجدول الزمني</span><span class="lp-val">نفس اليوم</span></div>
+      <a href="https://www.pinksale.finance" target="_blank" class="lp-btn outline">الذهاب إلى PinkSale →</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════
+     الاستعداد
+════════════════════════════════════ -->
+<section>
+  <div class="sec-label">ما تم وما تبقى</div>
+  <div class="sec-title">جاهزية التقديم <span class="grad-g">على المنصات</span></div>
+
+  <div class="checklist">
+    <div class="check-item"><div class="check-icon done">✓</div><div class="check-text"><strong>عقود ذكية منشورة وموثقة</strong><div class="check-sub">5 عقود على Sepolia · Solidity 0.8.29 · جميع المصادر علنية</div></div></div>
+    <div class="check-item"><div class="check-icon done">✓</div><div class="check-text"><strong>تدقيق أمني داخلي مكتمل</strong><div class="check-sub">جميع الثغرات الحرجة والعالية تم إصلاحها</div></div></div>
+    <div class="check-item"><div class="check-icon done">✓</div><div class="check-text"><strong>ورقة بيضاء تقنية</strong><div class="check-sub">16 قسماً · بالعربية والإنجليزية · whitepaper-ar.html</div></div></div>
+    <div class="check-item"><div class="check-icon done">✓</div><div class="check-text"><strong>عرض مباشر (شبكة تجريبية)</strong><div class="check-sub">لوحة تحكم المستثمر، بوابة الإصدار، المطالبة بالعوائد — حية الآن</div></div></div>
+    <div class="check-item"><div class="check-icon done">✓</div><div class="check-text"><strong>الموقع وGitHub</strong><div class="check-sub">na6ksa.github.io/swr · github.com/na6ksa/swr · مفتوح المصدر</div></div></div>
+    <div class="check-item"><div class="check-icon done">✓</div><div class="check-text"><strong>عقد البيع العام جاهز</strong><div class="check-sub">SWRPublicSale.sol — مُترجم ومختبر · جاهز للنشر</div></div></div>
+    <div class="check-item"><div class="check-icon todo">○</div><div class="check-text"><strong>حساب Twitter/X</strong> — مطلوب لمعظم المنصات<div class="check-sub">أنشئ @SWR_Platform وأضف 5–10 تغريدات عن المشروع</div></div></div>
+    <div class="check-item"><div class="check-icon todo">○</div><div class="check-text"><strong>مجموعة Telegram</strong> — مطلوبة لـ DAO Maker<div class="check-sub">أنشئ t.me/SWRPlatform — حتى 50 عضواً تكفي للبداية</div></div></div>
+    <div class="check-item"><div class="check-icon todo">○</div><div class="check-text"><strong>تدقيق خارجي</strong> — مطلوب لـ DAO Maker، غير مطلوب لـ Fjord<div class="check-sub">Sherlock أو Code4rena · 4–6 أسابيع · $5,000–$15,000</div></div></div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════
+     CTA
+════════════════════════════════════ -->
+<section class="cta-section">
+  <h2>هل أنت مستعد للاستثمار؟</h2>
+  <p>تواصل معنا مباشرةً للانضمام إلى جولة SAFT الخاصة أو للاستفسار عن الشراكة.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+    <a href="saft.html" class="btn-green" style="padding:14px 32px;font-size:0.9rem;">بوابة المستثمر ←</a>
+    <a href="mailto:founders@swr.sa?subject=استفسار استثماري SWR" class="btn-outline" style="padding:14px 32px;font-size:0.9rem;">founders@swr.sa</a>
+    <a href="whitepaper-ar.html" class="btn-outline" style="padding:14px 32px;font-size:0.9rem;">الورقة البيضاء</a>
+  </div>
+</section>
+
+</div><!-- /page -->
+
+<footer>
+  © 2026 SWR Platform · الرياض، المملكة العربية السعودية · <a href="mailto:founders@swr.sa">founders@swr.sa</a><br>
+  <span style="margin-top:6px;display:block;">⚠️ هذا عرض تقني على شبكة Sepolia التجريبية. ليس طرحاً عاماً للأوراق المالية. خاضع للموافقة التنظيمية.</span>
+</footer>
+
+</body>
+</html>
