@@ -728,7 +728,7 @@ async function connectWallet() {
   if (!window.ethereum) {
     if (isMobile()) {
       // Show deep link button — opens this page inside MetaMask's in-app browser
-      const url = 'https://metamask.app.link/dapp/' + window.location.host + window.location.pathname;
+      const url = 'https://metamask.app.link/dapp/' + (window.location.hostname === 'localhost' ? 'na6ksa.github.io/swr' + window.location.pathname : window.location.host + window.location.pathname);
       document.getElementById('metamask-deeplink').href = url;
       document.getElementById('mobile-deeplink').style.display = 'block';
       showToast('Tap "Open in MetaMask App" below to connect on mobile.', '');
