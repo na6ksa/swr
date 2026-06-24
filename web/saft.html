@@ -513,33 +513,47 @@ function disconnectWallet() {
 }
 
 const WC_PROJECT_ID = '6937f3c44433df5b990bf48d005000a1';
-
+let _wcProvider = null;
+const WC_META = {
+  projectId: WC_PROJECT_ID, chains: [11155111], showQrModal: true,
+  qrModalOptions: { themeMode: 'light' },
+  metadata: { name: 'SWR Platform', description: 'SAFT Investor Portal — Saudi Real World Assets', url: 'https://na6ksa.github.io/swr', icons: ['https://na6ksa.github.io/swr/logos/swr.svg'] }
+};
+async function _wcConnect(wcp) {
+  try {
+    provider = new ethers.providers.Web3Provider(wcp);
+    signer   = provider.getSigner();
+    const accs = await wcp.request({ method: 'eth_accounts' });
+    account = accs && accs[0];
+    if (account) await afterConnect();
+  } catch(e) {}
+}
 async function connectWalletConnect() {
   const btn = document.getElementById('btn-wc');
   if (btn) { btn.disabled = true; btn.textContent = 'Opening…'; }
   try {
     const { EthereumProvider } = await import('https://esm.sh/@walletconnect/ethereum-provider@2.17.0');
-    const wcProvider = await EthereumProvider.init({
-      projectId: WC_PROJECT_ID,
-      chains: [11155111],
-      showQrModal: true,
-      qrModalOptions: { themeMode: 'light' },
-      metadata: {
-        name: 'SWR Platform',
-        description: 'SAFT Investor Portal — Saudi Real World Assets',
-        url: 'https://na6ksa.github.io/swr',
-        icons: ['https://na6ksa.github.io/swr/logos/swr.svg']
-      }
-    });
-    await wcProvider.connect();
-    provider = new ethers.providers.Web3Provider(wcProvider);
-    signer   = provider.getSigner();
-    account  = (await provider.listAccounts())[0];
-    await afterConnect();
+    const wcp = await EthereumProvider.init(WC_META);
+    _wcProvider = wcp;
+    wcp.on('connect', () => _wcConnect(wcp));
+    wcp.on('accountsChanged', (accs) => { if (accs&&accs[0]) { account=accs[0]; _wcConnect(wcp); } else disconnectWallet(); });
+    wcp.on('disconnect', () => disconnectWallet());
+    if (wcp.session) { await _wcConnect(wcp); if (btn) btn.style.display='none'; return; }
+    await wcp.connect();
   } catch(e) {
     if (btn) { btn.disabled = false; btn.textContent = '🔗 Connect with WalletConnect'; }
-    if (e.message && !e.message.includes('reset')) showToast('WalletConnect: ' + e.message, 'error');
+    const msg = e?.message||'';
+    if (!msg.includes('reset')&&!msg.includes('closed')&&!msg.includes('modal')) showToast('WalletConnect: '+msg,'error');
   }
+}
+async function _tryRestoreWcSession() {
+  if (!Object.keys(localStorage).some(k=>k.startsWith('wc@2:'))) return;
+  try {
+    const { EthereumProvider } = await import('https://esm.sh/@walletconnect/ethereum-provider@2.17.0');
+    const wcp = await EthereumProvider.init({...WC_META, showQrModal:false});
+    _wcProvider = wcp;
+    if (wcp.session) { wcp.on('disconnect',()=>disconnectWallet()); await _wcConnect(wcp); }
+  } catch(e) {}
 }
 
 function copyPageUrl() {
@@ -563,6 +577,8 @@ window.addEventListener('load', async () => {
     const accounts = await window.ethereum.request({ method: 'eth_accounts' });
     if (accounts.length) { account = accounts[0]; provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner(); await afterConnect(); }
     window.ethereum.on('accountsChanged', accs => { if (!accs.length) disconnectWallet(); else { account = accs[0]; provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner(); afterConnect(); } });
+  } else {
+    await _tryRestoreWcSession();
   }
 });
 </script>
