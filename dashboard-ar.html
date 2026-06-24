@@ -242,6 +242,13 @@
       <h2>ربط محفظتك</h2>
       <p>قم بربط MetaMask لعرض محفظتك المباشرة وأصولك المرمّزة والعوائد المستحقة على شبكة Sepolia التجريبية.</p>
       <button class="btn-connect" onclick="connectWallet()">ربط MetaMask</button>
+      <div style="display:flex;align-items:center;gap:12px;color:var(--muted);font-size:0.75rem;width:100%;max-width:300px;">
+        <div style="flex:1;height:1px;background:var(--dark3)"></div>أو<div style="flex:1;height:1px;background:var(--dark3)"></div>
+      </div>
+      <button id="btn-wc" onclick="connectWalletConnect()" style="padding:13px 32px;border-radius:12px;font-size:0.92rem;font-weight:900;background:#3b99fc;color:#fff;border:none;cursor:pointer;width:100%;max-width:300px;font-family:'Cairo',sans-serif;">
+        🔗 ربط بـ WalletConnect
+      </button>
+      <p style="font-size:0.72rem;color:var(--muted);margin-top:-8px;">يعمل من أي متصفح · هاتف أو حاسوب</p>
       <div id="mobile-deeplink" style="display:none;margin-top:8px;width:100%;max-width:320px;text-align:center;">
         <div style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;line-height:1.8;">MetaMask على الهاتف يعمل فقط داخل متصفحه الخاص.<br>اتبع هذه الخطوات:</div>
         <div style="background:var(--dark4);border:1px solid var(--dark3);border-radius:12px;padding:16px;text-align:right;font-size:0.82rem;color:#1a1a1a;line-height:2;margin-bottom:12px;">
@@ -961,6 +968,36 @@ async function switchToSepolia() {
   } catch(e) {
     if (e.code === 4902) await window.ethereum.request({ method:'wallet_addEthereumChain', params:[{ chainId:'0xaa36a7', chainName:'Sepolia', rpcUrls:['https://rpc.sepolia.org'], nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18}, blockExplorerUrls:['https://sepolia.etherscan.io'] }] });
     else showToast('تعذّر تغيير الشبكة: ' + e.message, 'error');
+  }
+}
+
+const WC_PROJECT_ID = '6937f3c44433df5b990bf48d005000a1';
+
+async function connectWalletConnect() {
+  const btn = document.getElementById('btn-wc');
+  if (btn) { btn.disabled = true; btn.textContent = 'جارٍ الفتح…'; }
+  try {
+    const { EthereumProvider } = await import('https://esm.sh/@walletconnect/ethereum-provider@2.17.0');
+    const wcProvider = await EthereumProvider.init({
+      projectId: WC_PROJECT_ID,
+      chains: [11155111],
+      showQrModal: true,
+      qrModalOptions: { themeMode: 'light' },
+      metadata: {
+        name: 'SWR Platform',
+        description: 'الأصول الحقيقية السعودية على البلوكشين',
+        url: 'https://na6ksa.github.io/swr',
+        icons: ['https://na6ksa.github.io/swr/logos/swr.svg']
+      }
+    });
+    await wcProvider.connect();
+    provider = new ethers.providers.Web3Provider(wcProvider);
+    signer   = provider.getSigner();
+    account  = (await provider.listAccounts())[0];
+    await afterConnect();
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.textContent = '🔗 ربط بـ WalletConnect'; }
+    if (e.message && !e.message.includes('reset')) showToast('WalletConnect: ' + e.message, 'error');
   }
 }
 
