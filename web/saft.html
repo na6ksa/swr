@@ -141,10 +141,19 @@
       <h2>SAFT Investor Portal</h2>
       <p>Connect the wallet you registered as a SAFT investor to view your token allocation and vesting schedule.</p>
       <button class="btn-connect" onclick="connectWallet()">Connect MetaMask</button>
-      <div id="mobile-deeplink" style="display:none;margin-top:4px;width:100%;max-width:300px;">
-        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;">On mobile? Open inside MetaMask browser:</div>
-        <a id="metamask-deeplink" href="#" style="display:block;padding:12px 24px;border-radius:10px;font-size:0.85rem;font-weight:700;background:#f6851b;color:#fff;text-decoration:none;text-align:center;">
-          📱 Open in MetaMask App
+      <div id="mobile-deeplink" style="display:none;margin-top:8px;width:100%;max-width:320px;text-align:center;">
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:12px;line-height:1.6;">On mobile, MetaMask only works inside its own browser.<br>Follow these steps:</div>
+        <div style="background:var(--dark4);border:1px solid var(--dark3);border-radius:12px;padding:16px;text-align:left;font-size:0.78rem;color:#1a1a1a;line-height:1.9;margin-bottom:12px;">
+          1️⃣ Open the <strong>MetaMask app</strong><br>
+          2️⃣ Tap the <strong>Browser</strong> tab (bottom)<br>
+          3️⃣ Paste this URL and go:<br>
+          <code id="page-url-display" style="background:var(--dark3);padding:4px 8px;border-radius:6px;font-size:0.7rem;display:block;margin-top:6px;word-break:break-all;direction:ltr;"></code>
+        </div>
+        <button onclick="copyPageUrl()" style="width:100%;padding:11px;border-radius:10px;font-size:0.82rem;font-weight:700;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;border:none;cursor:pointer;margin-bottom:8px;">
+          📋 Copy URL
+        </button>
+        <a id="metamask-deeplink" href="#" style="display:block;padding:11px;border-radius:10px;font-size:0.78rem;font-weight:600;background:#f6851b;color:#fff;text-decoration:none;text-align:center;">
+          📱 Try Open in MetaMask
         </a>
       </div>
     </div>
@@ -330,10 +339,14 @@ function isMobile() {
 async function connectWallet() {
   if (!window.ethereum) {
     if (isMobile()) {
-      const url = 'https://metamask.app.link/dapp/' + (window.location.hostname === 'localhost' ? 'na6ksa.github.io/swr' + window.location.pathname : window.location.host + window.location.pathname);
-      document.getElementById('metamask-deeplink').href = url;
+      const pageUrl = window.location.hostname === 'localhost'
+        ? 'https://na6ksa.github.io/swr' + window.location.pathname
+        : window.location.href;
+      const deepLink = 'https://metamask.app.link/dapp/' + pageUrl.replace('https://', '');
+      document.getElementById('metamask-deeplink').href = deepLink;
+      document.getElementById('page-url-display').textContent = pageUrl;
       document.getElementById('mobile-deeplink').style.display = 'block';
-      showToast('Tap "Open in MetaMask App" below to connect on mobile.', '');
+      showToast('Open MetaMask app → Browser tab → paste the URL below.', '');
     } else {
       showToast('MetaMask not found. Install from metamask.io then reload.', 'error');
     }
@@ -490,6 +503,15 @@ function disconnectWallet() {
   document.getElementById('connect-overlay').style.display = 'flex';
   document.getElementById('not-investor').style.display = 'none';
   document.getElementById('dashboard-wrap').style.display = 'none';
+}
+
+function copyPageUrl() {
+  const url = document.getElementById('page-url-display').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('URL copied! Paste it in MetaMask Browser tab ✓', 'success');
+  }).catch(() => {
+    showToast('Copy: ' + url, '');
+  });
 }
 
 let toastTimer;

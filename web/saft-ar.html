@@ -143,10 +143,19 @@
       <h2>بوابة مستثمري SAFT</h2>
       <p>قم بربط المحفظة المسجلة كمستثمر SAFT لعرض تخصيصك وجدول الاستحقاق.</p>
       <button class="btn-connect" onclick="connectWallet()">ربط MetaMask</button>
-      <div id="mobile-deeplink" style="display:none;margin-top:4px;width:100%;max-width:300px;">
-        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:10px;">على الهاتف؟ افتح داخل متصفح MetaMask:</div>
-        <a id="metamask-deeplink" href="#" style="display:block;padding:12px 24px;border-radius:10px;font-size:0.88rem;font-weight:800;background:#f6851b;color:#fff;text-decoration:none;text-align:center;">
-          📱 فتح في تطبيق MetaMask
+      <div id="mobile-deeplink" style="display:none;margin-top:8px;width:100%;max-width:320px;text-align:center;">
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;line-height:1.8;">MetaMask على الهاتف يعمل فقط داخل متصفحه الخاص.<br>اتبع هذه الخطوات:</div>
+        <div style="background:var(--dark4);border:1px solid var(--dark3);border-radius:12px;padding:16px;text-align:right;font-size:0.82rem;color:#1a1a1a;line-height:2;margin-bottom:12px;">
+          1️⃣ افتح تطبيق <strong>MetaMask</strong><br>
+          2️⃣ انقر على تبويب <strong>المتصفح</strong> (أسفل الشاشة)<br>
+          3️⃣ الصق هذا الرابط واضغط انتقال:<br>
+          <code id="page-url-display" style="background:var(--dark3);padding:4px 8px;border-radius:6px;font-size:0.68rem;display:block;margin-top:6px;word-break:break-all;direction:ltr;text-align:left;"></code>
+        </div>
+        <button onclick="copyPageUrl()" style="width:100%;padding:11px;border-radius:10px;font-size:0.85rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;border:none;cursor:pointer;margin-bottom:8px;font-family:'Cairo',sans-serif;">
+          📋 نسخ الرابط
+        </button>
+        <a id="metamask-deeplink" href="#" style="display:block;padding:11px;border-radius:10px;font-size:0.8rem;font-weight:700;background:#f6851b;color:#fff;text-decoration:none;text-align:center;">
+          📱 محاولة فتح في MetaMask
         </a>
       </div>
     </div>
@@ -337,10 +346,14 @@ function isMobile() {
 async function connectWallet() {
   if (!window.ethereum) {
     if (isMobile()) {
-      const url = 'https://metamask.app.link/dapp/' + (window.location.hostname === 'localhost' ? 'na6ksa.github.io/swr' + window.location.pathname : window.location.host + window.location.pathname);
-      document.getElementById('metamask-deeplink').href = url;
+      const pageUrl = window.location.hostname === 'localhost'
+        ? 'https://na6ksa.github.io/swr' + window.location.pathname
+        : window.location.href;
+      const deepLink = 'https://metamask.app.link/dapp/' + pageUrl.replace('https://', '');
+      document.getElementById('metamask-deeplink').href = deepLink;
+      document.getElementById('page-url-display').textContent = pageUrl;
       document.getElementById('mobile-deeplink').style.display = 'block';
-      showToast('انقر على "فتح في تطبيق MetaMask" أدناه للاتصال من الهاتف.', '');
+      showToast('افتح MetaMask ← المتصفح ← الصق الرابط أدناه.', '');
     } else {
       showToast('MetaMask غير موجود. قم بتثبيته من metamask.io ثم أعد التحميل.', 'error');
     }
@@ -478,6 +491,13 @@ function disconnectWallet() {
   document.getElementById('connect-overlay').style.display = 'flex';
   document.getElementById('not-investor').style.display = 'none';
   document.getElementById('dashboard-wrap').style.display = 'none';
+}
+
+function copyPageUrl() {
+  const url = document.getElementById('page-url-display').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('تم نسخ الرابط! الصقه في متصفح MetaMask ✓', 'success');
+  }).catch(() => { showToast('الرابط: ' + url, ''); });
 }
 
 let toastTimer;
