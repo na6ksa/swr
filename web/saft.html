@@ -141,6 +141,12 @@
       <h2>SAFT Investor Portal</h2>
       <p>Connect the wallet you registered as a SAFT investor to view your token allocation and vesting schedule.</p>
       <button class="btn-connect" onclick="connectWallet()">Connect MetaMask</button>
+      <div id="mobile-deeplink" style="display:none;margin-top:4px;width:100%;max-width:300px;">
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;">On mobile? Open inside MetaMask browser:</div>
+        <a id="metamask-deeplink" href="#" style="display:block;padding:12px 24px;border-radius:10px;font-size:0.85rem;font-weight:700;background:#f6851b;color:#fff;text-decoration:none;text-align:center;">
+          📱 Open in MetaMask App
+        </a>
+      </div>
     </div>
 
     <!-- NOT AN INVESTOR -->
@@ -317,8 +323,22 @@ function showSection(id) {
   document.getElementById('topbar-title').textContent = SECTIONS[id] || id;
 }
 
+function isMobile() {
+  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+}
+
 async function connectWallet() {
-  if (!window.ethereum) { showToast('MetaMask not found.', 'error'); return; }
+  if (!window.ethereum) {
+    if (isMobile()) {
+      const url = 'https://metamask.app.link/dapp/' + window.location.host + window.location.pathname;
+      document.getElementById('metamask-deeplink').href = url;
+      document.getElementById('mobile-deeplink').style.display = 'block';
+      showToast('Tap "Open in MetaMask App" below to connect on mobile.', '');
+    } else {
+      showToast('MetaMask not found. Install from metamask.io then reload.', 'error');
+    }
+    return;
+  }
   try {
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     account  = accounts[0];
