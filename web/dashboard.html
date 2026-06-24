@@ -245,6 +245,12 @@
       <h2>Connect your wallet</h2>
       <p>Connect MetaMask to view your live portfolio, real asset holdings, and claimable yield on Sepolia testnet.</p>
       <button class="btn-connect" onclick="connectWallet()">Connect MetaMask</button>
+      <div id="mobile-deeplink" style="display:none;margin-top:4px;width:100%;max-width:320px;">
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;">On mobile? Open inside MetaMask browser:</div>
+        <a id="metamask-deeplink" href="#" style="display:block;padding:13px 28px;border-radius:12px;font-size:0.88rem;font-weight:700;background:#f6851b;color:#fff;text-decoration:none;text-align:center;">
+          📱 Open in MetaMask App
+        </a>
+      </div>
     </div>
 
     <!-- WRONG NETWORK -->
@@ -714,9 +720,21 @@ function showSection(id) {
 }
 
 // ── WALLET ────────────────────────────────────────────────────
+function isMobile() {
+  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+}
+
 async function connectWallet() {
   if (!window.ethereum) {
-    showToast('MetaMask not found. Install it from metamask.io then reload.', 'error');
+    if (isMobile()) {
+      // Show deep link button — opens this page inside MetaMask's in-app browser
+      const url = 'https://metamask.app.link/dapp/' + window.location.host + window.location.pathname;
+      document.getElementById('metamask-deeplink').href = url;
+      document.getElementById('mobile-deeplink').style.display = 'block';
+      showToast('Tap "Open in MetaMask App" below to connect on mobile.', '');
+    } else {
+      showToast('MetaMask not found. Install it from metamask.io then reload.', 'error');
+    }
     return;
   }
   try {
