@@ -744,7 +744,7 @@ async function connectWallet() {
   if (!window.ethereum) {
     if (isMobile()) {
       const pageUrl = window.location.hostname === 'localhost'
-        ? 'https://na6ksa.github.io/swr' + window.location.pathname
+        ? 'https://autonex.sa' + window.location.pathname
         : window.location.href;
       const deepLink = 'https://metamask.app.link/dapp/' + pageUrl.replace('https://', '');
       document.getElementById('metamask-deeplink').href = deepLink;
@@ -1057,7 +1057,7 @@ async function claimYield() {
 
 // ── ADD TOKEN TO METAMASK ─────────────────────────────────────
 async function addToken(symbol) {
-  const base = 'https://na6ksa.github.io/swr/logos/';
+  const base = 'https://autonex.sa/logos/';
   const tokens = {
     SARX:    { address: SWR.addresses.SARX,      symbol:'SARX',    decimals:6,  name:'SAR Stablecoin',                    image: base + 'sarx.svg' },
     SWR:     { address: SWR.addresses.SWRToken,   symbol:'SWR',     decimals:18, name:'SWR Token',                         image: base + 'swr.svg' },
@@ -1094,8 +1094,8 @@ const WC_META = {
   metadata: {
     name: 'SWR Platform',
     description: 'Saudi Real World Assets — Tokenized on Ethereum',
-    url: 'https://na6ksa.github.io/swr',
-    icons: ['https://na6ksa.github.io/swr/logos/swr.svg']
+    url: 'https://autonex.sa',
+    icons: ['https://autonex.sa/logos/swr.svg']
   }
 };
 

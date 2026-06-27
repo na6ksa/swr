@@ -121,7 +121,7 @@
       <div class="s-item" onclick="window.open('saft.html')">🌐 English Version ↗</div>
     </div>
     <div class="s-bottom">
-      <div>منصة SWR · founders@swr.sa</div>
+      <div>منصة SWR · Info@Autonex.sa</div>
       <div style="margin-top:4px;">الرياض، المملكة العربية السعودية</div>
     </div>
   </aside>
@@ -171,7 +171,7 @@
     <div id="not-investor">
       <div style="font-size:2rem">🔒</div>
       <h2>غير مسجل كمستثمر</h2>
-      <p>هذه المحفظة غير مسجلة كمستثمر SAFT. إذا كنت تعتقد أن هذا خطأ، تواصل معنا على founders@swr.sa</p>
+      <p>هذه المحفظة غير مسجلة كمستثمر SAFT. إذا كنت تعتقد أن هذا خطأ، تواصل معنا على Info@Autonex.sa</p>
     </div>
 
     <!-- SECTIONS -->
@@ -285,7 +285,7 @@
               <div class="ts-h3">الدفع</div>
               <div class="ts-row"><span class="ts-key">العملة المقبولة</span><span class="ts-val">ETH (أو USDT/USDC بالاتفاق)</span></div>
               <div class="ts-row"><span class="ts-key">سعر ETH المعتمد</span><span class="ts-val">وقت التحويل (متوسط 7 أيام للنزاعات)</span></div>
-              <div class="ts-row"><span class="ts-key">محفظة الاستقبال</span><span class="ts-val">founders@swr.sa — العنوان عند الطلب</span></div>
+              <div class="ts-row"><span class="ts-key">محفظة الاستقبال</span><span class="ts-val">Info@Autonex.sa — العنوان عند الطلب</span></div>
             </div>
 
             <div class="ts-section">
@@ -302,7 +302,7 @@
           </div>
 
           <div style="display:flex;gap:12px;margin-top:20px;flex-direction:row-reverse;">
-            <a href="mailto:founders@swr.sa?subject=اهتمام بـ SWR SAFT&body=أرغب في الاستثمار في جولة SAFT الخاصة لمنصة SWR." style="padding:12px 24px;border-radius:8px;font-size:0.82rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;text-decoration:none;font-family:'Cairo',sans-serif;">التعبير عن الاهتمام →</a>
+            <a href="mailto:Info@Autonex.sa?subject=اهتمام بـ SWR SAFT&body=أرغب في الاستثمار في جولة SAFT الخاصة لمنصة SWR." style="padding:12px 24px;border-radius:8px;font-size:0.82rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;text-decoration:none;font-family:'Cairo',sans-serif;">التعبير عن الاهتمام →</a>
             <a href="whitepaper-ar.html" style="padding:12px 24px;border-radius:8px;font-size:0.82rem;font-weight:700;border:1px solid var(--dark3);color:var(--slate);text-decoration:none;font-family:'Cairo',sans-serif;">الورقة البيضاء</a>
             <a href="found-ar.html" style="padding:12px 24px;border-radius:8px;font-size:0.82rem;font-weight:700;border:1px solid var(--dark3);color:var(--slate);text-decoration:none;font-family:'Cairo',sans-serif;">جولة التأسيس</a>
           </div>
@@ -354,7 +354,7 @@ async function connectWallet() {
   if (!window.ethereum) {
     if (isMobile()) {
       const pageUrl = window.location.hostname === 'localhost'
-        ? 'https://na6ksa.github.io/swr' + window.location.pathname
+        ? 'https://autonex.sa' + window.location.pathname
         : window.location.href;
       const deepLink = 'https://metamask.app.link/dapp/' + pageUrl.replace('https://', '');
       document.getElementById('metamask-deeplink').href = deepLink;
@@ -505,7 +505,7 @@ let _wcProvider = null;
 const WC_META = {
   projectId: WC_PROJECT_ID, chains: [11155111], showQrModal: true,
   qrModalOptions: { themeMode: 'light' },
-  metadata: { name: 'SWR Platform', description: 'بوابة مستثمري SAFT — الأصول الحقيقية السعودية', url: 'https://na6ksa.github.io/swr', icons: ['https://na6ksa.github.io/swr/logos/swr.svg'] }
+  metadata: { name: 'SWR Platform', description: 'بوابة مستثمري SAFT — الأصول الحقيقية السعودية', url: 'https://autonex.sa', icons: ['https://autonex.sa/logos/swr.svg'] }
 };
 async function _wcConnect(wcp) {
   try {
